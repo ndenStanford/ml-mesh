@@ -93,7 +93,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             1: {
                 "entity_name": "iptc_first_level",
                 "feature_view_name": "iptc_first_level_feature_view",
-                "redshift_table": "iptc_first_level",
                 "filter_columns": [],
                 "filter_values": [],
                 "comparison_operators": [],
@@ -104,7 +103,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             2: {
                 "entity_name": "iptc_second_level",
                 "feature_view_name": "iptc_second_level_feature_view",
-                "redshift_table": "iptc_second_level",
                 "filter_columns": ["topic_1"],
                 "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],
@@ -116,7 +114,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             3: {
                 "entity_name": "iptc_third_level",
                 "feature_view_name": "iptc_third_level_feature_view",
-                "redshift_table": "iptc_third_level",
                 "filter_columns": ["topic_2"],
                 "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],

@@ -33,7 +33,7 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
-            data_fetch_params=data_fetch_params,
+            settings=data_fetch_params,
         )
 
     @abstractmethod

@@ -60,47 +60,52 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         """
         self.logger.info("initializing feature-store...")
         self.get_featurestore()
-        self.logger.info(
-            f"Registered entities: {[entity.name for entity in self.fs.list_entities()]}"
-        )
-        self.logger.info(
-            f"Registered datasources: "
-            f"{[datasource.name for datasource in self.fs.list_data_sources()]}"
-        )
-        self.logger.info(
-            f"Registered feature views: "
-            f"{[feature_view.projection.name for feature_view in self.fs.list_feature_views()]}"  # noqa: E501
-        )
+        # self.logger.info(
+        #     f"Registered entities: {[entity.name for entity in self.fs.feature_store.list_entities()]}"
+        # )
+        # self.logger.info(
+        #     f"Registered datasources: "
+        #     f"{[datasource.name for datasource in self.fs.feature_store.list_data_sources()]}"
+        # )
+        # self.logger.info(
+        #     f"Registered feature views: "
+        #     f"{[feature_view.projection.name for feature_view in self.fs.feature_store.list_feature_views()]}"
+        # # noqa: E501
+        # )
 
-        base_feature_view_name = self.data_fetch_params.feature_view_name
-        self.feature_view = [
-            feature_view
-            for feature_view in self.fs.list_feature_views()
-            if feature_view.name == base_feature_view_name
-        ][0]
+        # base_feature_view_name = self.data_fetch_params.feature_view_name
+        # self.feature_view = [
+        #     feature_view
+        #     for feature_view in self.fs.feature_store.list_feature_views()
+        #     if feature_view.name == base_feature_view_name
+        # ][0]
 
-        features = [
-            f"{self.feature_view.name}:{feature.name}"
-            for feature in self.feature_view.features
+        # features = [
+        #     f"{self.feature_view.name}:{feature.name}"
+        #     for feature in self.feature_view.features
+        # ]
+
+        # # If the dataset is on-demand, add the corresponding on-demand features
+        # if self.data_fetch_params.is_on_demand:
+        #     on_demand_feature_view = [
+        #         feature_view
+        #         for feature_view in self.fs.feature_store.list_on_demand_feature_views()
+        #         if feature_view.name
+        #         == f"{self.data_fetch_params.entity_name}_on_demand_feature_view"
+        #     ][0]
+
+        #     on_demand_features = [
+        #         f"{on_demand_feature_view.name}:{feature.name}"
+        #         for feature in on_demand_feature_view.features
+        #     ]
+        #     features.extend(on_demand_features)
+        #     self.logger.info(f"Added on-demand features: {on_demand_features}")
+        features = features = [
+            "iptc_first_level_feature_view:topic_1",
+            "iptc_first_level_feature_view:content",
+            "iptc_first_level_feature_view:title",
         ]
-
-        # If the dataset is on-demand, add the corresponding on-demand features
-        if self.data_fetch_params.is_on_demand:
-            on_demand_feature_view = [
-                feature_view
-                for feature_view in self.fs.list_on_demand_feature_views()
-                if feature_view.name
-                == f"{self.data_fetch_params.entity_name}_on_demand_feature_view"
-            ][0]
-
-            on_demand_features = [
-                f"{on_demand_feature_view.name}:{feature.name}"
-                for feature in on_demand_feature_view.features
-            ]
-            features.extend(on_demand_features)
-            self.logger.info(f"Added on-demand features: {on_demand_features}")
-        entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
-LIMIT 10"""
+        entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level" LIMIT 10"""
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
             features=features,
