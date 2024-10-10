@@ -91,6 +91,7 @@ class TranslationModel(ServedModel):
             raise ValueError("Input content cannot be an empty string.")
 
         content = self.pre_process(content)
+        translated_text = None
         # Detect language from the first 500 characters
         language_detection_content = content[:500]
 
