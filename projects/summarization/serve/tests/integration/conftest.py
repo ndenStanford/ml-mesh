@@ -48,9 +48,22 @@ def test_df():
 
 
 @pytest.fixture
-def metric(settings):
+def deepeval_settings():
+    """Deepeval settings."""
+    return {
+        "percent_success": 0.5,
+        "threshold": 0.5,
+        "model": "gpt-4",
+        "summarization_compression_ratio": 4,
+    }
+
+
+@pytest.fixture
+def metric(deepeval_settings):
     """Deepeval metric."""
     metric = SummarizationMetric(
-        threshold=float(settings.THRESHOLD), model=settings.MODEL, verbose_mode=True
+        threshold=deepeval_settings["threshold"],
+        model=deepeval_settings["model"],
+        verbose_mode=True,
     )
     return metric
