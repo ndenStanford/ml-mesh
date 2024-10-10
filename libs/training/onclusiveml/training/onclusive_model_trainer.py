@@ -99,7 +99,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             ]
             features.extend(on_demand_features)
             self.logger.info(f"Added on-demand features: {on_demand_features}")
-
+        entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
+LIMIT 10"""
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
             features=features,

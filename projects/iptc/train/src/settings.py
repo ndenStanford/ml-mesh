@@ -5,7 +5,7 @@ import os
 from typing import List
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
@@ -44,7 +44,7 @@ class IPTCModelParams(TrackingSettings):
     test_size: float = 0.2
 
 
-class DataFetchParams(FeatureStoreParams):
+class DataFetchParams(FeastFeatureStoreSettings):
     """Feature registration inputs."""
 
     entity_name: str
