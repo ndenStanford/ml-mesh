@@ -22,6 +22,16 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
+test_sample_indices = [0, 1, 2, 3]
+languages = ["en", "ja"]
+# Generate the parameter combinations using a list comprehension
+parametrize_values = [
+    (index, language, languages.index(language))
+    for language in languages
+    for index in test_sample_indices
+]
+
+
 @pytest.fixture
 def settings() -> OnclusiveBaseSettings:
     """Fixture to provide IOSettings instance.

@@ -1,21 +1,16 @@
 """Compiled model tests."""
 
 # Standard Library
+import json
 from typing import List
 
 # 3rd party libraries
 import pandas as pd
 import pytest
+from conftest import parametrize_values
 
-
-test_sample_indices = [0, 1, 2, 3]
-languages = ["en", "ja"]
-# Generate the parameter combinations using a list comprehension
-parametrize_values = [
-    (index, language, languages.index(language))
-    for language in languages
-    for index in test_sample_indices
-]
+# Internal libraries
+from onclusiveml.compile.constants import CompileWorkflowTasks
 
 
 def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
@@ -76,7 +71,6 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler
     compiled_predictions_dict = [obj._asdict() for obj in compiled_predictions[0]]
-
     # Create copies of the lists of dictionaries
     compiled_predictions_list_copy = [dict(d) for d in compiled_predictions_dict]
     test_sample_list = [
@@ -99,13 +93,11 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
     for d in test_sample_list_copy:
         d.pop("score", None)
-
     # Now assert the equality of the modified lists of dictionaries
     assert compiled_predictions_list_copy == test_sample_list_copy
 
     compiled_predictions_df = to_dataframe(compiled_predictions_dict)
     expected_predictions_df = to_dataframe(test_sample_list)
-
     # assert ner are identical and scores are within 0.01 absolute deviation
     pd.testing.assert_frame_equal(
         compiled_predictions_df,
@@ -114,17 +106,17 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         atol=compilation_test_settings.regression_atol,
     )
     # create new export file or append prediction to existing exported prediction file
-    # try:
-    #     with open(
-    #         settings.test.test_files["predictions"]
-    #     ) as compiled_predictions_file:
-    #         all_compiled_predictions = json.load(compiled_predictions_file)
-    # except (FileExistsError, FileNotFoundError):
-    #     all_compiled_predictions = [[], []]
+    try:
+        with open(
+            settings.test_files(CompileWorkflowTasks.TEST)["predictions"]
+        ) as compiled_predictions_file:
+            all_compiled_predictions = json.load(compiled_predictions_file)
+    except (FileExistsError, FileNotFoundError):
+        all_compiled_predictions = [[], []]
 
-    # all_compiled_predictions[lang_index].append(compiled_predictions_dict)
+    all_compiled_predictions[lang_index].append(compiled_predictions_dict)
 
-    # with open(
-    #     settings.test.test_files["predictions"], "w"
-    # ) as compiled_predictions_file:
-    #     json.dump(all_compiled_predictions, compiled_predictions_file)
+    with open(
+        settings.test_files(CompileWorkflowTasks.TEST)["predictions"], "w"
+    ) as compiled_predictions_file:
+        json.dump(all_compiled_predictions, compiled_predictions_file)
