@@ -16,6 +16,7 @@ from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
 )
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
@@ -39,6 +40,7 @@ class TranslationModel(ServedModel):
     bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
+        self.sentence_tokenizer = SentenceTokenizer()
         super().__init__(name="translation")
 
     def bio(self) -> BioResponseSchema:
@@ -54,9 +56,11 @@ class TranslationModel(ServedModel):
         text = re.sub("\n+", " ", text)
         return text
 
-    def _chunk_content(self, content: str, max_length: int) -> List[str]:
+    def _chunk_content(self, content: str, max_length: int, language: str) -> List[str]:
         """Split the content into chunks, breaking only at sentence boundaries."""
-        sentences = re.split(r"(?<=\.)\s", content)
+        sentences = self.sentence_tokenizer.tokenize(
+            content=content, language=language
+        )["sentences"]
         chunks = []
         current_chunk = ""
 
@@ -70,7 +74,7 @@ class TranslationModel(ServedModel):
         if current_chunk:
             chunks.append(current_chunk.strip())
 
-        return [i for i in chunks if len(i)> 0]
+        return [i for i in chunks if len(i) > 0]
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction."""
@@ -87,14 +91,9 @@ class TranslationModel(ServedModel):
             raise ValueError("Input content cannot be an empty string.")
 
         content = self.pre_process(content)
-        # Split content into chunks if longer than 8000 characters, break at sentence boundaries # noqa
-        if len(content) > 8000:
-            content_chunks = self._chunk_content(content, max_length=8000)
-        else:
-            content_chunks = [content]
+        # Detect language from the first 500 characters
+        language_detection_content = content[:500]
 
-        translated_text = None
-        # Detect language only from the first chunk
         if reference_language:
             try:
                 # Convert the provided language to ISO value
@@ -105,9 +104,8 @@ class TranslationModel(ServedModel):
                 reference_language = None
 
         try:
-            # Detect the language of the text using only the first chunk
             iso_language = self._detect_language(
-                content=content_chunks[0], language=None
+                content=language_detection_content, language=None
             )
             if iso_language:
                 source_language = iso_language.value
@@ -125,6 +123,13 @@ class TranslationModel(ServedModel):
                 logger.warning(
                     f"Source language does not match detected language: '{source_language}'. Overriding with detected language."  # noqa
                 )
+            # Split content into chunks if longer than 8000 characters, break at sentence boundaries # noqa
+            if len(content) > 5000:
+                content_chunks = self._chunk_content(
+                    content, max_length=5000, language=source_language
+                )
+            else:
+                content_chunks = [content]
 
             try:
                 # Translate each chunk and concatenate the results
