@@ -11,9 +11,7 @@ from fastapi_crudrouter.core._types import DEPENDENCIES, PAGINATION
 from fastapi_crudrouter.core._types import PYDANTIC_SCHEMA as SCHEMA
 
 # Internal libraries
-from onclusiveml.data.data_model.dynamodb_data_model.dynamodb_model import (
-    DynamoDBModel,
-)
+from onclusiveml.data.data_model.dynamodb import DynamoDBModel
 
 
 CALLABLE = Callable[..., SCHEMA]

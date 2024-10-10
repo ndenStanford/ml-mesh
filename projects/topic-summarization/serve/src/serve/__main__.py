@@ -2,9 +2,7 @@
 """Model server."""
 
 # Internal libraries
-from onclusiveml.data.data_model.dynamodb_data_model.dynamodb_model import (
-    DynamoDBModel,
-)
+from onclusiveml.data.data_model.dynamodb import DynamoDBModel
 from onclusiveml.serving.rest.crud.dynamodb_router import DynamoDBCRUDRouter
 from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams

@@ -8,7 +8,7 @@ import pytest
 from pydantic import PrivateAttr
 
 # Internal libraries
-from onclusiveml.data.data_model.base_data_model import BaseDataModel
+from onclusiveml.data.data_model.base import BaseDataModel
 
 
 class MockDataModel(BaseDataModel[Any]):

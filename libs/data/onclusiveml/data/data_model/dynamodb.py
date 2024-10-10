@@ -8,7 +8,7 @@ from dyntastic import Dyntastic
 from pydantic import Field
 
 # Internal libraries
-from onclusiveml.data.data_model.base_data_model import BaseDataModel
+from onclusiveml.data.data_model.base import BaseDataModel
 
 
 T = TypeVar("T", bound=Dyntastic)

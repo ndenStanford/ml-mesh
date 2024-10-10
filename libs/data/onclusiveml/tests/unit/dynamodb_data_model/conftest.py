@@ -11,9 +11,7 @@ from moto import mock_aws  # Use mock_aws to mock all AWS services
 from pydantic import Field
 
 # Internal libraries
-from onclusiveml.data.data_model.dynamodb_data_model.dynamodb_model import (
-    DynamoDBModel,
-)
+from onclusiveml.data.data_model.dynamodb import DynamoDBModel
 
 
 @pytest.fixture(scope="session")

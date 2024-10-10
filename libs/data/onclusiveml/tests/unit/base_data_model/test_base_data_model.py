@@ -4,7 +4,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.data.data_model.base_data_model import BaseDataModel
+from onclusiveml.data.data_model.base import BaseDataModel
 
 
 def test_cannot_instantiate_base_class():
