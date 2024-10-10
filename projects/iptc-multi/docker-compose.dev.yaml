@@ -21,7 +21,7 @@ services:
         PROJECT: iptc-multi
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
@@ -73,7 +73,7 @@ services:
         PROJECT: iptc-multi
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -121,7 +121,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -170,7 +170,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -219,7 +219,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -269,7 +269,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -313,7 +313,7 @@ services:
 
   # unit tests
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     volumes:
       - type: bind
@@ -327,7 +327,7 @@ services:
       - onclusive-net
 
   serve-unit-debug:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     command: [python, -W ignore::DeprecationWarning, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     ports:
       - 5678:5678
@@ -348,7 +348,7 @@ services:
       - type: bind
         source: serve
         target: /projects/iptc-multi/serve
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
@@ -364,7 +364,7 @@ services:
       - type: bind
         source: serve
         target: /projects/iptc-multi/serve
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000

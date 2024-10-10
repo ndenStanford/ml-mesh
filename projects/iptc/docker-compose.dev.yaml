@@ -21,7 +21,7 @@ services:
       - type: bind
         source: train
         target: /projects/iptc/train
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -50,7 +50,7 @@ services:
         PROJECT: iptc
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
     ports:
       - 5678:5678
@@ -72,7 +72,7 @@ services:
       - type: bind
         source: train
         target: /projects/iptc/train
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -102,7 +102,7 @@ services:
       - type: bind
         source: register/src
         target: /projects/iptc/register/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_features]
     profiles: [register]
     environment:
@@ -127,7 +127,7 @@ services:
         PROJECT: iptc
         COMPONENT: register
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.register_features]
     ports:
       - 5678:5678
@@ -147,7 +147,7 @@ services:
       - type: bind
         source: register/
         target: /projects/iptc/register/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-register:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     env_file: register/config/dev.env
@@ -165,7 +165,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [register, train, serve, integration, functional, debug]
     ports:
@@ -265,7 +265,7 @@ services:
         PROJECT: iptc
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
     command: [python, -m, src.compile]
     profiles: [register, compile, unit, integration, pipeline]
     environment:
@@ -287,7 +287,7 @@ services:
         PROJECT: iptc
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
     command:
       - /bin/sh
       - -c
@@ -313,7 +313,7 @@ services:
       - type: bind
         source: compile/tests
         target: /projects/iptc/compile/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     hostname: onclusive-ml
@@ -327,7 +327,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
@@ -348,7 +348,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/tests, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
     profiles: [pipeline]
     environment:
@@ -365,7 +365,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/iptc/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
@@ -394,7 +394,7 @@ services:
         PROJECT: iptc
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/dev.env
     profiles: [serve, functional, load]
@@ -426,7 +426,7 @@ services:
       - type: bind
         source: serve/src
         target: /projects/iptc/serve/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, functional, load]
     environment:
@@ -450,7 +450,7 @@ services:
         PROJECT: iptc
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -484,7 +484,7 @@ services:
       - type: bind
         source: serve/tests
         target: /projects/iptc/serve/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     env_file: serve/config/dev.env
@@ -508,7 +508,7 @@ services:
       - type: bind
         source: serve/tests
         target: /projects/iptc/serve/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no, -s]
     env_file: serve/config/dev.env
     profiles: [integration]
@@ -530,7 +530,7 @@ services:
       - type: bind
         source: serve/tests
         target: /projects/iptc/serve/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/dev.env
     profiles: [functional]
