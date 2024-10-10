@@ -40,6 +40,10 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
 
         Returns:
             Any: The item with the specified ID, or None if not found.
+
+        Raises:
+            ItemNotFoundException: If the item does not exist.
+            DataModelException: For other data-related errors.
         """
         pass
 
@@ -52,6 +56,10 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
 
         Returns:
             Any: The created item, potentially with additional metadata (e.g., ID).
+
+        Raises:
+            ValidationException: If the input data is invalid.
+            DataModelException: For other data-related errors.
         """
         pass
 
@@ -65,6 +73,11 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
 
         Returns:
             Any: The updated item, or None if the item with the given ID doesn't exist.
+
+        Raises:
+            ItemNotFoundException: If the item does not exist.
+            ValidationException: If the input data is invalid.
+            DataModelException: For other data-related errors.
         """
         pass
 
@@ -77,6 +90,10 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
 
         Returns:
             Any: The deleted item, or None if the item with the given ID doesn't exist.
+
+        Raises:
+            ItemNotFoundException: If the item does not exist.
+            DataModelException: For other data-related errors.
         """
         pass
 
@@ -86,5 +103,8 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
 
         Returns:
             List[Any]: A list of all deleted items.
+
+        Raises:
+            DataModelException: For errors during deletion.
         """
         pass

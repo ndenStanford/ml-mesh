@@ -1,15 +1,19 @@
-"""DynamoDB CRUD Router."""
+"""General Purpose CRUD Router."""
 
 # Standard Library
 from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 # 3rd party libraries
-from dyntastic.exceptions import DoesNotExist
 from fastapi import HTTPException
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.data.data_model.dynamodb import DynamoDBModel
+from onclusiveml.data.data_model.base import (
+    BaseDataModel,
+    DataModelException,
+    ItemNotFoundException,
+    ValidationException,
+)
 from onclusiveml.serving.rest.crud._base import CRUDGenerator
 from onclusiveml.serving.rest.crud._types import depends
 
@@ -18,17 +22,17 @@ CALLABLE = Callable[..., BaseModel]
 CALLABLE_LIST = Callable[..., List[BaseModel]]
 
 
-class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
-    """A CRUD router for DynamoDB operations using FastAPI.
+class CRUDRouter(CRUDGenerator[BaseModel]):
+    """A general-purpose CRUD router for FastAPI.
 
-    This class extends the CRUDGenerator to provide CRUD operations
-    specifically for DynamoDB tables using the DynamoDBModel.
+    This class extends the CRUDGenerator to provide CRUD endpoints
+    for any data model that inherits from BaseDataModel.
     """
 
     def __init__(
         self,
         schema: Type[BaseModel],
-        model: DynamoDBModel,
+        model: BaseDataModel[Any],
         create_schema: Optional[Type[BaseModel]] = None,
         update_schema: Optional[Type[BaseModel]] = None,
         prefix: Optional[str] = None,
@@ -42,13 +46,13 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
         delete_all_route: Union[bool, depends] = True,
         **kwargs: Any,
     ) -> None:
-        """Initialize the DynamoDBCRUDRouter.
+        """Initialize the CRUDRouter.
 
         Args:
-            schema (Type[SCHEMA]): The Pydantic schema for the model.
-            model (DynamoDBModel): An instance of DynamoDBModel.
-            create_schema (Optional[Type[SCHEMA]]): Schema for create operations.
-            update_schema (Optional[Type[SCHEMA]]): Schema for update operations.
+            schema (Type[BaseModel]): The Pydantic schema for the model.
+            model (BaseDataModel): An instance of a data model.
+            create_schema (Optional[Type[BaseModel]]): Schema for create operations.
+            update_schema (Optional[Type[BaseModel]]): Schema for update operations.
             prefix (Optional[str]): URL prefix for the routes.
             tags (Optional[List[str]]): Tags for the routes.
             paginate (Optional[int]): Number of items per page for pagination.
@@ -76,7 +80,7 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
             **kwargs,
         )
 
-        self.model = model  # Instance of DynamoDBModel
+        self.model = model  # Instance of BaseDataModel
 
     def _get_all(self, *args: Any, **kwargs: Any) -> CALLABLE_LIST:
         """Generate a route for retrieving all items with pagination.
@@ -96,6 +100,9 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
                 items = items[skip:] if limit is None else items[skip : skip + limit]
 
                 return [self.schema(**item.__dict__) for item in items]
+            except DataModelException as e:
+                # Handle known data model exceptions
+                raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
@@ -113,16 +120,11 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
         def route(item_id: str) -> BaseModel:
             try:
                 item = self.model._get_one(item_id)
-                if item is None:
-                    raise HTTPException(
-                        status_code=404, detail=f"Item with id {item_id} not found"
-                    )
                 return self.schema(**item.__dict__)
-            except DoesNotExist as de:  # noqa: F841
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Item with id {item_id} not found in database",
-                )
+            except ItemNotFoundException as e:
+                raise HTTPException(status_code=404, detail=str(e)) from e
+            except DataModelException as e:
+                raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
@@ -141,8 +143,10 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
             try:
                 item = self.model._create(model_data.dict())
                 return self.schema(**item.__dict__)
-            except ValueError as ve:
-                raise HTTPException(status_code=400, detail=f"Invalid input: {str(ve)}")
+            except ValidationException as ve:
+                raise HTTPException(status_code=400, detail=str(ve)) from ve
+            except DataModelException as e:
+                raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
@@ -161,18 +165,13 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
             try:
                 update_data = model_data.dict(exclude_unset=True)
                 item = self.model._update(item_id, update_data)
-                if item is None:
-                    raise HTTPException(
-                        status_code=404, detail=f"Item with id {item_id} not found"
-                    )
                 return self.schema(**item.__dict__)
-            except DoesNotExist as de:  # noqa: F841
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Item with id {item_id} not found in database",
-                )
-            except ValueError as ve:
-                raise HTTPException(status_code=400, detail=f"Invalid input: {str(ve)}")
+            except ItemNotFoundException as e:
+                raise HTTPException(status_code=404, detail=str(e)) from e
+            except ValidationException as ve:
+                raise HTTPException(status_code=400, detail=str(ve)) from ve
+            except DataModelException as e:
+                raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
@@ -191,6 +190,8 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
             try:
                 items = self.model._delete_all()
                 return [self.schema(**item.__dict__) for item in items]
+            except DataModelException as e:
+                raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
@@ -208,16 +209,11 @@ class DynamoDBCRUDRouter(CRUDGenerator[BaseModel]):
         def route(item_id: str) -> BaseModel:
             try:
                 item = self.model._delete_one(item_id)
-                if item is None:
-                    raise HTTPException(
-                        status_code=404, detail=f"Item with id {item_id} not found"
-                    )
                 return self.schema(**item.__dict__)
-            except DoesNotExist as de:  # noqa: F841
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Item with id {item_id} not found in database",
-                )
+            except ItemNotFoundException as e:
+                raise HTTPException(status_code=404, detail=str(e)) from e
+            except DataModelException as e:
+                raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"

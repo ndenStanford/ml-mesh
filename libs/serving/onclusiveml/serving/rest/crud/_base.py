@@ -24,8 +24,10 @@ NOT_FOUND = HTTPException(404, "Item not found")
 class CRUDGenerator(Generic[T], APIRouter, ABC):
     """Base class for generating CRUD routes in FastAPI.
 
+    Taken from https://github.com/awtkns/fastapi-crudrouter/blob/2c18c90abf04b145f097da22044fa71e3ab3d52b/fastapi_crudrouter/core/_base.py.
+
     Provides methods to automatically generate CRUD endpoints for a given Pydantic schema.
-    """
+    """  # noqa: W505
 
     schema: Type[T]
     create_schema: Type[T]
@@ -346,7 +348,7 @@ class CRUDGenerator(Generic[T], APIRouter, ABC):
 
         Args:
             e (Exception): The exception to raise.
-            status_code (int, optional): The HTTP status code. Defaults to 422.
+            status_code (int, optional): The HTTP status code.
 
         Raises:
             HTTPException: The HTTP exception with the specified status code and error message.

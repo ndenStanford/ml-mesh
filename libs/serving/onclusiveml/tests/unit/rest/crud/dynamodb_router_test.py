@@ -60,7 +60,7 @@ def test_get_one_nonexistent_item(client):
     response = client.get("/items/nonexistent-id")
     assert response.status_code == HTTPStatus.NOT_FOUND
     data = response.json()
-    assert data["detail"] == "Item with id nonexistent-id not found in database"
+    assert data["detail"] == "Item with id nonexistent-id does not exist."
 
 
 def test_update_existing_item(client):
@@ -84,7 +84,7 @@ def test_update_nonexistent_item(client):
     response = client.put("/items/nonexistent-id", json=update_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
     data = response.json()
-    assert data["detail"] == "Item with id nonexistent-id not found in database"
+    assert data["detail"] == "Item with id nonexistent-id does not exist."
 
 
 def test_delete_existing_item(client):
@@ -107,7 +107,7 @@ def test_delete_nonexistent_item(client):
     response = client.delete("/items/nonexistent-id")
     assert response.status_code == HTTPStatus.NOT_FOUND
     data = response.json()
-    assert data["detail"] == "Item with id nonexistent-id not found in database"
+    assert data["detail"] == "Item with id nonexistent-id does not exist."
 
 
 def test_delete_all_items(client):

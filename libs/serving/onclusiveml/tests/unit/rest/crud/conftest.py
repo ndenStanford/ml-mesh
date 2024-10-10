@@ -13,7 +13,7 @@ from pydantic import Field
 
 # Internal libraries
 from onclusiveml.data.data_model.dynamodb import DynamoDBModel
-from onclusiveml.serving.rest.crud.dynamodb_router import DynamoDBCRUDRouter
+from onclusiveml.serving.rest.crud.crud_router import CRUDRouter
 
 
 @pytest.fixture(scope="session")
@@ -46,7 +46,7 @@ def dynamo_db_model(TestDyntasticModel):
 
 @pytest.fixture(scope="function")
 def app(dynamo_db_model, TestDyntasticModel):
-    """Fixture to provide a FastAPI app with the DynamoDBCRUDRouter."""
+    """Fixture to provide a FastAPI app with the CRUDRouter."""
     # 3rd party libraries
     from fastapi import FastAPI
 
@@ -71,7 +71,7 @@ def app(dynamo_db_model, TestDyntasticModel):
     app = FastAPI()
     # Include the router
     app.include_router(
-        DynamoDBCRUDRouter(
+        CRUDRouter(
             schema=ItemSchema,
             create_schema=CreateItemSchema,
             update_schema=UpdateItemSchema,

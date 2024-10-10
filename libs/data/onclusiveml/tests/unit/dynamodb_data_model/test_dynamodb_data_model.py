@@ -2,8 +2,12 @@
 
 # 3rd party libraries
 import pytest
-from dyntastic.exceptions import DoesNotExist
-from pydantic import ValidationError
+
+# Internal libraries
+from onclusiveml.data.data_model.exception import (
+    ItemNotFoundException,
+    ValidationException,
+)
 
 
 def test_create_item(dynamo_db_model):
@@ -18,7 +22,7 @@ def test_create_item(dynamo_db_model):
 def test_create_item_missing_required_field(dynamo_db_model):
     """Test creating an item without required fields."""
     item_data = {"age": 25}  # Missing 'name'
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationException):
         dynamo_db_model._create(item_data)
 
 
@@ -36,7 +40,7 @@ def test_get_one_existing_item(dynamo_db_model):
 
 def test_get_one_nonexistent_item(dynamo_db_model):
     """Test retrieving a non-existent item."""
-    with pytest.raises(DoesNotExist):
+    with pytest.raises(ItemNotFoundException):
         retrieved_item = dynamo_db_model._get_one("nonexistent-id")  # noqa: F841
 
 
@@ -73,7 +77,7 @@ def test_update_existing_item(dynamo_db_model):
 
 def test_update_nonexistent_item(dynamo_db_model):
     """Test updating a non-existent item."""
-    with pytest.raises(DoesNotExist):
+    with pytest.raises(ItemNotFoundException):
         updated_data = {"name": "Grace", "age": 50}
         updated_item = dynamo_db_model._update(  # noqa: F841
             "nonexistent-id", updated_data
@@ -90,13 +94,13 @@ def test_delete_existing_item(dynamo_db_model):
     assert deleted_item is not None
     assert deleted_item.name == "Heidi"
     # Verify the item is deleted
-    with pytest.raises(DoesNotExist):
+    with pytest.raises(ItemNotFoundException):
         retrieved_item = dynamo_db_model._get_one(created_item.id)  # noqa: F841
 
 
 def test_delete_nonexistent_item(dynamo_db_model):
     """Test deleting a non-existent item."""
-    with pytest.raises(DoesNotExist):
+    with pytest.raises(ItemNotFoundException):
         deleted_item = dynamo_db_model._delete_one("nonexistent-id")  # noqa: F841
 
 

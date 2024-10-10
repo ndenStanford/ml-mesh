@@ -1,11 +1,9 @@
 """Init."""
 
 # Internal libraries
-from onclusiveml.serving.rest.crud.dynamodb_router import (  # noqa: F401
-    DynamoDBCRUDRouter,
-)
+from onclusiveml.serving.rest.crud.crud_router import CRUDRouter  # noqa: F401
 
 
 __all__ = [
-    "DynamoDBCRUDRouter",
+    "CRUDRouter",
 ]
