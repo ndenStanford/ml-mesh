@@ -866,6 +866,20 @@ jobs       :
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
 
+               # compile
+          - name: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
+
     with:
       project: ner
       environment: prod
