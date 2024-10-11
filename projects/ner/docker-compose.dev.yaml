@@ -351,7 +351,7 @@ services:
       AUTO_OFFSET_RESET: earliest
     hostname: onclusive-ml
     networks: [onclusive-net]
-  
+
   # =============================================
   # COMPILE
   # =============================================
@@ -506,11 +506,11 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    
+
   # =============================================
   # OTHER
   # =============================================
-  
+
   jobmanager:
     image: apache/flink:1.16-scala_2.12-java11
     command: [jobmanager]

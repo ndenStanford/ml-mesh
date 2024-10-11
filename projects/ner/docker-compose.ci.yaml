@@ -229,7 +229,7 @@ services:
       AUTO_OFFSET_RESET: earliest
     hostname: onclusive-ml
     networks: [onclusive-net]
-    
+
   # =============================================
   # COMPILE
   # =============================================
@@ -320,7 +320,7 @@ services:
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    
+
   # =============================================
   # OTHER
   # =============================================
