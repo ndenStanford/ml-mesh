@@ -93,6 +93,7 @@ ALL_PROJECTS:= \
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk
+include features/makefile.mk
 include libs/makefile.mk
 include docker/makefile.mk
 include projects/makefile.mk
