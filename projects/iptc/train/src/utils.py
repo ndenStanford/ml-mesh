@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 # Internal libraries
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
 )
@@ -26,7 +27,7 @@ def compute_metrics(pred):  # type: ignore[no-untyped-def]
 
 
 def find_num_labels(  # type: ignore[no-untyped-def]
-    level, first_level_root=None, second_level_root=None
+    level, first_level_root=None, second_level_root=None, third_level_root=None
 ):
     """Retrieve the number of labels from the CLASS_DICT file."""
     if level == 1:
@@ -35,6 +36,8 @@ def find_num_labels(  # type: ignore[no-untyped-def]
         return len(CANDIDATE_DICT_SECOND[first_level_root])
     elif level == 3:
         return len(CANDIDATE_DICT_THIRD[second_level_root])
+    elif level == 4:
+        return len(CANDIDATE_DICT_FOURTH[third_level_root])
 
 
 def extract_model_id(project: str) -> str:
