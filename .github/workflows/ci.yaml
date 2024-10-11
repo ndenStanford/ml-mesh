@@ -325,7 +325,7 @@ jobs       :
 
         self-hosted-runner-neuron: [false]
         self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
-        use-cache: [true]
+        use-cache: [false]
 
     with:
       environment: prod
@@ -851,6 +851,18 @@ jobs       :
       matrix:
         components:
           # NOTE: list of project components to run
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-22.04
+            use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: beam-backfill
 
           # serve
           - name: serve
