@@ -8,8 +8,8 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.data.data_model.base import (
-    BaseDataModel,
+from onclusiveml.data.data_model.base import BaseDataModel
+from onclusiveml.data.data_model.exception import (
     DataModelException,
     ItemNotFoundException,
     ValidationException,
