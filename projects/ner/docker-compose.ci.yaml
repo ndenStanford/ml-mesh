@@ -156,163 +156,101 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  # =============================================
+   # =============================================
   # COMPILE
   # =============================================
 
   compile:
+    volumes:
+      - compile-volume:/projects/ner/compile/outputs
     devices:
       - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/ner/compile/outputs
     build:
       context: ../../
       dockerfile: projects/ner/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-compile,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-debug:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/ner/compile/outputs
-    build:
-      context: ../../
-      dockerfile: projects/ner/compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-debugger}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: ner
-        COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
-    command:
-      - /bin/sh
-      - -c
-      - python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile
-    ports:
-      - 5678:5678
-    profiles: [debug]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-unit:
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
-    env_file: compile/config/dev.env
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-download-model:
     volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/ner/compile/outputs
+      - compile-volume:/projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-compile-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile
-        target: /projects/ner/compile
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/dev.env
+      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
+      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
+      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
+      COMPILED_PROJECT: ${COMPILED_PROJECT}
+      COMPILED_MODEL: ${COMPILED_MODEL}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-validate-model:
+    volumes:
+      - compile-volume:/projects/ner/compile/outputs
     devices:
       - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
+    command: [python, -m, pytest, src/tests, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/dev.env
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-upload-model:
     volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/ner/compile/outputs
+      - compile-volume:/projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
+      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
+      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
+      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
+      COMPILED_PROJECT: ${COMPILED_PROJECT}
+      COMPILED_MODEL: ${COMPILED_MODEL}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
+
 
 networks:
   onclusive-net:
 
 volumes :
   serve-volume:
+  compile-volume:
