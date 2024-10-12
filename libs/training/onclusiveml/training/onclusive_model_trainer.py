@@ -100,15 +100,18 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         #     ]
         #     features.extend(on_demand_features)
         #     self.logger.info(f"Added on-demand features: {on_demand_features}")
-        features = features = [
-            "iptc_first_level:topic_1",
-            "iptc_first_level:content",
-            "iptc_first_level:title",
-        ]
-        entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level" LIMIT 10"""
-        self.dataset_df = self.fs.get_historical_features(
-            entity_df=entity_df,
-            features=features,
+        # features = features = [
+        #     "iptc_first_level:topic_1",
+        #     "iptc_first_level:content",
+        #     "iptc_first_level:title",
+        # ]
+        # entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
+        # FROM "external"."iptc_first_level" LIMIT 10"""
+        self.dataset_df = self.fs.get_training_dataset(
+            name="iptc_first_level",
+            join_key_columns=[],
+            feature_name_columns=["topic_1", "content", "language", "title"],
+            timestamp_field="created_at",
         )
         # Logging the initial dataset size
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
