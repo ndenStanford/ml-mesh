@@ -244,24 +244,26 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         )  # Implement this method to return the candidate dictionary
         initial_row_count = len(self.dataset_df)
         # Apply the filter
-        self.dataset_df = self.dataset_df[
-            self.dataset_df[f"topic_{self.level}_llm"].isin(valid_labels)
-        ]
-        # Log the size after removing invalid labels
-        filtered_row_count = len(self.dataset_df)
-        removed_rows = initial_row_count - filtered_row_count
-        self.logger.info(
-            f"Removed {removed_rows} rows with invalid labels. Filtered dataset size: {self.dataset_df.shape}"
-        )
-
-        if filtered_row_count == 0:
-            self.logger.warning(
-                "No valid rows remaining after filtering. Please check the input data or candidate list."
+        if self.is_on_demand:
+            self.dataset_df = self.dataset_df[
+                self.dataset_df[f"topic_{self.level}_llm"].isin(valid_labels)
+            ]
+            # Log the size after removing invalid labels
+            filtered_row_count = len(self.dataset_df)
+            removed_rows = initial_row_count - filtered_row_count
+            self.logger.info(
+                f"Removed {removed_rows} rows with invalid labels. Filtered dataset size: {self.dataset_df.shape}"
             )
+
+            if filtered_row_count == 0:
+                self.logger.warning(
+                    "No valid rows remaining after filtering. Please check the input data or candidate list."
+                )
         # Display the first few rows of the filtered dataset
         self.logger.info(f"Final preprocessed dataset:\n{self.dataset_df.head()}")
         # fix the topic discrepencies
         self.dataset_df = topic_conversion(self.dataset_df)
+        self.dataset_df = self.dataset_df.sample(n=50, random_state=42)
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")

@@ -1,7 +1,5 @@
 """Class for training and managing Onclusive models."""
 
-# filter/limit
-
 # Standard Library
 import io
 from abc import abstractmethod
@@ -238,4 +236,4 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     def __call__(self) -> None:
         """Call Method."""
         self.get_training_data()
-        self.upload_training_data_to_s3()
+        # self.upload_training_data_to_s3()
