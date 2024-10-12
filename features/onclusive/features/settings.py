@@ -31,7 +31,7 @@ class GlobalSettings(BaseSettings):
         env_file_encoding="utf-8",
         validate_assignment=True,
         arbitrary_types_allowed=True,
-        env_prefix="onclusiveml_feast_",
+        env_prefix="onclusiveml_feature_store_",
     )
 
     @property

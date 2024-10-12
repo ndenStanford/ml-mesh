@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 from feast import Entity, FeatureView, Field, types
-from oml.register.contrib.redshift import OnclusiveRedshiftSource
+from contrib.redshift import OnclusiveRedshiftSource
 
 entity = Entity(
     name="iptc_third_level",
@@ -28,6 +28,7 @@ feature_view = FeatureView(
         Field(name="topic_2", dtype=types.String, description="Level 2 IPTC Topic label."),
         Field(name="topic_3", dtype=types.String, description="Level 3 IPTC Topic label."),
         Field(name="content", dtype=types.String, description="Content (model input)."),
+        Field(name="title", dtype=types.String, description="Article title."),
         Field(name="language", dtype=types.String, description="Content Language."),
     ],
     source=source,

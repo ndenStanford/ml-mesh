@@ -1,7 +1,7 @@
-features.install/%:
+features.install:
 	poetry --directory=features install --with dev
 
-warehouse.lock/%:
+features.lock:
 	poetry --directory=features lock
 
 features.plan:

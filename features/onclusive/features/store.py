@@ -4,7 +4,7 @@ from feast import RepoConfig
 from feast.infra.offline_stores.redshift import RedshiftOfflineStoreConfig
 from feast.infra.online_stores.dynamodb import DynamoDBOnlineStoreConfig
 from feast.infra.registry.sql import SqlRegistryConfig
-from oml.register.settings import get_settings
+from settings import get_settings
 
 settings = get_settings()
 
