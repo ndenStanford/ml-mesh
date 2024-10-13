@@ -3,7 +3,7 @@ name = "features"
 version = "0.1.0"
 description = "Feature store management"
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
-packages = [{include = "onclusive"}]
+packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "3.9.19"

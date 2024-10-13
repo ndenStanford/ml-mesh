@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 from feast import Entity, FeatureView, Field, types
-from src.contrib.redshift import OnclusiveRedshiftSource
+from onclusiveml.features.contrib.redshift import OnclusiveRedshiftSource
 
 entity = Entity(
     name="iptc_second_level",
