@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from feast import RedshiftSource
 from feast.value_type import ValueType
+from typing import Optional
 
 
 class OnclusiveRedshiftSource(RedshiftSource):
@@ -12,17 +13,17 @@ class OnclusiveRedshiftSource(RedshiftSource):
     def __init__(
         self,
         *,
-        name: str | None = None,
-        timestamp_field: str | None = None,
-        table: str | None = None,
-        schema: str | None = None,
-        created_timestamp_column: str | None = None,
-        field_mapping: dict[str, str] | None = None,
-        query: str | None = None,
-        description: str | None = "",
-        tags: dict[str, str] | None = None,
-        owner: str | None = "",
-        database: str | None = "",
+        name: Optional[str] = None,
+        timestamp_field: Optional[str] = None,
+        table: Optional[str] = None,
+        schema: Optional[str] = None,
+        created_timestamp_column: Optional[str] = None,
+        field_mapping: Optional[str] = None,
+        query: Optional[str] = None,
+        description: Optional[str] = "",
+        tags: Optional[dict[str, str]] = None,
+        owner: Optional[str] = "",
+        database: Optional[str] = "",
     ) -> None:
         super().__init__(
             name=name,

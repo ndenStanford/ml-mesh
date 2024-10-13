@@ -1,11 +1,10 @@
 """Main."""
-
 from pathlib import Path
 from typing import Any
 
 import click
-from oml.register.repo_operations import apply_total, plan
-from oml.register.store import repo_config
+from repo_operations import apply_total, plan
+from store import repo_config
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
@@ -28,7 +27,8 @@ def features() -> None:
 @features.command(hidden=True, name="plan")
 def plan_cmd() -> None:
     """Plan features."""
-    from oml.register import feature_views
+    # from oml.register import feature_views
+    import feature_views
 
     plan(repo_config, Path(f"{feature_views.__path__[0]}"), True)
 
@@ -36,7 +36,8 @@ def plan_cmd() -> None:
 @features.command(hidden=True, name="apply")
 def apply_cmd() -> None:
     """Apply features."""
-    from oml.register import feature_views
+    # from oml.register import feature_views
+    import feature_views
 
     apply_total(repo_config, Path(f"{feature_views.__path__[0]}"), True)
 

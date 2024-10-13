@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from feast.value_type import ValueType
 from parameterized.parameterized import parameterized
-from register.contrib.redshift import OnclusiveRedshiftSource
+from onclusiveml.features.contrib.redshift import OnclusiveRedshiftSource
 
 
 class OnclusiveRedshiftSourceValueTypeConversionTestCase(TestCase):

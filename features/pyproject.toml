@@ -1,13 +1,12 @@
 [tool.poetry]
-name = "register"
+name = "features"
 version = "0.1.0"
 description = "Feature store management"
-package-mode = true
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
-packages = [{include = "oml"}]
+packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.11.9"
+python = "3.9.19"
 click = "^8.1.7"
 feast = {version = "^0.40.1", extras = ["aws"]}
 pydantic-settings = "^2.5.2"

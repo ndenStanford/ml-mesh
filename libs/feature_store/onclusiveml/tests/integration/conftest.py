@@ -17,4 +17,5 @@ def settings() -> FeastFeatureStoreSettings:
 @pytest.fixture
 def entity_df() -> pd.DataFrame:
     """Entity df."""
-    return pd.DataFrame.from_dict({"iptc_id": [], "event_timestamp": []})
+    return """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level"
+LIMIT 10"""
