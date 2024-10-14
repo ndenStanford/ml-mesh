@@ -207,6 +207,24 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
   # ===============================================
+  # TEST FEATURES
+  # ===============================================
+
+  run-repository-state:
+    name: Get Repository metadata
+    uses: ./.github/workflows/_repository-state.yaml
+    needs: [get-environment, run-code-quality-checks]
+    with:
+      environment: prod
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      base-ref: ${{ github.base_ref }}
+      head-ref: ${{ github.ref_name }}
+      pre-release: ${{ github.ref_name == 'develop' }}
+      include-pre-releases: ${{ github.ref_name == 'develop' }}
+    secrets:
+      GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===============================================
   # DOCKER
   # ===============================================
 
