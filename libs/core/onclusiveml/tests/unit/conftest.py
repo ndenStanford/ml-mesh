@@ -9,11 +9,11 @@ from pytest import FixtureRequest
 
 # Source
 from src import Settings, settings
-from src.main import read_env
 
 
 @pytest.fixture
 def patch_settings(request: FixtureRequest) -> Iterator[Settings]:
+    """Patch settings."""
     # Make a copy of the original settings
     original_settings = settings.model_copy()
     # Collect the env vars to patch
