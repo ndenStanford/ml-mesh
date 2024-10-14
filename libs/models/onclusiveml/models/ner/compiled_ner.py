@@ -58,7 +58,7 @@ class CompiledNER:
             os.path.join(directory, "compiled_ner_pipeline_base")
         )
         self.compiled_ner_pipeline_korean_and_japanese.save_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline_korean_and_japanese")
+            os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
     @classmethod
@@ -75,7 +75,7 @@ class CompiledNER:
             os.path.join(directory, "compiled_ner_pipeline_base")
         )
         compiled_ner_pipeline_korean_and_japanese = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline_korean_and_japanese")
+            os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
         return cls(
