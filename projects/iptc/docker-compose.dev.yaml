@@ -25,7 +25,6 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
