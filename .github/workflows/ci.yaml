@@ -1317,7 +1317,7 @@ jobs       :
 
   run-register-pipelines:
     name: Register features
-    uses: ./.github/workflows/_register_features.yaml
+    uses: ./.github/workflows/_register-features.yaml
     needs:
       - run-repository-state
       - run-keywords-project
