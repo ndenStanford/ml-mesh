@@ -1284,7 +1284,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
-            push-image: ${{ github.event_name == 'pull_request' }}
+            push-image: true
             base-image: python-base
 
     with:
