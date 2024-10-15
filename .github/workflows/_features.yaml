@@ -30,9 +30,9 @@ on  :
         default: 30
         description: Time (in  seconds) between attempts.
     secrets:
-      AWS_DEFAULT_REGION:
-        required: true
-        description: "AWS account region"
+      # AWS_DEFAULT_REGION:
+      #   required: true
+      #   description: "AWS account region"
       AWS_ACCESS_KEY_ID:
         required: true
         description: "AWS access key ID."
@@ -65,7 +65,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: us-east-2
 
       - uses: dorny/paths-filter@v3
         id: files-changed
