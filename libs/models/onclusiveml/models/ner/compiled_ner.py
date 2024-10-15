@@ -31,18 +31,20 @@ class CompiledNER:
     def __init__(
         self,
         compiled_ner_pipeline_base: CompiledPipeline,
-        compiled_ner_pipeline_kj: CompiledPipeline,
+        compiled_ner_pipeline_korean_and_japanese: CompiledPipeline,
     ):
         """Initalize the CompiledNER object.
 
         Args:
             compiled_ner_pipeline_base (CompiledPipeline): The compiled NER pipline used for
                 inference
-            compiled_ner_pipeline_kj (CompiledPipeline): The compiled NER pipline used for
+            compiled_ner_pipeline_korean_and_japanese (CompiledPipeline): The compiled NER pipline used for
                 inference for korean and japanese
         """
         self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
-        self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
+        self.compiled_ner_pipeline_korean_and_japanese = (
+            compiled_ner_pipeline_korean_and_japanese
+        )
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
@@ -55,7 +57,7 @@ class CompiledNER:
         self.compiled_ner_pipeline_base.save_pretrained(
             os.path.join(directory, "compiled_ner_pipeline_base")
         )
-        self.compiled_ner_pipeline_kj.save_pretrained(
+        self.compiled_ner_pipeline_korean_and_japanese.save_pretrained(
             os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
@@ -72,13 +74,13 @@ class CompiledNER:
         compiled_ner_pipeline_base = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_ner_pipeline_base")
         )
-        compiled_ner_pipeline_kj = CompiledPipeline.from_pretrained(
+        compiled_ner_pipeline_korean_and_japanese = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
         return cls(
             compiled_ner_pipeline_base=compiled_ner_pipeline_base,
-            compiled_ner_pipeline_kj=compiled_ner_pipeline_kj,
+            compiled_ner_pipeline_korean_and_japanese=compiled_ner_pipeline_korean_and_japanese,
         )
 
     def sentence_tokenize(self, documents: List[str], language: str) -> List[List[str]]:
@@ -134,7 +136,12 @@ class CompiledNER:
                 - end (int): ending position of word
         """
         if language in DISTILBERT_SUPPORTED_LANGS:
-            res = list(map(self.compiled_ner_pipeline_kj, sent_tokenized_documents))
+            res = list(
+                map(
+                    self.compiled_ner_pipeline_korean_and_japanese,
+                    sent_tokenized_documents,
+                )
+            )
         else:
             res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
         # results are in nested list of entities where each sublist represents a doc
