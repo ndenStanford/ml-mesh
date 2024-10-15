@@ -105,12 +105,26 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         # ]
         # entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
         # FROM "external"."iptc_first_level" LIMIT 10"""
-        self.dataset_df = self.fs.get_training_dataset(
-            name="iptc_first_level",
-            join_key_columns=[],
-            feature_name_columns=["topic_1", "content", "language", "title"],
-            timestamp_field="created_at",
+
+        # self.dataset_df = self.fs.get_training_dataset(
+        #     name="iptc_first_level",
+        #     join_key_columns=[],
+        #     feature_name_columns=["topic_1", "content", "language", "title"],
+        #     timestamp_field="created_at",
+        # )
+
+        entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level"
+        LIMIT 500"""
+        self.dataset_df = self.fs.get_historical_features(
+            entity_df=entity_df,
+            features=[
+                "iptc_first_level:topic_1",
+                "iptc_first_level:content",
+                "iptc_first_level:title",
+                "iptc_first_level_on_demand_feature_view:topic_1_llm",
+            ],
         )
+
         # Logging the initial dataset size
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
@@ -124,6 +138,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self.logger.info(
             f"Fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
         )
+        print(self.dataset_df.columns)
 
         self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
