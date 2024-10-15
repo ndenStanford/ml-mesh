@@ -219,7 +219,7 @@ jobs       :
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
     secrets:
-      GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
 
   # ===============================================
   # DOCKER
