@@ -29,11 +29,18 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+    secrets:
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD:
+        required: true
+        description: MySQL database password.
 
 jobs:
   deploy:
     name: 'Install & test library: ${{ inputs. lib }}'
     runs-on: ubuntu-22.04
+
+    env:
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
 
     steps:
       - name: Check out code

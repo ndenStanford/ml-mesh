@@ -210,17 +210,14 @@ jobs       :
   # TEST FEATURES
   # ===============================================
 
-  run-repository-state:
-    name: Get Repository metadata
-    uses: ./.github/workflows/_repository-state.yaml
-    needs: [get-environment, run-code-quality-checks]
+  run-features-test:
+    uses: ./.github/workflows/_features.yaml
+    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
     with:
-      environment: prod
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      base-ref: ${{ github.base_ref }}
-      head-ref: ${{ github.ref_name }}
-      pre-release: ${{ github.ref_name == 'develop' }}
-      include-pre-releases: ${{ github.ref_name == 'develop' }}
+      test: true
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
