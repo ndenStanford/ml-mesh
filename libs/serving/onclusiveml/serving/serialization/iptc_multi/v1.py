@@ -25,6 +25,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     """
 
     language: str = "en"
+    override_min_score_cutoff: Optional[float] = None
 
 
 class PredictResponseIPTC(JsonApiSchema):

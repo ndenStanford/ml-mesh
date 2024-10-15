@@ -30,6 +30,7 @@ class ModelSettings(OnclusiveBaseSettings):
 
     profanity: str = "MASK"
     model_name: str = "translation"
+    max_length: int = 5000
 
 
 class GlobalSettings(
