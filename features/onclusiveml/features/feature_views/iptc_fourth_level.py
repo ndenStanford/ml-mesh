@@ -10,7 +10,7 @@ feature_transformation = PandasTransformation(
     udf_string="iptc_fourth_level_on_demand_feature_view",
 )
 
-feature_view = OnDemandFeatureView(
+on_demand_feature_view = OnDemandFeatureView(
     name="iptc_fourth_level_on_demand_feature_view",
     sources=[feature_view],
     schema=[Field(name="topic_4_llm", dtype=types.String, description="")],

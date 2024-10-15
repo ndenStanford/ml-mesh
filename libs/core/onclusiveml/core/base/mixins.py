@@ -195,7 +195,7 @@ def __construct_arg(  # noqa: C901
             raise TypeError(f"Expected {argument_name} to be a {annotation.__name__}.")
     # string
     elif annotation == str:
-        if isinstance(setting, str) == str or isinstance(setting, Path):
+        if isinstance(setting, str) or isinstance(setting, Path):
             return str(setting)
         else:
             raise TypeError(f"Expected {argument_name} to be a string.")
