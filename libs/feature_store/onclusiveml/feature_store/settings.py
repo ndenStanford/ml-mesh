@@ -28,7 +28,6 @@ class FeastFeatureStoreSettings(FeatureStoreSettings):
     redshift_iam_role: str
 
     model_config = SettingsConfigDict(
-        env_file="dev.env",
         extra="forbid",
         env_file_encoding="utf-8",
         validate_assignment=True,
