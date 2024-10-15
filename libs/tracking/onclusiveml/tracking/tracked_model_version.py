@@ -391,7 +391,10 @@ class TrackedModelVersion(ModelVersion):
                 exception will be raised.
         """
         if os.path.exists(local_file_path):
-            raise FileExistsError(f"Specified file {local_file_path} already exists.")
+            logger.info(
+                f"Local file {local_file_path} already exists, and will be removed."
+            )
+            os.remove(local_file_path)
 
         logger.debug(
             f"Downloading File attribute {neptune_attribute_path} into local file "
