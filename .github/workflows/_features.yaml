@@ -46,7 +46,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_prod
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
       export ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup # hard-coded for testing
