@@ -189,9 +189,6 @@ jobs       :
             integration: true
             functional: false
 
-          - name: feature_store
-            integration: false
-
           - name: queries
             integration: false
 
