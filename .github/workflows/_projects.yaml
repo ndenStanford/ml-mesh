@@ -378,7 +378,7 @@ jobs:
             PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             USE_DOCKER_CACHE="true"
-
+      
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.push-image }}
         run: |
@@ -389,6 +389,19 @@ jobs:
             PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
+
+      - name: Get ECR credentials us-east-2 | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION=us-east-2
+
+      - name: Tag and Push Docker image with version to us-east-2 | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ inputs.push-image }}
+        run: |
+          # Tag the image for the us-east-2 region
+          docker tag ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }} \
+            ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
+
+          # Push the tagged image to us-east-2
+          docker push ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'
