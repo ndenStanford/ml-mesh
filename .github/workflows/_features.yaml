@@ -46,6 +46,9 @@ on  :
       AWS_ROLE_TO_ASSUME:
         required: true
         description: "AWS IAM role to assume."
+      AWS_ROLE_EXTERNAL_ID:
+        required: true
+        description: "AWS External ID to assume IAM role."
 
 jobs:
   deploy:
@@ -69,6 +72,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
 
       - uses: dorny/paths-filter@v3
         id: files-changed
