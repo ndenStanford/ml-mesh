@@ -126,7 +126,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         # )
 
         if self.num_samples != "-1":
-            entity_df =self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
+            entity_df = self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
 
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
