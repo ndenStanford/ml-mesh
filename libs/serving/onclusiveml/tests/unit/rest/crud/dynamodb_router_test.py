@@ -130,18 +130,6 @@ def test_delete_all_items(client):
     assert len(data) == 0
 
 
-def test_pagination(client):
-    """Test pagination parameters in get all items."""
-    # Create multiple items
-    for i in range(10):
-        client.post("/items", json={"name": f"User{i}", "age": 20 + i})
-    # Retrieve items with pagination
-    response = client.get("/items?skip=1&limit=3")
-    assert response.status_code == HTTPStatus.OK
-    data = response.json()
-    assert len(data) == 3
-
-
 def test_create_item_invalid_input(client):
     """Test creating an item with invalid input."""
     response = client.post("/items", json={"name": 123, "age": "abc"})
@@ -202,10 +190,4 @@ def test_extra_fields_in_update(client):
     item_id = response.json()["id"]
     # Update with extra field
     response = client.put(f"/items/{item_id}", json={"extra": "field"})
-    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-
-
-def test_get_all_items_with_invalid_pagination(client):
-    """Test retrieving items with invalid pagination parameters."""
-    response = client.get("/items?skip=-1&limit=0")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY

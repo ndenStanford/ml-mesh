@@ -1,48 +1,81 @@
 """Conftest."""
 
 # Standard Library
-from typing import Any, Dict, List
+from typing import Type
 
 # 3rd party libraries
 import pytest
-from pydantic import PrivateAttr
+from pydantic import BaseModel, PrivateAttr
 
 # Internal libraries
 from onclusiveml.data.data_model.base import BaseDataModel
 
 
-class MockDataModel(BaseDataModel[Any]):
-    """An implementation of BaseDataModel for testing."""
+class Item(BaseModel):
+    """Represents an item with an ID, name, and value."""
 
-    _data_store: Dict[str, Any] = PrivateAttr(default_factory=dict)
+    id: str
+    name: str
+    value: int
 
-    def _get_all(self) -> List[Any]:
-        return list(self._data_store.values())
 
-    def _get_one(self, id: str) -> Any:
-        return self._data_store.get(id)
+class MockDataModel(BaseDataModel[Item]):
+    """A mock implementation of BaseDataModel using an in-memory store."""
 
-    def _create(self, item: Any) -> Any:
-        id = str(len(self._data_store) + 1)
-        self._data_store[id] = item
+    _store: dict = PrivateAttr(default_factory=dict)
+
+    def __init__(self, model: Type[Item]):
+        """Initialise MockDataModel with specific model."""
+        super().__init__(model=model)
+
+    def get_all(self):
+        """Retrieve all items from in-memory store."""
+        return list(self._store.values())
+
+    def get_one(self, id: str):
+        """Retrieve a single item by id."""
+        return self._store.get(id)
+
+    def create(self, item: Item):
+        """Create a new item in the in-memory store."""
+        self._store[item.id] = item
         return item
 
-    def _update(self, id: str, item: Any) -> Any:
-        if id in self._data_store:
-            self._data_store[id] = item
-            return item
-        return None
+    def update(self, id: str, item: Item):
+        """Update an existing item in the in-memory store."""
+        self._store[id] = item
+        return item
 
-    def _delete_one(self, id: str) -> Any:
-        return self._data_store.pop(id, None)
+    def delete_one(self, id: str):
+        """Delete a single item by its id from in-memory store."""
+        return self._store.pop(id, None)
 
-    def _delete_all(self) -> List[Any]:
-        deleted_items = list(self._data_store.values())
-        self._data_store.clear()
-        return deleted_items
+    def delete_all(self):
+        """Delete all items from in-memory store."""
+        items = list(self._store.values())
+        self._store.clear()
+        return items
 
 
 @pytest.fixture
-def mock_data_model() -> MockDataModel:
-    """Fixture for the MockDataModel instance."""
-    return MockDataModel()
+def data_model():
+    """Fixture for the data model."""
+    return MockDataModel(model=Item)
+
+
+@pytest.fixture
+def item():
+    """Fixture for a sample item."""
+    return Item(id="1", name="Item1", value=100)
+
+
+@pytest.fixture
+def item_update():
+    """Fixture for a sample item."""
+    return Item(id="1", name="Item123", value=999)
+
+
+@pytest.fixture
+def item2():
+    """Fixture for a second sample item."""
+    return Item(id="2", name="Item2", value=200)

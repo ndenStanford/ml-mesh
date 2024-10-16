@@ -13,7 +13,7 @@ from pydantic import Field
 
 # Internal libraries
 from onclusiveml.data.data_model.dynamodb import DynamoDBModel
-from onclusiveml.serving.rest.crud.crud_router import CRUDRouter
+from onclusiveml.serving.rest.crud._base import CRUDGenerator
 
 
 @pytest.fixture(scope="session")
@@ -71,7 +71,7 @@ def app(dynamo_db_model, TestDyntasticModel):
     app = FastAPI()
     # Include the router
     app.include_router(
-        CRUDRouter(
+        CRUDGenerator(
             schema=ItemSchema,
             create_schema=CreateItemSchema,
             update_schema=UpdateItemSchema,

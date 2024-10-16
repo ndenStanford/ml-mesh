@@ -2,16 +2,19 @@
 
 # Standard Library
 from abc import ABC, abstractmethod
-from typing import Any, Generic, List, TypeVar
+from typing import Any, Generic, List, Type, TypeVar
+
+# 3rd party libraries
+from pydantic import Field
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseModel
+from onclusiveml.core.serialization.schema import JsonApiSchema
 
 
 T = TypeVar("T")
 
 
-class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
+class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
     """Abstract base class for data models.
 
     This class defines the interface for basic CRUD (Create, Read, Update, Delete)
@@ -22,8 +25,18 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
     stored in the data model.
     """
 
+    model: Type[T] = Field(...)
+
+    def __init__(self, model: Type[T]):
+        """Initialize the BaseDataModel with a specific model.
+
+        Args:
+            model (Type[T]): The model class representing the data schema.
+        """
+        super().__init__(model=model)
+
     @abstractmethod
-    def _get_all(self) -> List[Any]:
+    def get_all(self) -> List[Any]:
         """Retrieve all items from the data store.
 
         Returns:
@@ -32,7 +45,7 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def _get_one(self, id: str) -> Any:
+    def get_one(self, id: str) -> Any:
         """Retrieve a single item from the data store by its ID.
 
         Args:
@@ -48,7 +61,7 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def _create(self, item: Any) -> Any:
+    def create(self, item: Any) -> Any:
         """Create a new item in the data store.
 
         Args:
@@ -64,7 +77,7 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def _update(self, id: str, item: Any) -> Any:
+    def update(self, id: str, item: Any) -> Any:
         """Update an existing item in the data store.
 
         Args:
@@ -82,7 +95,7 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def _delete_one(self, id: str) -> Any:
+    def delete_one(self, id: str) -> Any:
         """Delete a single item from the data store by its ID.
 
         Args:
@@ -98,7 +111,7 @@ class BaseDataModel(OnclusiveBaseModel, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def _delete_all(self) -> List[Any]:
+    def delete_all(self) -> List[Any]:
         """Delete all items from the data store.
 
         Returns:

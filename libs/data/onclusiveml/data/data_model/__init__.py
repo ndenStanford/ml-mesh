@@ -1,9 +1,5 @@
 """Init."""
 
-from onclusiveml.data.data_model.base import (  # noqa: F401
-    BaseDataModel,
-)
+from onclusiveml.data.data_model.base import BaseDataModel  # noqa: F401
 
-from onclusiveml.data.data_model.dynamodb import (  # noqa: F401
-    DynamoDBModel,
-)
+from onclusiveml.data.data_model.dynamodb import DynamoDBModel  # noqa: F401

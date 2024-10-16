@@ -13,46 +13,45 @@ def test_cannot_instantiate_base_class():
         BaseDataModel()
 
 
-def test_create(mock_data_model):
-    """Test the _create method."""
-    item = {"name": "Test Item"}
-    created_item = mock_data_model._create(item)
-    assert created_item == item
-    assert mock_data_model._get_all() == [item]
-
-
-def test_get_one(mock_data_model):
-    """Test the _get_one method."""
-    item = {"name": "Test Item"}
-    mock_data_model._create(item)
-    retrieved_item = mock_data_model._get_one("1")
+def test_create_and_get_one(data_model, item):
+    """Test create and get one function."""
+    data_model.create(item)
+    retrieved_item = data_model.get_one(item.id)
     assert retrieved_item == item
 
 
-def test_update(mock_data_model):
-    """Test the _update method."""
-    item = {"name": "Test Item"}
-    mock_data_model._create(item)
-    updated_item = {"name": "Updated Item"}
-    result = mock_data_model._update("1", updated_item)
-    assert result == updated_item
-    assert mock_data_model._get_one("1") == updated_item
+def test_get_all(data_model, item, item2):
+    """Test get all function."""
+    data_model.create(item)
+    data_model.create(item2)
+    all_items = data_model.get_all()
+    assert len(all_items) == 2
+    assert item in all_items
+    assert item2 in all_items
 
 
-def test_delete_one(mock_data_model):
-    """Test the _delete_one method."""
-    item = {"name": "Test Item"}
-    mock_data_model._create(item)
-    deleted_item = mock_data_model._delete_one("1")
+def test_update(data_model, item, item_update):
+    """Test update function."""
+    data_model.create(item)
+    data_model.update(item.id, item_update)
+    retrieved_item = data_model.get_one(item.id)
+    assert retrieved_item == item_update
+
+
+def test_delete_one(data_model, item):
+    """Test delete one function."""
+    data_model.create(item)
+    deleted_item = data_model.delete_one(item.id)
     assert deleted_item == item
-    assert mock_data_model._get_one("1") is None
+    assert data_model.get_one(item.id) is None
 
 
-def test_delete_all(mock_data_model):
-    """Test the _delete_all method."""
-    items = [{"name": "Item 1"}, {"name": "Item 2"}]
-    for item in items:
-        mock_data_model._create(item)
-    deleted_items = mock_data_model._delete_all()
-    assert deleted_items == items
-    assert mock_data_model._get_all() == []
+def test_delete_all(data_model, item, item2):
+    """Test delete all function."""
+    data_model.create(item)
+    data_model.create(item2)
+    deleted_items = data_model.delete_all()
+    assert len(deleted_items) == 2
+    assert item in deleted_items
+    assert item2 in deleted_items
+    assert data_model.get_all() == []
