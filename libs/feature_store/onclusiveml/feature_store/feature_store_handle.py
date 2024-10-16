@@ -6,6 +6,7 @@ from typing import Any, List, Optional
 
 # 3rd party libraries
 import boto3
+import yaml
 import botocore
 import pandas as pd
 from boto3_type_annotations.s3 import Client
@@ -83,6 +84,21 @@ class FeatureStoreHandle:
         self.fs = FeatureStore(fs_yaml_file=self.config_file_path)
         self.fs.apply([])
 
+    def update_yaml_database(self, yaml_file_path: str):
+        """Updates the database in the YAML file after downloading.
+
+        Args:
+            yaml_file_path (str): The path of the downloaded YAML file.
+        """
+        with open(yaml_file_path, 'r') as file:
+            config = yaml.safe_load(file)
+
+        # Update the database field
+        config['offline_store']['database'] = 'warehouse'
+
+        with open(yaml_file_path, 'w') as file:
+            yaml.safe_dump(config, file, default_flow_style=False)
+    
     def s3_config_downloader(self) -> str:
         """Downloads feast-config yaml from s3 in local directory.
 
@@ -96,6 +112,7 @@ class FeatureStoreHandle:
             self.s3_handle.Bucket(self.feast_config_bucket).download_file(
                 self.config_file, f"{self.local_config_dir}/{self.config_file}"
             )
+            self.update_yaml_database(f"{self.local_config_dir}/{self.config_file}")
         except botocore.exceptions.ClientError as e:
             if e.response["Error"]["Code"] == "404":
                 print("The object does not exist.")
