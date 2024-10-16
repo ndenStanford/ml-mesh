@@ -42,7 +42,7 @@ def imprec(intervaltimes, metadatawindows, metadata_old):
         list: List of tuples containing the time and the imputed metadata.
     """
     acc = []
-    while intervaltimes:
+    while len(intervaltimes) > 0:  # Explicitly check if intervaltimes is not empty
         if not metadatawindows:
             acc += [(t, metadata_old) for t in intervaltimes]
             break
@@ -52,7 +52,17 @@ def imprec(intervaltimes, metadatawindows, metadata_old):
         ]
         interval_size = (tmd2 - tmd1).total_seconds()
         imputed = [
-            (time, [int(prop1 * a + prop2 * b) for a, b in zip(md1, md2)])
+            (
+                time,
+                [
+                    (
+                        int(prop1 * a + prop2 * b)
+                        if a is not None and b is not None
+                        else None
+                    )
+                    for a, b in zip(md1, md2)
+                ],
+            )
             for time in interval_times
             for prop1, prop2 in [
                 (
