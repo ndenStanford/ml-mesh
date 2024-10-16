@@ -3,6 +3,10 @@ name: Features Registration
 on  :
   workflow_call:
     inputs:
+      environment:
+        required: true
+        type: string
+        description: Environment where code is deployed [prod, dev]
       test:
         required: true
         default: true
