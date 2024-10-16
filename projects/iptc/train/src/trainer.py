@@ -99,7 +99,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 # "non_nullable_columns": [
                 #     model_card.model_params.selected_text,
                 # ],
-                "entity_df" : """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """
+                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """
             },
             2: {
                 # "entity_name": "iptc_second_level",
@@ -111,9 +111,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 #     model_card.model_params.selected_text,
                 #     "topic_1",
                 # ],
-                "entity_df" : """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" WHERE topic_1 = """ + filtered_value
-                
-
+                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" WHERE topic_1 = """
+                + filtered_value
             },
             3: {
                 # "entity_name": "iptc_third_level",
