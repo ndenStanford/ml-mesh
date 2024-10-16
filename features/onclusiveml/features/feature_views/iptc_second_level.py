@@ -6,7 +6,6 @@ from feast import Entity, FeatureView, Field, types, OnDemandFeatureView
 from onclusiveml.features.contrib.redshift import OnclusiveRedshiftSource
 from feast.transformation.pandas_transformation import PandasTransformation
 from onclusiveml.features.contrib.on_demand.iptc.utils import iptc_second_level_on_demand_feature_view
-from onclusiveml.features.feature_views.iptc_second_level import feature_view
 
 entity = Entity(
     name="iptc_second_level",
