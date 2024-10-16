@@ -43,6 +43,9 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: "AWS secret access key"
+      AWS_ROLE_TO_ASSUME:
+        required: true
+        description: "AWS IAM role to assume."
 
 jobs:
   deploy:
@@ -65,6 +68,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
       - uses: dorny/paths-filter@v3
         id: files-changed
