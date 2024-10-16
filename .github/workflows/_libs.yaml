@@ -33,6 +33,16 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+    secrets:
+      AWS_DEFAULT_REGION:
+        required: true
+        description: "AWS account region"
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: "AWS access key ID."
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: "AWS secret access key"
 
 jobs:
   deploy:
@@ -50,6 +60,13 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
       - uses: dorny/paths-filter@v3
         id: files-changed
@@ -81,6 +98,19 @@ jobs:
           retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
           timeout_minutes: 10
           command: make libs.install/${{ inputs.lib }}
+
+      - name: Setup env vars from SSM
+        uses: dkershner6/aws-ssm-getparameters-action@v2
+        with:
+          parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/host = ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST,
+            /kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER,
+            /kubeflow/${{ inputs.environment }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT,
+            /kubeflow/${{ inputs.environment }}/kubeflow-db/password = ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD,
+            /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID,
+            /admin/${{ inputs.environment }}/warehouse/redshift/database-name = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,
+            /admin/${{ inputs.environment }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY,
+            /mesh/${{ inputs.environment }}/iam/amp-write-acces-role-arn = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE"
+          withDecryption: "true"
 
       - name: Run unit tests
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
