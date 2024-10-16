@@ -113,16 +113,24 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         #     timestamp_field="created_at",
         # )
 
-        entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level"
-        LIMIT 500"""
+        # entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level"
+        # LIMIT 500"""
+        # self.dataset_df = self.fs.get_historical_features(
+        #     entity_df=entity_df,
+        #     features=[
+        #         "iptc_first_level:topic_1",
+        #         "iptc_first_level:content",
+        #         "iptc_first_level:title",
+        #         "iptc_first_level_on_demand_feature_view:topic_1_llm",
+        #     ],
+        # )
+
+        if self.num_samples != "-1":
+            entity_df =self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
+
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
-            features=[
-                "iptc_first_level:topic_1",
-                "iptc_first_level:content",
-                "iptc_first_level:title",
-                "iptc_first_level_on_demand_feature_view:topic_1_llm",
-            ],
+            features=self.data_fetch_params.features,
         )
 
         # Logging the initial dataset size
@@ -148,11 +156,11 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         Returns: None
         """
         if self.data_fetch_params.save_artifact:
-            num_samples = str(self.data_fetch_params.n_records_full)
+            self.num_samples = str(self.data_fetch_params.n_records_full)
         else:
-            num_samples = str(self.data_fetch_params.n_records_sample)
+            self.num_samples = str(self.data_fetch_params.n_records_sample)
 
-        self.logger.info(f"fetching {num_samples} samples from feature-store")
+        self.logger.info(f"fetching {self.num_samples} samples from feature-store")
 
         self.fs = FeastFeatureStore.from_settings(self.data_fetch_params)
 

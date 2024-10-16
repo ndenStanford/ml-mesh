@@ -91,51 +91,55 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.data_fetch_params = data_fetch_params
         data_fetch_configurations = {
             1: {
-                "entity_name": "iptc_first_level",
-                "feature_view_name": "iptc_first_level_feature_view",
-                "filter_columns": [],
-                "filter_values": [],
-                "comparison_operators": [],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                ],
+                # "entity_name": "iptc_first_level",
+                # "feature_view_name": "iptc_first_level_feature_view",
+                # "filter_columns": [],
+                # "filter_values": [],
+                # "comparison_operators": [],
+                # "non_nullable_columns": [
+                #     model_card.model_params.selected_text,
+                # ],
+                "entity_df" : """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """
             },
             2: {
-                "entity_name": "iptc_second_level",
-                "feature_view_name": "iptc_second_level_feature_view",
-                "filter_columns": ["topic_1"],
-                "filter_values": [filtered_value],
-                "comparison_operators": ["equal"],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                    "topic_1",
-                ],
+                # "entity_name": "iptc_second_level",
+                # "feature_view_name": "iptc_second_level_feature_view",
+                # "filter_columns": ["topic_1"],
+                # "filter_values": [filtered_value],
+                # "comparison_operators": ["equal"],
+                # "non_nullable_columns": [
+                #     model_card.model_params.selected_text,
+                #     "topic_1",
+                # ],
+                "entity_df" : """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" WHERE topic_1 = """ + filtered_value
+                
+
             },
             3: {
-                "entity_name": "iptc_third_level",
-                "feature_view_name": "iptc_third_level_feature_view",
-                "filter_columns": ["topic_2"],
-                "filter_values": [filtered_value],
-                "comparison_operators": ["equal"],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                    "topic_1",
-                    "topic_2",
-                ],
+                # "entity_name": "iptc_third_level",
+                # "feature_view_name": "iptc_third_level_feature_view",
+                # "filter_columns": ["topic_2"],
+                # "filter_values": [filtered_value],
+                # "comparison_operators": ["equal"],
+                # "non_nullable_columns": [
+                #     model_card.model_params.selected_text,
+                #     "topic_1",
+                #     "topic_2",
+                # ],
             },
             4: {
-                "entity_name": "iptc_fourth_level",
-                "feature_view_name": "iptc_third_level_feature_view",
-                "redshift_table": "iptc_third_level",
-                "filter_columns": ["topic_3"],
-                "filter_values": [filtered_value],
-                "comparison_operators": ["equal"],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                    "topic_1",
-                    "topic_2",
-                    "topic_3",
-                ],
+                # "entity_name": "iptc_fourth_level",
+                # "feature_view_name": "iptc_third_level_feature_view",
+                # "redshift_table": "iptc_third_level",
+                # "filter_columns": ["topic_3"],
+                # "filter_values": [filtered_value],
+                # "comparison_operators": ["equal"],
+                # "non_nullable_columns": [
+                #     model_card.model_params.selected_text,
+                #     "topic_1",
+                #     "topic_2",
+                #     "topic_3",
+                # ],
             },
         }
         for key, value in data_fetch_configurations[self.level].items():
@@ -263,7 +267,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.logger.info(f"Final preprocessed dataset:\n{self.dataset_df.head()}")
         # fix the topic discrepencies
         self.dataset_df = topic_conversion(self.dataset_df)
-        self.dataset_df = self.dataset_df.sample(n=50, random_state=42)
+        # self.dataset_df = self.dataset_df.sample(n=50, random_state=42)
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
