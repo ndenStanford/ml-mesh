@@ -123,6 +123,10 @@ jobs:
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make features.test
 
-      #- Run Feature plan
+      - name: Run plan
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        run: make features.plan
 
-      #- Run Feature apply
+      - name: Run apply
+        if: ${{ inputs.release}}
+        run: make features.apply
