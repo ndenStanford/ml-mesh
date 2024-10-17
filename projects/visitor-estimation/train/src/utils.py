@@ -673,10 +673,14 @@ def final_data_clean(
 
     profile_df5_new = profile_df5.drop(columns=["domain_id", "parent_id"])
 
+    # nofundme = profile_df5_new[
+    #     ((profile_df5_new["v0"] != 0) | (profile_df5_new["v1"] != 0))
+    #     & (profile_df5_new["entityTimestamp"].between(min_entity_date, max_entity_date))
+    # ].drop(columns=["articleType", "namedEntityText", "v0", "v1"])
+
     nofundme = profile_df5_new[
-        ((profile_df5_new["v0"] != 0) | (profile_df5_new["v1"] != 0))
-        & (profile_df5_new["entityTimestamp"].between(min_entity_date, max_entity_date))
-    ].drop(columns=["articleType", "namedEntityText", "v0", "v1"])
+        (profile_df5_new["entityTimestamp"].between(min_entity_date, max_entity_date))
+    ].drop(columns=["articleType", "namedEntityText"])
 
     nofundme = nofundme.merge(good_profids[["profileID"]], on="profileID")
     nofundme = nofundme.drop(columns=["is_customer", "enabled"])
