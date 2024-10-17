@@ -1392,6 +1392,7 @@ jobs       :
       - run-libs-tests
       - run-core-docker
       - run-core-docker
+      - run-register-pipelines
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
