@@ -5,7 +5,7 @@ import os
 from functools import lru_cache
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.tracking import (
@@ -21,6 +21,7 @@ class TrackedNERModelSpecs(TrackedModelSettings):
 
     project: str = "onclusive/ner"
     model: str = "NER-TRAINED"
+    model_config = SettingsConfigDict(protected_namespaces=("settings_",))
 
 
 class Inputs(TrackingSettings):
@@ -45,6 +46,7 @@ class NERModelParams(NERModelParams):
     huggingface_pipeline_task: str = "token-classification"
     huggingface_model_reference: str = "dslim/bert-base-NER"
     model_class: str = "BertForTokenClassification"
+    model_config = SettingsConfigDict(protected_namespaces=("settings_",))
 
 
 class TrackedNERBaseModelCard(TrackedModelCard):
@@ -60,9 +62,11 @@ class TrackedNERBaseModelCard(TrackedModelCard):
     local_output_dir: str = os.path.join(".", "ner_model_artifacts")
     logging_level: str = "INFO"
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        protected_namespaces=("settings_",),
+        env_file="config/dev.env",
+        env_file_encoding="utf-8",
+    )
 
 
 class GlobalSettings(TrackedNERModelSpecs, TrackedNERBaseModelCard):
@@ -70,6 +74,8 @@ class GlobalSettings(TrackedNERModelSpecs, TrackedNERBaseModelCard):
 
     model_specs: TrackedNERModelSpecs = TrackedNERModelSpecs()
     model_card: TrackedNERBaseModelCard = TrackedNERBaseModelCard()
+
+    model_config = SettingsConfigDict(protected_namespaces=("settings_",))
 
 
 @lru_cache
