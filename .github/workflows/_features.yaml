@@ -109,7 +109,7 @@ jobs:
             /kubeflow/${{ inputs.environment }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT,
             /kubeflow/${{ inputs.environment }}/kubeflow-db/password = ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD,
             /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,
-            /admin/${{ inputs.environment }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY,
+            /admin/${{ inputs.environment }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
           withDecryption: "true"
 
       - name: Run tests
