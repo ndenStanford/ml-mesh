@@ -102,7 +102,7 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-register
-        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION=us-east-2
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Run feature registration for the project
         run: |
