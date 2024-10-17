@@ -50,10 +50,11 @@ jobs:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     env:
-      ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_prod
+      ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup # hard-coded for testing
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: s3://kubeflow-feast-backend-prod/nutch.dendumrongsup # hard-coded for testing
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: redshift-prod
 
     steps:
       - name: Check out code
@@ -104,7 +105,6 @@ jobs:
             /kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER,
             /kubeflow/${{ inputs.environment }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT,
             /kubeflow/${{ inputs.environment }}/kubeflow-db/password = ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD,
-            /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID,
             /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,
             /admin/${{ inputs.environment }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY,
             /mesh/${{ inputs.environment }}/iam/amp-write-acces-role-arn = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE"
