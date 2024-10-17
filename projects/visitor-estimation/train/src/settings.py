@@ -164,7 +164,15 @@ class VEModelParams(TrackingSettings):
     included_profiles: Optional[str] = None
     index_features: list = ["type", "category_id", "company_sector_id"]
     encode_features: list = ["type", "category_id"]
-    exclude_features: list = []
+    exclude_features: list = [
+        "id",
+        "hasVisitors",
+        "relevance",
+        "analytics_flag",
+        "profileID",
+        "analytics_profile_id",
+        "entityID",
+    ]
     interact: list = []
     min_entity_date: str = "2012-01-01"
     remove_zero_visitor: bool = False

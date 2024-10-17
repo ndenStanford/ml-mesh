@@ -42,7 +42,7 @@ def imprec(intervaltimes, metadatawindows, metadata_old):
         list: List of tuples containing the time and the imputed metadata.
     """
     acc = []
-    while intervaltimes:
+    while len(intervaltimes) > 0:  # Explicitly check if intervaltimes is not empty
         if not metadatawindows:
             acc += [(t, metadata_old) for t in intervaltimes]
             break
@@ -52,7 +52,17 @@ def imprec(intervaltimes, metadatawindows, metadata_old):
         ]
         interval_size = (tmd2 - tmd1).total_seconds()
         imputed = [
-            (time, [int(prop1 * a + prop2 * b) for a, b in zip(md1, md2)])
+            (
+                time,
+                [
+                    (
+                        int(prop1 * a + prop2 * b)
+                        if a is not None and b is not None
+                        else None
+                    )
+                    for a, b in zip(md1, md2)
+                ],
+            )
             for time in interval_times
             for prop1, prop2 in [
                 (
@@ -75,7 +85,18 @@ def maxOptions(rows):
     Returns:
         list: A list of maximum values for each column.
     """
-    return [max(filter(None, col), default=None) for col in zip(*[r[1] for r in rows])]
+    # Transpose the rows to get columns
+    columns = zip(*rows)
+
+    result = []
+    for column in columns:
+        # Filter out None values explicitly
+        filtered = [value for value in column if value is not None]
+        # If there are valid values, take the max; otherwise, keep None
+        max_value = max(filtered) if filtered else None
+        result.append(max_value)
+
+    return result
 
 
 def mergeDuplicates(metadatas):
@@ -108,9 +129,9 @@ def imputeByColumns(times, metadatas):
         return [(time, []) for time in times]
     rowData = [[(date, val) for val in metadata] for date, metadata in metadatas_new]
     columns = list(zip(*rowData))
-    return list(
-        zip(times, map(list, zip(*[imprec(times, column, None) for column in columns])))
-    )
+    imputed_columns = [imputeColumn(times, column) for column in columns]
+    transposed_result = list(zip(*imputed_columns))
+    return list(zip(times, transposed_result))
 
 
 def imputeClean(times, column):
@@ -124,31 +145,30 @@ def imputeClean(times, column):
         list: List of imputed values for the given times.
     """
     acc = []
-    while times:
-        if not column:
-            acc += [None] * len(times)
+    times = list(times)
+    while len(times) > 0:
+        if len(column) == 0:
+            acc.extend([None] * len(times))
             break
         t1, v1 = column[0]
         if len(column) == 1:
-            acc += [v1 if t >= t1 else None for t in times]
+            acc.extend([v1 if t >= t1 else None for t in times])
             break
         t2, v2 = column[1]
-        preintervalTimes, times = [t for t in times if t < t1], [
-            t for t in times if t >= t1
-        ]
-        intervalTimes, times = [t for t in times if t < t2], [
-            t for t in times if t >= t2
-        ]
-        intervalSize = (t2 - t1).total_seconds()
+        pre_interval_times = [t for t in times if t < t1]
+        interval_times = [t for t in times if t1 <= t < t2]
+        times = [t for t in times if t >= t2]
+        interval_size = (t2 - t1).total_seconds()
         imputed = [
             int(
-                (1 - (t2 - t).total_seconds() / intervalSize) * v1
-                + (t2 - t).total_seconds() / intervalSize * v2
+                (1 - (t2 - t).total_seconds() / interval_size) * v1
+                + (t2 - t).total_seconds() / interval_size * v2
             )
-            for t in intervalTimes
+            for t in interval_times
         ]
-        acc += [None] * len(preintervalTimes) + imputed
+        acc.extend([None] * len(pre_interval_times) + imputed)
         column = column[1:]
+
     return acc
 
 
