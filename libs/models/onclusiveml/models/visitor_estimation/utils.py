@@ -111,3 +111,24 @@ def imputeByColumns(times, metadatas):
     imputed_columns = [imputeColumn(times, column) for column in columns]
     transposed_result = list(zip(*imputed_columns))
     return list(zip(times, transposed_result))
+
+
+def getRelevancePercentile(relevance_map, profile_id, relevance):
+    """Get the relevance percentile for a given profile ID and relevance value.
+
+    Args:
+        relevance_map (dict): A dictionary where keys are profile IDs (integers) and
+                              values are sorted dictionaries (TreeMap equivalent) with
+                              relevance values as keys and percentiles as values.
+        profile_id (int): The ID of the profile for which relevance needs to be checked.
+        relevance (float): The relevance value for which to find the closest percentile.
+
+    Returns:
+        float: The percentile value if found, otherwise 0.0.
+    """
+    if profile_id in relevance_map:
+        tree_map = relevance_map[profile_id]
+        closest_key = max((k for k in tree_map if k <= relevance), default=None)
+        return tree_map[closest_key] if closest_key is not None else 0.0
+    else:
+        return 0.0

@@ -147,13 +147,6 @@ services:
 
   # serving image
   serve:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
     volumes:
       - type: bind
         source: ${HOME}/data
@@ -176,31 +169,18 @@ services:
     env_file: serve/config/dev.env
     profiles: [serve, functional]
     ports:
-      - 8000:8000
+      - 7000:7000
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/visitor-estimation/v1/ready]
+      test: [CMD, curl, -f, http://serve:7000/visitor-estimation/v1/ready]
       interval: 1m30s
       retries: 3
       start_period: 1m
       timeout: 1m10s
 
   serve-debug:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              # that's the closest analogue to --gpus; provide
-              # an integer amount of devices or 'all'
-              count: 1
-              # Devices are reserved using a list of capabilities, making
-              # capabilities the only required field. A device MUST
-              # satisfy all the requested capabilities for a successful
-              # reservation.
-              capabilities: [gpu]
     build:
       context: ../../
       dockerfile: projects/visitor-estimation/serve/Dockerfile

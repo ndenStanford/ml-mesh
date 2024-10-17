@@ -1,6 +1,7 @@
 """Trained VE."""
 
 # Standard Library
+import os
 import pickle
 from pathlib import Path
 from typing import List, Union
@@ -11,7 +12,10 @@ import pandas as pd
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.visitor_estimation.utils import imputeByColumns
+from onclusiveml.models.visitor_estimation.utils import (
+    getRelevancePercentile,
+    imputeByColumns,
+)
 
 
 logger = get_default_logger(__name__, level=20)
@@ -20,8 +24,9 @@ logger = get_default_logger(__name__, level=20)
 class TrainedVE:
     """Class for using trained visitor estimation model."""
 
-    def __init__(self, trained_ve_pipeline):
+    def __init__(self, trained_ve_pipeline, relevance_map):
         self.trained_ve_pipeline = trained_ve_pipeline
+        self.relevance_map = relevance_map
 
     @classmethod
     def from_pretrained(cls, directory: Union[str, Path]) -> "TrainedVE":
@@ -33,13 +38,16 @@ class TrainedVE:
         Returns:
             TrainedVE: The loaded trained VE object
         """
-        with open(directory, "rb") as f:
+        model_path = os.path.join(directory, "trained_pipeline")
+        with open(model_path, "rb") as f:
             trained_ve_pipeline = pickle.load(f)
 
-        logger.info(f"Model loaded from {directory}")
-        return cls(
-            trained_ve_pipeline=trained_ve_pipeline,
-        )
+        relevance_map_path = os.path.join(directory, "relevancemap.pkl")
+        with open(relevance_map_path, "rb") as f:
+            relevance_map = pickle.load(f)
+
+        logger.info(f"Trained pipeline and relevance map loaded from {directory}")
+        return cls(trained_ve_pipeline=trained_ve_pipeline, relevance_map=relevance_map)
 
     def preprocess(self, data: List[dict]) -> pd.DataFrame:
         """Preprocess the input data to prepare it for the visitor estimation model.
@@ -96,7 +104,9 @@ class TrainedVE:
         # Adding the additional columns to match Scala's code
         metadata_df["entityTimestamp"] = pd.Timestamp(data["entityTimestamp"])
         metadata_df["namedEntityCount"] = data["namedEntityCount"]
-        metadata_df["relevancePercentile"] = data["relevance"]
+        metadata_df["relevancePercentile"] = getRelevancePercentile(
+            self.relevance_map, data["profileID"], data["relevance"]
+        )
         metadata_df["pageRank"] = data["pagerank"]
         metadata_df["company_sector_id"] = data["companySectorId"]
         metadata_df["type"] = data["typeCd"]
@@ -119,7 +129,7 @@ class TrainedVE:
 
         return result_df
 
-    def inference(self, model, df: pd.DataFrame) -> List[float]:
+    def inference(self, df: pd.DataFrame) -> List[float]:
         """Perform inference using the trained visitor estimation model.
 
         Args:
@@ -129,6 +139,7 @@ class TrainedVE:
         Returns:
             List[float]: The predicted visitor counts.
         """
+        model = self.trained_ve_pipeline
         X_preprocessed = model.named_steps["data_pipe"].transform(df)
         predictions = model.named_steps["model"].predict(X_preprocessed)
         # Step 2: Apply the UnlogTransformer to transform the predictions
@@ -148,5 +159,5 @@ class TrainedVE:
             List[float]: A list of predicted visitor counts.
         """
         df = self.preprocess(input)
-        predicted_visitors = self.inference(self.trained_ve_pipeline, df)
+        predicted_visitors = self.inference(df)
         return predicted_visitors

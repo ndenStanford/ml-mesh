@@ -51,7 +51,7 @@ curl -X 'POST' 'http://0.0.0.0:8000/v1/visitor-estimation/predict' \
                             "fbComments": [1000, 1000, 1000],
                             "fbTotal": [1000, 1000, 1000],
                             "fbShares": [1000, 1000, 1000],
-                            "linkedinShares": [1000, None, 1000],
+                            "linkedInShares": [1000, None, 1000],
                             "googlePlusones": [1000, None, 1100],
                             "twitterRetweets": [1000, 1000, 1200],
                         },
