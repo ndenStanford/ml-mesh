@@ -30,10 +30,12 @@ from src.utils import (
     final_data_clean,
     getPerWithNamedEntityCounts,
     getRelevancePercentiles,
+    getRelevanceTable,
     getTotalVisitors,
     good_profile_ids,
     joinEntityAnalyticsWithLinkMetadata,
     joinWithSyndicates,
+    makeRelevanceMap,
 )
 
 
@@ -281,6 +283,8 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         profileDF5 = profileDF5.loc[:, ~profileDF5.columns.duplicated()]
         # Save preprocessed data in the dataset_dict for further use
         self.dataset_dict["profileDF5"] = profileDF5
+        self.relevanceTable = getRelevanceTable(df_per)
+        self.relevanceMap = makeRelevanceMap(self.relevanceTable)
 
         self.logger.info("Data preprocessing complete.")
 
@@ -427,6 +431,11 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def save(self) -> None:
         """Save the trained pipeline."""
         # Save the model artifacts and any other required files
+        with open(
+            os.path.join(self.model_card.local_output_dir, "relevancemap.pkl"), "wb"
+        ) as f:
+            pickle.dump(self.relevanceMap, f)
+
         self.ve_model_path = os.path.join(
             self.model_card.local_output_dir, "trained_pipeline"
         )

@@ -4,40 +4,55 @@
 from collections import defaultdict
 
 
-def imprec(intervaltimes, metadatawindows, metadata_old):
-    """Impute metadata for missing intervals based on surrounding metadata windows.
+def imputeClean(times, column):
+    """Impute missing values in a column based on linear interpolation between known values.
 
     Args:
-        intervaltimes (list): List of time intervals where metadata needs to be imputed.
-        metadatawindows (list): List of tuples, where each tuple contains two metadata windows.
-        metadata_old (list): Metadata to use when no new metadata is available.
+        times (list): List of times for which values need to be imputed.
+        column (list): List of tuples where each tuple contains a time and a value.
 
     Returns:
-        list: List of tuples containing the time and the imputed metadata.
+        list: List of imputed values for the given times.
     """
     acc = []
-    while intervaltimes:
-        if not metadatawindows:
-            acc += [(t, metadata_old) for t in intervaltimes]
+    times = list(times)
+    while len(times) > 0:
+        if len(column) == 0:
+            acc.extend([None] * len(times))
             break
-        (tmd1, md1), (tmd2, md2) = metadatawindows[0]
-        interval_times, intervaltimes = [t for t in intervaltimes if t < tmd2], [
-            t for t in intervaltimes if t >= tmd2
-        ]
-        interval_size = (tmd2 - tmd1).total_seconds()
+        t1, v1 = column[0]
+        if len(column) == 1:
+            acc.extend([v1 if t >= t1 else None for t in times])
+            break
+        t2, v2 = column[1]
+        pre_interval_times = [t for t in times if t < t1]
+        interval_times = [t for t in times if t1 <= t < t2]
+        times = [t for t in times if t >= t2]
+        interval_size = (t2 - t1).total_seconds()
         imputed = [
-            (time, [int(prop1 * a + prop2 * b) for a, b in zip(md1, md2)])
-            for time in interval_times
-            for prop1, prop2 in [
-                (
-                    1 - (tmd2 - time).total_seconds() / interval_size,
-                    (tmd2 - time).total_seconds() / interval_size,
-                )
-            ]
+            int(
+                (1 - (t2 - t).total_seconds() / interval_size) * v1
+                + (t2 - t).total_seconds() / interval_size * v2
+            )
+            for t in interval_times
         ]
-        acc += imputed
-        metadatawindows = metadatawindows[1:]
+        acc.extend([None] * len(pre_interval_times) + imputed)
+        column = column[1:]
+
     return acc
+
+
+def imputeColumn(times, column):
+    """Filter out None values from the column and impute missing values.
+
+    Args:
+        times (list): List of times for which values need to be imputed.
+        column (list): List of tuples where each tuple contains a time and a value.
+
+    Returns:
+        list: List of imputed values for the given times.
+    """
+    return imputeClean(times, [(time, val) for time, val in column if val is not None])
 
 
 def maxOptions(rows):
@@ -49,7 +64,18 @@ def maxOptions(rows):
     Returns:
         list: A list of maximum values for each column.
     """
-    return [max(filter(None, col), default=None) for col in zip(*[r[1] for r in rows])]
+    # Transpose the rows to get columns
+    columns = zip(*rows)
+
+    result = []
+    for column in columns:
+        # Filter out None values explicitly
+        filtered = [value for value in column if value is not None]
+        # If there are valid values, take the max; otherwise, keep None
+        max_value = max(filtered) if filtered else None
+        result.append(max_value)
+
+    return result
 
 
 def mergeDuplicates(metadatas):
@@ -82,6 +108,6 @@ def imputeByColumns(times, metadatas):
         return [(time, []) for time in times]
     rowData = [[(date, val) for val in metadata] for date, metadata in metadatas_new]
     columns = list(zip(*rowData))
-    return list(
-        zip(times, map(list, zip(*[imprec(times, column, None) for column in columns])))
-    )
+    imputed_columns = [imputeColumn(times, column) for column in columns]
+    transposed_result = list(zip(*imputed_columns))
+    return list(zip(times, transposed_result))
