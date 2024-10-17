@@ -21,7 +21,7 @@ services:
         PROJECT: transcript-segmentation
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.server]
     environment:
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
@@ -54,7 +54,7 @@ services:
         PROJECT: transcript-segmentation
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
@@ -73,7 +73,7 @@ services:
 
   # unit tests
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     volumes:
       - type: bind
@@ -91,7 +91,7 @@ services:
       - type: bind
         source: serve
         target: /projects/transcript-segmentation/serve
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
@@ -111,7 +111,7 @@ services:
       - type: bind
         source: serve
         target: /projects/transcript-segmentation/serve
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     environment:
@@ -135,7 +135,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [serve, integration, functional, debug]
     ports:

@@ -20,7 +20,7 @@ services:
       - type: bind
         source: register/src
         target: /projects/topic/register/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-register:${IMAGE_TAG}
     command: [python, -m, src.register_features]
     profiles: [register]
     environment:
@@ -42,7 +42,7 @@ services:
         PROJECT: topic
         COMPONENT: register
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-register:${IMAGE_TAG}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.register_features]
     ports:
       - 5678:5678
@@ -60,7 +60,7 @@ services:
       - type: bind
         source: register/
         target: /projects/topic/register/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-register:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     hostname: onclusive-ml
@@ -101,7 +101,7 @@ services:
         PROJECT: topic
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -137,7 +137,7 @@ services:
         PROJECT: topic
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-train:${IMAGE_TAG}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
     ports:
       - 5678:5678
@@ -155,7 +155,7 @@ services:
       - type: bind
         source: train/
         target: /projects/topic/train/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-train:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
@@ -193,7 +193,7 @@ services:
         PROJECT: topic
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/dev.env
     profiles: [serve, functional]
@@ -240,7 +240,7 @@ services:
       - type: bind
         source: serve/src
         target: /projects/topic/serve/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -269,7 +269,7 @@ services:
       - type: bind
         source: serve/src
         target: /projects/topic/serve/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
@@ -292,7 +292,7 @@ services:
       - type: bind
         source: serve/tests
         target: /projects/topic/serve/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     env_file: serve/config/dev.env
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -311,7 +311,7 @@ services:
       - type: bind
         source: serve/tests
         target: /projects/topic/serve/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/dev.env
     profiles: [functional]
@@ -341,7 +341,7 @@ services:
       - type: bind
         source: backfill/src
         target: /projects/topic/backfill/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-backfill:${IMAGE_TAG}
     entrypoint: [python, -m, src.backfill.__main__]
     profiles: [backfill]
     network_mode: service:taskmanager
@@ -377,7 +377,7 @@ services:
         PROJECT: topic
         COMPONENT: backfill
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-backfill:${IMAGE_TAG}
     profiles: [debug]
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.backfill.__main__]
     ports:
@@ -409,7 +409,7 @@ services:
       - type: bind
         source: backfill
         target: /projects/topic/backfill
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-backfill:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
