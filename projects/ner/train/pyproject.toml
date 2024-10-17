@@ -6,9 +6,9 @@ authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
-torch = "1.9.1"
-transformers = "4.17.0"
+python = "3.9.19"
+torch = "1.12.1"
+transformers = "4.33.1"
 core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
 
