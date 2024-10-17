@@ -53,7 +53,7 @@ jobs:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_prod
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup # hard-coded for testing
-      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: s3://kubeflow-feast-backend-prod/nutch.dendumrongsup # hard-coded for testing
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: s3://kubeflow-feast-backend-dev/nutch.dendumrongsup # hard-coded for testing
 
     steps:
       - name: Check out code
