@@ -20,7 +20,7 @@ services:
         PROJECT: keywords
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -42,7 +42,7 @@ services:
         PROJECT: keywords
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
     ports:
       - 5678:5678
@@ -60,7 +60,7 @@ services:
       - type: bind
         source: train/
         target: /projects/keywords/train/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
@@ -93,7 +93,7 @@ services:
         PROJECT: keywords
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -115,7 +115,7 @@ services:
         PROJECT: keywords
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command:
       - /bin/sh
       - -c
@@ -141,7 +141,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/keywords/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     env_file: compile/config/dev.env
     profiles: [unit]
@@ -156,7 +156,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/keywords/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
@@ -177,7 +177,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/keywords/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
@@ -194,7 +194,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/keywords/compile/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
@@ -227,7 +227,7 @@ services:
         PROJECT: keywords
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-serve:${IMAGE_TAG}
     profiles: [serve, functional, load]
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/dev.env
@@ -256,7 +256,7 @@ services:
         PROJECT: keywords
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-serve:${IMAGE_TAG}
     profiles: [debug]
     command:
       - /bin/sh
@@ -278,7 +278,7 @@ services:
       - type: bind
         source: serve/
         target: /projects/keywords/serve/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.util.download_compiled_model]
     profiles: [serve, integration, functional, load]
     environment:
@@ -299,7 +299,7 @@ services:
       - type: bind
         source: serve/
         target: /projects/keywords/serve/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -316,7 +316,7 @@ services:
       - type: bind
         source: serve/
         target: /projects/keywords/serve/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/dev.env
     profiles: [integration]
@@ -332,7 +332,7 @@ services:
       - type: bind
         source: serve/
         target: /projects/keywords/serve/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/dev.env
     profiles: [functional]
