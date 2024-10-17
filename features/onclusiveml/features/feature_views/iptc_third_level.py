@@ -5,7 +5,7 @@ from datetime import timedelta
 from feast import Entity, FeatureView, Field, types, OnDemandFeatureView
 from onclusiveml.features.contrib.redshift import OnclusiveRedshiftSource
 from feast.transformation.pandas_transformation import PandasTransformation
-from onclusiveml.features.contrib.on_demand.iptc.utils import iptc_third_level_on_demand_feature_view
+from onclusiveml.features.contrib.on_demand.iptc.utils import iptc_third_level_on_demand_feature_view, iptc_fourth_level_on_demand_feature_view
 
 entity = Entity(
     name="iptc_third_level",
@@ -37,14 +37,26 @@ feature_view = FeatureView(
 )
 
 
-feature_transformation = PandasTransformation(
+third_level_feature_transformation = PandasTransformation(
     udf=iptc_third_level_on_demand_feature_view,
     udf_string="iptc_third_level_on_demand_feature_view",
 )
 
-on_demand_feature_view = OnDemandFeatureView(
+third_level_on_demand_feature_view = OnDemandFeatureView(
     name="iptc_third_level_on_demand_feature_view",
     sources=[feature_view],
     schema=[Field(name="topic_3_llm", dtype=types.String, description="")],
-    feature_transformation=feature_transformation,
+    feature_transformation=third_level_feature_transformation,
+)
+
+fourth_level_feature_transformation = PandasTransformation(
+    udf=iptc_fourth_level_on_demand_feature_view,
+    udf_string="iptc_fourth_level_on_demand_feature_view",
+)
+
+fourth_level_on_demand_feature_view = OnDemandFeatureView(
+    name="iptc_fourth_level_on_demand_feature_view",
+    sources=[feature_view],
+    schema=[Field(name="topic_4_llm", dtype=types.String, description="")],
+    feature_transformation=fourth_level_feature_transformation,
 )
