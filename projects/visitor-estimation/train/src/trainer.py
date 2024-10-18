@@ -397,7 +397,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             self.cleaned_data, test_size=0.2, random_state=42
         )
 
-        self.logger.info("Final training data:", self.train_data)
+        # self.logger.info("Final training data:", self.train_data)
         # Initialize pipeline and train the model
         data_pipe = self.make_pipeline(
             index_features=self.index_features,
