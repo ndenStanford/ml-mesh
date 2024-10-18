@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "iptc"
+name = "visitor-estimation"
 version = "0.1.0"
 description = "IPTC features registration"
 authors = ["vishal-singh <vishal.singh@onclusive.com>"]

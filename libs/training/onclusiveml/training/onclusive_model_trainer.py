@@ -8,6 +8,7 @@ from io import BytesIO
 # 3rd party libraries
 import boto3
 from botocore.client import BaseClient
+from datetime import datetime
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -104,21 +105,13 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             comparison_operators=self.data_fetch_params.comparison_operators,
             non_nullable_columns=self.data_fetch_params.non_nullable_columns,
         )
-        # Logging the initial dataset size
-        self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
-
-        # Drop rows with NA values
-        self.dataset_df = self.dataset_df.dropna()
-
-        # Logging the size after filtering
-        self.logger.info(f"Filtered dataset size (no NAs): {self.dataset_df.shape}")
-
-        # Displaying the first few rows of the filtered dataset
+        self.logger.info(self.dataset_df.head())
         self.logger.info(
-            f"Fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
+            f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
         )
 
-        self.docs = self.dataset_df["content"].apply(str).values.tolist()
+        if "content" in self.dataset_df.columns:
+            self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
     def get_featurestore_handle(self) -> None:
         """Initialize feature store handle for the trainer class.
@@ -157,7 +150,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
         s3_model_version_prefix = "/".join(s3_model_version_full_prefix.split("/")[-3:])
 
-        file_name = self.tracked_model_version.get_url().split("/")[-1] + ".parquet"
+        file_name = self.tracked_model_version.get_url().split("/")[-1] + "_" + datetime.now().strftime("%Y%m%d_%H%M%S") + ".parquet"
+
         self.neptune_attr_path = (
             f"{self.model_card.training_data_attribute_path}/{file_name}"
         )

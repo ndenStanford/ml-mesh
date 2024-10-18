@@ -55,6 +55,10 @@ on  :
         default: true
         type: boolean
         description: Indicates whether to wait for the job to complete before continuing.
+      parameters:
+        required: false
+        type: string
+        description: Parameters associated with the training.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -125,14 +129,14 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: us-east-2
 
       - name: Run project train component on sagemaker
         run: |
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
-            --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
-            --aws-environment prod \
+            --aws-region us-east-2 \
+            --aws-environment ${{ inputs.environment }} \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
             --project-name ${{ inputs.project }} \
@@ -142,6 +146,7 @@ jobs:
             --trained-model ${{ inputs.trained-model }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
-            --save_artifact ${{ !inputs.pull-request }} \
+            --save_artifact ${{ inputs.pull-request }} \
+            --parameters ${{ inputs.parameters }} \
             --wait ${{ inputs.wait }} \
             python -m src.train_model
