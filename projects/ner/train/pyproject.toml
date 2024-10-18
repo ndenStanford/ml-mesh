@@ -9,6 +9,7 @@ packages = [{include = "src"}]
 python = "3.9.19"
 torch = "1.12.1"
 transformers = "4.33.1"
+numpy = "<2.0"
 core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
 
