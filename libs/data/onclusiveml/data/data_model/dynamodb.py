@@ -1,7 +1,7 @@
 """DynamoDB Data Model."""
 
 # Standard Library
-from typing import Any, List, TypeVar
+from typing import Any, Dict, List
 
 # 3rd party libraries
 from dyntastic import Dyntastic
@@ -16,9 +16,6 @@ from onclusiveml.data.data_model.exception import (
 )
 
 
-T = TypeVar("T", bound=Dyntastic)
-
-
 class DynamoDBModel(BaseDataModel[Dyntastic]):
     """A data model class for interacting with DynamoDB tables.
 
@@ -26,7 +23,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
     using the Dyntastic library for object mapping.
     """
 
-    def get_all(self) -> List[T]:
+    def get_all(self) -> List[Dyntastic]:
         """Fetch all items from the DynamoDB table.
 
         Returns:
@@ -40,14 +37,14 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def get_one(self, id: str) -> T:
+    def get_one(self, id: str) -> Dyntastic:
         """Fetch a single item from the DynamoDB table by its ID.
 
         Args:
             id (str): The unique identifier of the item.
 
         Returns:
-            T: The item with the specified ID.
+            Dyntastic: The item with the specified ID.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -63,14 +60,14 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def create(self, item: Any) -> T:
+    def create(self, item: Dict[str, Any]) -> Dyntastic:
         """Create a new item in the DynamoDB table.
 
         Args:
-            item (Any): The item data to create.
+            item (Dict[str,Any]): The item data to create.
 
         Returns:
-            T: The newly created item.
+            Dyntastic: The newly created item.
 
         Raises:
             ValidationException: If the input data is invalid.
@@ -85,15 +82,15 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def update(self, id: str, item: Any) -> T:
+    def update(self, id: str, item: Dict[str, Any]) -> Dyntastic:
         """Update an existing item in the DynamoDB table.
 
         Args:
             id (str): The unique identifier of the item to update.
-            item (Any): The updated item data.
+            item (Dict[str,Any]): The updated item data.
 
         Returns:
-            T: The updated item.
+            Dyntastic: The updated item.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -115,14 +112,14 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def delete_one(self, id: str) -> T:
+    def delete_one(self, id: str) -> Dyntastic:
         """Delete an item from the DynamoDB table by its ID.
 
         Args:
             id (str): The unique identifier of the item to delete.
 
         Returns:
-            T: The deleted item.
+            Dyntastic: The deleted item.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -140,7 +137,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def delete_all(self) -> List[T]:
+    def delete_all(self) -> List[Dyntastic]:
         """Delete all items in the DynamoDB table.
 
         Returns:

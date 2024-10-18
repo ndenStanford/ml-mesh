@@ -36,23 +36,23 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         super().__init__(model=model)
 
     @abstractmethod
-    def get_all(self) -> List[Any]:
+    def get_all(self) -> List[T]:
         """Retrieve all items from the data store.
 
         Returns:
-            List[Any]: A list of all items in the data store.
+            List[T]: A list of all items in the data store.
         """
         pass
 
     @abstractmethod
-    def get_one(self, id: str) -> Any:
+    def get_one(self, id: str) -> T:
         """Retrieve a single item from the data store by its ID.
 
         Args:
             id (str): The unique identifier of the item to retrieve.
 
         Returns:
-            Any: The item with the specified ID, or None if not found.
+            T: The item with the specified ID, or None if not found.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -61,14 +61,14 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def create(self, item: Any) -> Any:
+    def create(self, item: Any) -> T:
         """Create a new item in the data store.
 
         Args:
             item (Any): The item to be created.
 
         Returns:
-            Any: The created item, potentially with additional metadata (e.g., ID).
+            T: The created item, potentially with additional metadata (e.g., ID).
 
         Raises:
             ValidationException: If the input data is invalid.
@@ -77,7 +77,7 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def update(self, id: str, item: Any) -> Any:
+    def update(self, id: str, item: Any) -> T:
         """Update an existing item in the data store.
 
         Args:
@@ -85,7 +85,7 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             item (Any): The updated item data.
 
         Returns:
-            Any: The updated item, or None if the item with the given ID doesn't exist.
+            T: The updated item, or None if the item with the given ID doesn't exist.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -95,14 +95,14 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def delete_one(self, id: str) -> Any:
+    def delete_one(self, id: str) -> T:
         """Delete a single item from the data store by its ID.
 
         Args:
             id (str): The unique identifier of the item to delete.
 
         Returns:
-            Any: The deleted item, or None if the item with the given ID doesn't exist.
+            T: The deleted item, or None if the item with the given ID doesn't exist.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -111,11 +111,11 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def delete_all(self) -> List[Any]:
+    def delete_all(self) -> List[T]:
         """Delete all items from the data store.
 
         Returns:
-            List[Any]: A list of all deleted items.
+            List[T]: A list of all deleted items.
 
         Raises:
             DataModelException: For errors during deletion.
