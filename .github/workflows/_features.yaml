@@ -57,7 +57,7 @@ jobs:
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: redshift-prod
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::690763002009:role/mesh/onclusiveml-mesh-dev-amp-write-role
 
-      
+
 
     steps:
       - name: Check out code
