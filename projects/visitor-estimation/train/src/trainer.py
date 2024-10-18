@@ -453,6 +453,10 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def save(self) -> None:
         """Save the trained pipeline."""
         # Save the model artifacts and any other required files
+
+        if not os.path.exists(self.model_card.local_output_dir):
+            os.makedirs(self.model_card.local_output_dir)
+
         with open(
             os.path.join(self.model_card.local_output_dir, "relevancemap.pkl"), "wb"
         ) as f:
