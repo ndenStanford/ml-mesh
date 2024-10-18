@@ -72,25 +72,9 @@ class ApplicationSettings(OnclusiveBaseSettings):
     }
 
 
-class RedshiftSettings(OnclusiveBaseSettings):
-    """Redshift settings to retrieve data for test."""
-
-    CLUSTER_ID: str = "redshift-dev"
-    DATABASE: str = "redshift"
-    DB_USER: str = "admin"
-    SQL: str = """SELECT * FROM "redshift"."dev"."abstractive_summarization" LIMIT 10"""
-    REGION_NAME: str = "us-east-2"
-
-    class Config:
-        env_prefix = "redshift_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
 class GlobalSettings(
     ServerModelSettings,
     ApplicationSettings,
-    RedshiftSettings,
 ):
     """Global server settings."""
 
