@@ -60,6 +60,7 @@ jobs:
       # ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: redshift-prod
       # ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: kubeflow-rds-dev.c7sisgss8ghm.us-east-2.rds.amazonaws.com
 
 
     steps:
@@ -107,8 +108,7 @@ jobs:
       - name: Setup env vars from SSM
         uses: dkershner6/aws-ssm-getparameters-action@v2
         with:
-          parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/host = ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST,
-            /kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER,
+          parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER,
             /kubeflow/${{ inputs.environment }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT,
             /kubeflow/${{ inputs.environment }}/kubeflow-db/password = ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD,
             /kubeflow/${{ inputs.environment }}/iam/amp-write-acces-role-arn = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE,
