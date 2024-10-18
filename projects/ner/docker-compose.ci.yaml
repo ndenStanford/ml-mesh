@@ -230,6 +230,101 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  # =============================================
+  # COMPILE
+  # =============================================
+
+  compile:
+    volumes:
+      - compile-volume:/projects/ner/compile/outputs
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/ner/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      # cache_to:
+      #   - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-compile,mode=max
+      # cache_from:
+      #   - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-compile
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: ner
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    command: [python, -m, src.compile]
+    profiles: [compile, unit, integration, pipeline]
+    environment:
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-unit:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-download-model:
+    volumes:
+      - compile-volume:/projects/ner/compile/outputs
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [pipeline]
+    environment:
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
+      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
+      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
+      COMPILED_PROJECT: ${COMPILED_PROJECT}
+      COMPILED_MODEL: ${COMPILED_MODEL}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-validate-model:
+    volumes:
+      - compile-volume:/projects/ner/compile/outputs
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, src/tests, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+    profiles: [pipeline]
+    environment:
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-upload-model:
+    volumes:
+      - compile-volume:/projects/ner/compile/outputs
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    command: [python, -m, src.upload]
+    profiles: [pipeline]
+    environment:
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
+      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
+      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
+      COMPILED_PROJECT: ${COMPILED_PROJECT}
+      COMPILED_MODEL: ${COMPILED_MODEL}
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # OTHER
+  # =============================================
+
   jobmanager:
     image: apache/flink:1.16-scala_2.12-java11
     command: [jobmanager]
@@ -313,4 +408,5 @@ networks:
 
 volumes :
   serve-volume:
+  compile-volume:
   backfill-volume:
