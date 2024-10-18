@@ -104,7 +104,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     "iptc_first_level:topic_1",
                     "iptc_first_level:content",
                     "iptc_first_level:title",
-                    # "iptc_first_level_on_demand_feature_view:topic_1_llm",
+                    "iptc_first_level_on_demand_feature_view:topic_1_llm",
                 ],
             },
             2: {
@@ -253,6 +253,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         #     subset=self.data_fetch_params.non_nullable_columns
         # )  # type: ignore
         self.dataset_df: DataFrame = self.dataset_df.dropna()
+        print(self.dataset_df.columns)
+        print(self.dataset_df.iloc[0])
         # Filter out rows with invalid labels not in the candidate list
         self.logger.info("Filtering rows with invalid labels...")
         valid_labels = self.get_candidate_list(

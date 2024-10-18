@@ -60,7 +60,7 @@ class DataFetchParams(FeastFeatureStoreSettings):
     # filter_values: List[str] = []
     # comparison_operators: List[str] = []
     # non_nullable_columns: List[str] = ["content", "topic_1"]
-    is_on_demand: bool = False
+    is_on_demand: bool = True
     entity_df: Optional[str] = None
     features: Optional[List[str]] = None
 
