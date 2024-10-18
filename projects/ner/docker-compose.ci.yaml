@@ -322,6 +322,52 @@ services:
     networks: [onclusive-net]
 
   # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/ner/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-production}
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-train,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-train
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: ner
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
+    command: [python, -m, src.train_model]
+    profiles: [train]
+    environment:
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/ner/train/src
+      - type: bind
+        source: train/tests
+        target: /projects/ner/train/tests
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [train, unit]
+    environment:
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: train/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
   # OTHER
   # =============================================
 
