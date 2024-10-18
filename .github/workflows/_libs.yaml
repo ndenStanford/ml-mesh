@@ -3,6 +3,10 @@ name: Internal Library
 on  :
   workflow_call:
     inputs:
+      environment:
+        required: true
+        type: string
+        description: Environment where code is deployed [prod, dev]
       lib:
         required: true
         type: string
