@@ -68,6 +68,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Set PR user login as environment variable
+        run: echo "PR_USER_LOGIN=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+
+      - name: Print PR user login
+        run: echo "The PR was opened by $PR_USER_LOGIN"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
