@@ -76,7 +76,6 @@ class OnclusiveService(OnclusiveStrEnum):
     # --- Visitor Estimation
     VISITOR_ESTIMATION_REGISTER = "visitor-estimation-register"
     VISITOR_ESTIMATION_TRAIN = "visitor-estimation-train"
-    VISITOR_ESTIMATION_SERVE = "visitor-estimation-serve"
 
 
 class OnclusiveLogMessageFormat(OnclusiveStrEnum):
