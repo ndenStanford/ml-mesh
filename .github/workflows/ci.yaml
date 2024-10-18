@@ -160,6 +160,9 @@ jobs       :
       matrix:
         libs:
 
+          - name: core
+            integration: false
+
           - name: compile
             integration: false
 
