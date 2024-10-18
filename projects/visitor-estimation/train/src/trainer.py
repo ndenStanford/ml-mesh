@@ -112,6 +112,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             ),
             axis=1,
         )
+        df_ent["domain_id"] = df_dom["domain_id"]  # remove this data manipulation
         df_crl["entity_id"] = df_ent["entity_id"]
         # Step 1: Join entity analytics with link metadata
         profileDF = joinEntityAnalyticsWithLinkMetadata(
@@ -309,28 +310,31 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
 
         assert len(encode_only_features) == 0
         # List of columns to remove
-        columns_to_remove = list(
-            set(
-                [
-                    "profileID",
-                    "entityID",
-                    "profileIDIndex",
-                    "visitors",
-                    "logvisitors",
-                    "hasVisitors",
-                    "fbLikesNotNaN",
-                    "relevance",
-                    "analyticsTimestamp",
-                    "entityTimestamp",
-                ]
+        columns_to_remove = (
+            list(
+                set(
+                    [
+                        "profileID",
+                        "entityID",
+                        "profileIDIndex",
+                        "visitors",
+                        "logvisitors",
+                        "hasVisitors",
+                        "fbLikesNotNaN",
+                        "relevance",
+                        "analyticsTimestamp",
+                        "entityTimestamp",
+                    ]
+                )
+                - set([f"{feature}Index" for feature in index_only_features])
+                - set([f"{feature}Vec" for feature in index_encode_features])
             )
-            - set([f"{feature}Index" for feature in index_only_features])
-            - set([f"{feature}Vec" for feature in index_encode_features])
+            + exclude_features
         )
 
         temporal_transformer = FunctionTransformer(add_temporal_features)
         index_transformers = [
-            (f"{feature}Index", OneHotEncoder(), [feature])
+            (f"{feature}Index", OneHotEncoder(handle_unknown="ignore"), [feature])
             for feature in index_features
         ]
         interaction_transformer = InteractionTransformer(interact)
@@ -375,7 +379,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             self.cleaned_data, test_size=0.2, random_state=42
         )
 
-        self.logger.info("Final training data:", self.train_data)
         # Initialize pipeline and train the model
         data_pipe = self.make_pipeline(
             index_features=self.index_features,
@@ -431,6 +434,10 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def save(self) -> None:
         """Save the trained pipeline."""
         # Save the model artifacts and any other required files
+
+        if not os.path.exists(self.model_card.local_output_dir):
+            os.makedirs(self.model_card.local_output_dir)
+
         with open(
             os.path.join(self.model_card.local_output_dir, "relevancemap.pkl"), "wb"
         ) as f:
