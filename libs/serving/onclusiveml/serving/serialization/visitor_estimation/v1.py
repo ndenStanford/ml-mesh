@@ -30,7 +30,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction response data."""
 
-    predicted_visitors: float
+    predicted_visitors: List[float]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

@@ -169,12 +169,12 @@ services:
     env_file: serve/config/dev.env
     profiles: [serve, functional]
     ports:
-      - 7000:7000
+      - 8000:8000
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:7000/visitor-estimation/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/visitor-estimation/v1/ready]
       interval: 1m30s
       retries: 3
       start_period: 1m

@@ -49,11 +49,11 @@ class TrainedVE:
         logger.info(f"Trained pipeline and relevance map loaded from {directory}")
         return cls(trained_ve_pipeline=trained_ve_pipeline, relevance_map=relevance_map)
 
-    def preprocess(self, data: List[dict]) -> pd.DataFrame:
+    def preprocess(self, data: dict) -> pd.DataFrame:
         """Preprocess the input data to prepare it for the visitor estimation model.
 
         Args:
-            data (List[dict]): The raw input data in JSON format containing analytics, social, and metadata information.
+            data (dict): The raw input data in JSON format containing analytics, social, and metadata information.
 
         Returns:
             pd.DataFrame: The processed data, ready for prediction with the model.
@@ -158,6 +158,6 @@ class TrainedVE:
         Returns:
             List[float]: A list of predicted visitor counts.
         """
-        df = self.preprocess(input)
+        df = self.preprocess(input[0])
         predicted_visitors = self.inference(df)
         return predicted_visitors
