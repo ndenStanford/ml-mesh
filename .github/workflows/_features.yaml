@@ -110,7 +110,6 @@ jobs:
         with:
           parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER,
             /kubeflow/${{ inputs.environment }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT,
-            /kubeflow/${{ inputs.environment }}/kubeflow-db/password = ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD,
             /kubeflow/${{ inputs.environment }}/iam/amp-write-acces-role-arn = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE,
             /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,
             /admin/${{ inputs.environment }}/warehouse/redshift/user = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER,
