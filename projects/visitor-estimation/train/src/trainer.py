@@ -85,15 +85,35 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         """Process the dataframes."""
         # Create references to dataframes in self.dataset_dict
         df_ss = self.dataset_dict.get("search_seeds_feature_view")
+        # df_ss =  df_ss.dropna(subset=['profile_id'])
+
         df_eclr = self.dataset_dict.get("eclr_links_feature_view")
+        # df_eclr =  df_eclr.dropna(subset=['entity_id', 'link_id'])
+
         df_crl = self.dataset_dict.get("crawler_items_feature_view")
+        # df_crl = df_crl.dropna(subset=['entity_id'])
+
         df_per = self.dataset_dict.get("profile_entity_relationships_feature_view")
+        # df_per = df_per.dropna(subset=['entity_id', 'profile_id', 'id'])
+
         df_prof = self.dataset_dict.get("profile_company_sectors_feature_view")
+        # df_prof = df_prof.dropna(subset=['parent_id', 'profile_id', 'category_id'])
+
         df_lmd = self.dataset_dict.get("entity_links_lmd_feature_view")
+        # df_lmd = df_lmd.dropna(subset=['entity_id'])
+
         df_ea = self.dataset_dict.get("entity_ea_per_feature_view")
+        # df_ea = df_ea.dropna(subset=['entity_id', 'profile_id'])
+
         df_ent = self.dataset_dict.get("entity_links_feature_view")
+        # df_ent = df_ent.dropna(subset=['entity_id', 'link_id', 'domain_id'])
+
         df_dom = self.dataset_dict.get("domains_feature_view")
+        # df_dom = df_dom.dropna(subset=['id'])
+
         df_connect = self.dataset_dict.get("entity_connections_feature_view")
+        # df_connect = df_connect.dropna(subset=['child_entity_id', 'parent_entity_id'])
+
         # adjust column names (need to fix in redshift)
         df_lmd = df_lmd.rename(columns={"link_metadata_timestamp": "timestamp"})
         df_ea = df_ea.rename(columns={"ea_timestamp": "timestamp"})
