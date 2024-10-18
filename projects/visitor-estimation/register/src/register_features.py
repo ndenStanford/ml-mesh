@@ -26,7 +26,7 @@ from src.settings import (  # type: ignore[attr-defined]
 
 
 logger = get_default_logger(
-    name=__name__, service=OnclusiveService.VISITOR_ESTIMATION.value
+    name=__name__, service=OnclusiveService.VISITOR_ESTIMATION_REGISTER.value
 )
 
 
