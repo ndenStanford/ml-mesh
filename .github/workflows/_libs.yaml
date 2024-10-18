@@ -47,6 +47,9 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: "AWS secret access key"
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV:
+        required: true
+        description: "MySQL password for dev account"
 
 jobs:
   deploy:
