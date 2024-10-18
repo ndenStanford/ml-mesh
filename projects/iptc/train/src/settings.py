@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import List
+from typing import List, Optional
 
 # Internal libraries
 from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
@@ -61,8 +61,8 @@ class DataFetchParams(FeastFeatureStoreSettings):
     # comparison_operators: List[str] = []
     # non_nullable_columns: List[str] = ["content", "topic_1"]
     is_on_demand: bool = False
-    entity_df: str
-    features: List[str]
+    entity_df: Optional[str] = None
+    features: Optional[List[str]] = None
 
 
 class TrackedIPTCBaseModelCard(TrackedModelCard):

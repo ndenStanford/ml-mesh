@@ -99,7 +99,13 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 # "non_nullable_columns": [
                 #     model_card.model_params.selected_text,
                 # ],
-                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """
+                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """,
+                "features": [
+                    "iptc_first_level:topic_1",
+                    "iptc_first_level:content",
+                    "iptc_first_level:title",
+                    # "iptc_first_level_on_demand_feature_view:topic_1_llm",
+                ],
             },
             2: {
                 # "entity_name": "iptc_second_level",
@@ -112,7 +118,13 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 #     "topic_1",
                 # ],
                 "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" WHERE topic_1 = """
-                + filtered_value
+                + filtered_value,
+                "features": [
+                    "iptc_first_level:topic_2",
+                    "iptc_first_level:content",
+                    "iptc_first_level:title",
+                    # "iptc_first_level_on_demand_feature_view:topic_2_llm",
+                ],
             },
             3: {
                 # "entity_name": "iptc_third_level",
@@ -237,9 +249,10 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
         # drop null
-        self.dataset_df: DataFrame = self.dataset_df.dropna(
-            subset=self.data_fetch_params.non_nullable_columns
-        )  # type: ignore
+        # self.dataset_df: DataFrame = self.dataset_df.dropna(
+        #     subset=self.data_fetch_params.non_nullable_columns
+        # )  # type: ignore
+        self.dataset_df: DataFrame = self.dataset_df.dropna()
         # Filter out rows with invalid labels not in the candidate list
         self.logger.info("Filtering rows with invalid labels...")
         valid_labels = self.get_candidate_list(
