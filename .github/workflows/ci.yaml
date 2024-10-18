@@ -197,6 +197,7 @@ jobs       :
 
 
     with:
+      environment: prod
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
