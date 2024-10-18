@@ -3,13 +3,14 @@
 
 # Internal libraries
 from onclusiveml.data.data_model.dynamodb import DynamoDBModel
-from onclusiveml.serving.rest.crud.crud_router import CRUDRouter
+from onclusiveml.serving.rest.crud._base import CRUDGenerator
 from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
 from src.serve._init import init
 from src.serve.model import ServedTopicModel
+from src.serve.schema import PredictResponseSchema
 from src.serve.tables import PredictResponseSchemaWID, TopicSummaryResponseDB
 
 
@@ -27,11 +28,11 @@ def get_model_server() -> ModelServer:
 
     response_model = DynamoDBModel(model=TopicSummaryResponseDB)
     model_server.include_router(
-        CRUDRouter(
+        CRUDGenerator(
             schema=PredictResponseSchemaWID,
             model=response_model,
-            create_schema=PredictResponseSchemaWID,
-            update_schema=PredictResponseSchemaWID,
+            create_schema=PredictResponseSchema,
+            update_schema=PredictResponseSchema,
             prefix="/items",
             tags=["Items"],
             delete_one_route=False,
