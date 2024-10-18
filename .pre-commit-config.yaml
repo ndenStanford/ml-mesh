@@ -32,7 +32,6 @@ repos                   :
     hooks:
       - id: yamlfmt
         args: [--mapping, '2', --sequence, '4', --offset, '2', --colons, --preserve-quotes]
-        exclude: ^(.github/workflows/_features.yaml)
 
 
   # =================================
