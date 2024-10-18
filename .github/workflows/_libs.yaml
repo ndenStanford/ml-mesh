@@ -62,17 +62,13 @@ jobs:
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
       ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: kubeflow-rds-dev.c7sisgss8ghm.us-east-2.rds.amazonaws.com
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
 
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Set PR user login as environment variable
-        run: echo "PR_USER_LOGIN=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
-
-      - name: Print PR user login
-        run: echo "The PR was opened by $PR_USER_LOGIN"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -116,10 +112,9 @@ jobs:
         uses: dkershner6/aws-ssm-getparameters-action@v2
         with:
           parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER, /kubeflow/${{ inputs.environment\
-            \ }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT, /kubeflow/${{ inputs.environment }}/iam/amp-write-acces-role-arn = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE,\
-            \ /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE, /admin/${{ inputs.environment\
-            \ }}/warehouse/redshift/user = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER, /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID,\
-            \ /admin/${{ inputs.environment }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
+            \ }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT, /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,\
+            \ /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID, /admin/${{ inputs.environment\
+            \ }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
           withDecryption: "true"
 
       - name: Create an s3 path environment variable
