@@ -55,7 +55,7 @@ jobs:
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup # hard-coded for testing
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: s3://kubeflow-feast-backend-prod/nutch.dendumrongsup # hard-coded for testing
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: redshift-prod
-      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::690763002009:role/mesh/onclusiveml-mesh-dev-amp-write-role
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
 
 
     steps:
