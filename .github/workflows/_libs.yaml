@@ -5,6 +5,7 @@ on  :
     inputs:
       environment:
         required: true
+        default: prod
         type: string
         description: Environment where code is deployed [prod, dev]
       lib:
