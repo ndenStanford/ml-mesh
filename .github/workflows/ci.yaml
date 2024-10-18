@@ -1298,6 +1298,19 @@ jobs       :
             push-image: ${{ github.event_name == 'pull_request' }}
             base-image: python-base
 
+          # serve
+          - name: serve
+            download-model: true
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: gpu-base
+
     with:
       project: visitor-estimation
       environment: prod
