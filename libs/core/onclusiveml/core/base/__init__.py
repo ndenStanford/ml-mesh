@@ -7,7 +7,7 @@ from onclusiveml.core.base.enum import (
     OnclusiveStrEnum,
 )
 from onclusiveml.core.base.exception import OnclusiveException
-from onclusiveml.core.base.mixins import FromSettings
+from onclusiveml.core.base.mixins import FromSettings  # noqa: F401
 from onclusiveml.core.base.pydantic import (
     OnclusiveBaseModel,
     OnclusiveBaseSettings,

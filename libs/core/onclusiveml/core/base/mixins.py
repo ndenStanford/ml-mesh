@@ -4,8 +4,8 @@
 import collections
 import inspect
 import logging
-from abc import ABC, abstractmethod
-from inspect import Parameter, signature
+from abc import ABC
+from inspect import Parameter
 from pathlib import Path
 from typing import (
     Any,
@@ -43,15 +43,16 @@ class FromSettings(ABC):
         constructor_to_call: Callable[..., T] = None,
         constructor_to_inspect: Union[Callable[..., T], Callable[[T], None]] = None,
         **extras,
-    ) -> Optional[T]:
-        """
-        This is the automatic implementation of `from_settings`. Any class that subclasses
-        `FromSettings` gets this implementation for free.
+    ) -> Optional[T]:  # noqa: D205
+        """This is the automatic implementation of `from_settings`.
+        Any class that subclasses `FromSettings` gets this implementation for free.
+
         If you want your class to be instantiated from settings in the "obvious" way
         -- pop off parameters and hand them to your constructor with the same names --
         this provides that functionality.
         If you need more complex logic in your from `from_settings` method, you'll have to implement
         your own method that overrides this one.
+
         Example:
             class FeatureStore(BaseFeatureStore):
                 def __init__(self,
@@ -136,7 +137,6 @@ def __can_construct_from_settings(t: Type) -> bool:
     """Check if class can be contructed via `from_settings` method."""
     if t in [str, int, float, bool]:
         return True
-    origin = getattr(t, "__origin__", None)
     if hasattr(t, "from_settings"):
         return True
     args = getattr(t, "__args__")
@@ -144,7 +144,9 @@ def __can_construct_from_settings(t: Type) -> bool:
     return hasattr(t, "from_settings")
 
 
-def __create_extras(cls: Type[T], extras: Dict[str, Any]) -> Dict[str, Any]:
+def __create_extras(
+    cls: Type[T], extras: Dict[str, Any]
+) -> Dict[str, Any]:  # noqa: D415, D205
     """Given a dictionary of extra keyword arguments, returns a dictionary
     as kwargs thta actually are a part of the signature of cls.from_settings
     (or cls) method.
@@ -168,13 +170,13 @@ def __remove_optional(annotation: type) -> type:
     origin = getattr(annotation, "__origin__", None)
     args = getattr(annotation, "__args__", ())
 
-    if origin == Union:
-        return Union[tuple([arg for arg in args if arg != type(None)])]
+    if origin is Union:
+        return Union[tuple([arg for arg in args if arg != type(None)])]  # noqa: E721
     else:
         return annotation
 
 
-def __construct_arg(
+def __construct_arg(  # noqa: C901
     class_name: str,
     argument_name: str,
     setting: Any,
@@ -185,8 +187,6 @@ def __construct_arg(
     """Constructs initializer argument."""
     origin = getattr(annotation, "__origin__", None)
     args = getattr(annotation, "__args__", [])
-    # The parameter is optional if its default value is not the "no default" sentinel.
-    optional = default != _NO_DEFAULT
     # integer or boolean
     if annotation in {int, bool}:
         if type(setting) in {int, bool}:
@@ -195,7 +195,7 @@ def __construct_arg(
             raise TypeError(f"Expected {argument_name} to be a {annotation.__name__}.")
     # string
     elif annotation == str:
-        if type(setting) == str or isinstance(setting, Path):
+        if isinstance(setting, str) or isinstance(setting, Path):
             return str(setting)
         else:
             raise TypeError(f"Expected {argument_name} to be a string.")
@@ -359,7 +359,7 @@ def _create_kwargs(
     cls: Type[T],
     settings: OnclusiveBaseSettings,
     **extras,
-) -> Dict[str, Any]:
+) -> Dict[str, Any]:  # noqa: D415, D417, D205
     """Given some class, an `OnclusiveBaseSettings` object, and potentially other
     keyword arguments, create a dict of keyword args suitable for passing to the class's constructor.
 
@@ -372,7 +372,6 @@ def _create_kwargs(
         cls (Type[T]):
         settings (OnclusiveBaseSettings):
     """
-
     kwargs: Dict[str, Any] = {}
 
     if constructor is None:

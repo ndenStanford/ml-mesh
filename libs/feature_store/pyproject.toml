@@ -10,6 +10,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.9.19"
 feast = {version = "0.40.1", extras = ["aws"]}
 core = {path = "../core"}
+features = {path = "../../features"}
 dask = {version = "2024.8.0", extras = ["dataframe"]}
 pymysql = "^1.1.1"
 

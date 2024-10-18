@@ -1,0 +1,136 @@
+---
+name: Features Registration
+on  :
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: Environment where code is deployed [prod, dev]
+      test:
+        required: true
+        default: true
+        type: boolean
+        description: Whether to run test.
+      python-version:
+        required: false
+        type: string
+        description: Python version.
+      poetry-version:
+        required: false
+        type: string
+        description: Poetry version.
+      release:
+        required: true
+        default: true
+        type: boolean
+        description: If false, run only when there are changes in the code, otherwise always run it.
+      apply-max-attempts:
+        type: number
+        default: 2
+        description: Number of attempts to deploy manifests to cluster.
+      apply-retry-wait-seconds:
+        type: number
+        default: 30
+        description: Time (in  seconds) between attempts.
+    secrets:
+      AWS_DEFAULT_REGION:
+        required: true
+        description: "AWS account region"
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: "AWS access key ID."
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: "AWS secret access key"
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV:
+        required: true
+        description: "MySQL host for dev account"
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV:
+        required: true
+        description: "MySQL password for dev account"
+
+jobs:
+  deploy:
+    name: 'Plan and apply features'
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    env:
+      ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
+
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - uses: dorny/paths-filter@v3
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'features/**'
+
+      - name: Setup Python
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Setup Poetry
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ inputs.poetry-version }}
+          virtualenvs-create: false
+
+      - name: Install lib dependencies
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: ${{ inputs.apply-max-attempts }}
+          retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
+          timeout_minutes: 10
+          command: make features.install
+
+      - name: Setup env vars from SSM
+        uses: dkershner6/aws-ssm-getparameters-action@v2
+        with:
+          parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER, /kubeflow/${{ inputs.environment\
+            \ }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT, /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,\
+            \ /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID, /admin/${{ inputs.environment\
+            \ }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
+          withDecryption: "true"
+
+      - name: Create an s3 path environment variable
+        run: |
+          # Perform a transformation
+          ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY="s3://kubeflow-feast-backend-prod/${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER}"
+
+          # Set the new environment variable by appending it to the $GITHUB_ENV file
+          echo "ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY" >> $GITHUB_ENV
+
+      - name: Run tests
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        run: make features.test
+
+      - name: Run plan
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        run: make features.plan
+
+      - name: Run apply
+        if: ${{ inputs.release}}
+        run: make features.apply

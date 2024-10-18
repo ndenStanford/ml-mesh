@@ -2,8 +2,10 @@
 
 from datetime import timedelta
 
-from feast import Entity, FeatureView, Field, types
+from feast import Entity, FeatureView, Field, types, OnDemandFeatureView
 from onclusiveml.features.contrib.redshift import OnclusiveRedshiftSource
+from feast.transformation.pandas_transformation import PandasTransformation
+from onclusiveml.features.contrib.on_demand.iptc.utils import iptc_first_level_on_demand_feature_view
 
 entity = Entity(name="iptc_first_level", join_keys=["iptc_id"], description="Iptc First Level.")
 
@@ -26,4 +28,16 @@ feature_view = FeatureView(
         Field(name="language", dtype=types.String, description="Content Language."),
     ],
     source=source,
+)
+
+feature_transformation = PandasTransformation(
+    udf=iptc_first_level_on_demand_feature_view,
+    udf_string="iptc_first_level_on_demand_feature_view",
+)
+
+on_demand_feature_view = OnDemandFeatureView(
+    name="iptc_first_level_on_demand_feature_view",
+    sources=[feature_view],
+    schema=[Field(name="topic_1_llm", dtype=types.String, description="")],
+    feature_transformation=feature_transformation,
 )
