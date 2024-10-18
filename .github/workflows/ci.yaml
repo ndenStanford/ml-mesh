@@ -325,7 +325,7 @@ jobs       :
 
         self-hosted-runner-neuron: [false]
         self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
-        use-cache: [false]
+        use-cache: [true]
 
     with:
       environment: prod
