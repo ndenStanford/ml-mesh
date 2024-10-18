@@ -56,7 +56,7 @@ jobs:
   deploy:
     name: 'Install & test library: ${{ inputs. lib }}'
     runs-on: ubuntu-22.04
-
+    environment: ${{ inputs.environment }}
     env:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
