@@ -55,10 +55,7 @@ jobs:
     env:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
-      # ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup # hard-coded for testing
-      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: s3://kubeflow-feast-backend-prod/admin # hard-coded for testing
-      # ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: redshift-prod
-      # ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
+      # ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: s3://kubeflow-feast-backend-prod/admin
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
       ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: kubeflow-rds-dev.c7sisgss8ghm.us-east-2.rds.amazonaws.com
 
@@ -116,6 +113,20 @@ jobs:
             /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID,
             /admin/${{ inputs.environment }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
           withDecryption: "true"
+
+      - name: Create a new environment variable from a transformation
+        run: |
+          # Access the existing environment variable
+          EXISTING_VAR=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER
+
+          # Perform a transformation (e.g., append "-transformed" to the existing variable)
+          ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY="s3://kubeflow-feast-backend-prod/${EXISTING_VAR}"
+
+          # Set the new environment variable by appending it to the $GITHUB_ENV file
+          echo "ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY" >> $GITHUB_ENV
+
+      - name: Output the new environment variable
+        run: echo $ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY
 
       - name: Run tests
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
