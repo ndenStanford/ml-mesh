@@ -26,7 +26,6 @@ class FeastFeatureStoreSettings(FeatureStoreSettings):
     redshift_user: str
     redshift_s3_staging_directory: str
     redshift_iam_role: str
-    is_on_demand: bool = False
 
     model_config = SettingsConfigDict(
         extra="forbid",

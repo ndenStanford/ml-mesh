@@ -117,13 +117,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 #     model_card.model_params.selected_text,
                 #     "topic_1",
                 # ],
-                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" WHERE topic_1 = """
-                + filtered_value,
+                "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp 
+                                FROM "features"."pred_iptc_second_level" 
+                                WHERE topic_1 = '{filtered_value}' """,
                 "features": [
-                    "iptc_first_level:topic_2",
-                    "iptc_first_level:content",
-                    "iptc_first_level:title",
-                    # "iptc_first_level_on_demand_feature_view:topic_2_llm",
+                    "iptc_second_level:topic_1",
+                    "iptc_second_level:topic_2",
+                    "iptc_second_level:content",
+                    "iptc_second_level:title",
+                    "iptc_second_level_on_demand_feature_view:topic_2_llm",
                 ],
             },
             3: {
@@ -137,6 +139,17 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 #     "topic_1",
                 #     "topic_2",
                 # ],
+                "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp 
+                                FROM "features"."pred_iptc_third_level" 
+                                WHERE topic_2 = '{filtered_value}' """,
+                "features": [
+                    "iptc_third_level:topic_1",
+                    "iptc_third_level:topic_2",
+                    "iptc_third_level:topic_3",
+                    "iptc_third_level:content",
+                    "iptc_third_level:title",
+                    "iptc_third_level_on_demand_feature_view:topic_3_llm",
+                ],
             },
             4: {
                 # "entity_name": "iptc_fourth_level",
@@ -151,9 +164,22 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 #     "topic_2",
                 #     "topic_3",
                 # ],
+                "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp 
+                                FROM "features"."pred_iptc_third_level" 
+                                WHERE topic_3 = '{filtered_value}' """,
+                "features": [
+                    "iptc_third_level:topic_1",
+                    "iptc_third_level:topic_2",
+                    "iptc_third_level:topic_3",
+                    "iptc_third_level:content",
+                    "iptc_third_level:title",
+                    "iptc_fourth_level_on_demand_feature_view:topic_4_llm",
+                ],
             },
         }
         for key, value in data_fetch_configurations[self.level].items():
+            print(key)
+            print(value)
             setattr(self.data_fetch_params, key, value)
 
         super().__init__(
@@ -260,12 +286,13 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         valid_labels = self.get_candidate_list(
             level=self.level
         )  # Implement this method to return the candidate dictionary
+        column_name = f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
+        self.dataset_df = self.dataset_df[
+                self.dataset_df[column_name].isin(valid_labels)
+            ]
         initial_row_count = len(self.dataset_df)
         # Apply the filter
-        if self.is_on_demand:
-            self.dataset_df = self.dataset_df[
-                self.dataset_df[f"topic_{self.level}_llm"].isin(valid_labels)
-            ]
+        if self.is_on_demand:   
             # Log the size after removing invalid labels
             filtered_row_count = len(self.dataset_df)
             removed_rows = initial_row_count - filtered_row_count
@@ -286,7 +313,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
         class_distribution = self.dataset_df[
-            f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
+            column_name
         ].value_counts(normalize=True)
         self.logger.info(
             f"Class distribution after dropping nulls: \n{class_distribution}"
