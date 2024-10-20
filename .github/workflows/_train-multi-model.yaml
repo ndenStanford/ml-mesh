@@ -163,10 +163,7 @@ jobs:
           echo "ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY" >> $GITHUB_ENV
 
       - name: Print Custom Environment Variable
-        run: echo "The custom environment variable is $ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
-
-      - name: Print Custom Environment Variable 2
-        run: echo "The custom environment variable is ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY}"
+        run: echo "The custom environment variable is $ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT"
 
       - name: Run project train component on sagemaker
         run: |
