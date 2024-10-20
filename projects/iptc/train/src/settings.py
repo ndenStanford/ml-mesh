@@ -47,19 +47,12 @@ class IPTCModelParams(TrackingSettings):
 class DataFetchParams(FeastFeatureStoreSettings):
     """Feature registration inputs."""
 
-    # entity_name: str
-    # entity_join_key: str
-    # feature_view_name: str
     dataset_upload_bucket: str
     dataset_upload_dir: str
     save_artifact: bool = False
     n_records_sample: int
     n_records_full: int
     iptc_label: str = "root"
-    # filter_columns: List[str] = []
-    # filter_values: List[str] = []
-    # comparison_operators: List[str] = []
-    # non_nullable_columns: List[str] = ["content", "topic_1"]
     is_on_demand: bool = True
     entity_df: Optional[str] = None
     features: Optional[List[str]] = None
