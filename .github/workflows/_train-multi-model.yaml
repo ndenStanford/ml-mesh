@@ -186,8 +186,8 @@ jobs:
             --onclusive-feature-store-project ${ONCLUSIVEML_FEATURE_STORE_PROJECT} \
             --onclusive-feature-store-mysql-user ${ONCLUSIVEML_FEATURE_STORE_MYSQL_USER} \
             --onclusive-feature-store-mysql-port ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT} \
-            --onclusive-feature-store-mysql-password ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV} \
-            --onclusive-feature-store-mysql-host ${ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV} \
+            --onclusive-feature-store-mysql-password ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD} \
+            --onclusive-feature-store-mysql-host ${ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST} \
             --onclusive-feature-store-redshift-cluster-region ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION} \
             --onclusive-feature-store-redshift-user ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER} \
             --onclusive-feature-store-redshift-iam-role ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE} \
