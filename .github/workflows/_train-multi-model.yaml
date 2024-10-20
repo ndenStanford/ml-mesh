@@ -78,6 +78,12 @@ on  :
       NEPTUNE_API_TOKEN:
         required: true
         description: The API token for the neptune service account managing the model registry.
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV:
+        required: true
+        description: "MySQL host for dev account"
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV:
+        required: true
+        description: "MySQL password for dev account"
 
 jobs:
   check-run-criteria:
@@ -105,6 +111,14 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
+    env:
+      ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
+
 
     steps:
       - name: Check out code
@@ -131,6 +145,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
+      - name: Setup env vars from SSM
+        uses: dkershner6/aws-ssm-getparameters-action@v2
+        with:
+          parameterPairs: "/kubeflow/${{ inputs.environment }}/kubeflow-db/username = ONCLUSIVEML_FEATURE_STORE_MYSQL_USER, /kubeflow/${{ inputs.environment\
+            \ }}/kubeflow-db/port = ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT, /admin/${{ inputs.environment }}/warehouse/dbt/redshift-database = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE,\
+            \ /admin/${{ inputs.environment }}/warehouse/redshift/cluster-id = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID, /admin/${{ inputs.environment\
+            \ }}/warehouse/feast/backend = ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY"
+          withDecryption: "true"
+
+      - name: Create an s3 path environment variable
+        run: |
+          # Perform a transformation
+          ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY="s3://kubeflow-feast-backend-prod/${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER}"
+
+          # Set the new environment variable by appending it to the $GITHUB_ENV file
+          echo "ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY" >> $GITHUB_ENV
+
       - name: Run project train component on sagemaker
         run: |
           python bin/sagemaker-run \
@@ -149,4 +180,16 @@ jobs:
             --save_artifact ${{ !inputs.pull-request }} \
             --parameters ${{ inputs.parameters }} \
             --wait ${{ inputs.wait }} \
+
+            --onclusive-feature-store-project ${ONCLUSIVEML_FEATURE_STORE_PROJECT} \
+            --onclusive-feature-store-mysql-user ${ONCLUSIVEML_FEATURE_STORE_MYSQL_USER} \
+            --onclusive-feature-store-mysql-port ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT} \
+            --onclusive-feature-store-mysql-password ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV} \
+            --onclusive-feature-store-mysql-host ${ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV} \
+            --onclusive-feature-store-redshift-cluster-region ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION} \
+            --onclusive-feature-store-redshift-user ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER} \
+            --onclusive-feature-store-redshift-iam-role ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE} \
+            --onclusive-feature-store-redshift-database ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE} \
+            --onclusive-feature-store-redshift-cluster-id ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID} \
+            --onclusive-feature-store-redshift-s3-staging-directory ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY} \
             python -m src.train_model

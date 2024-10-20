@@ -91,14 +91,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.data_fetch_params = data_fetch_params
         data_fetch_configurations = {
             1: {
-                # "entity_name": "iptc_first_level",
-                # "feature_view_name": "iptc_first_level_feature_view",
-                # "filter_columns": [],
-                # "filter_values": [],
-                # "comparison_operators": [],
-                # "non_nullable_columns": [
-                #     model_card.model_params.selected_text,
-                # ],
                 "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """,
                 "features": [
                     "iptc_first_level:topic_1",
@@ -108,15 +100,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 ],
             },
             2: {
-                # "entity_name": "iptc_second_level",
-                # "feature_view_name": "iptc_second_level_feature_view",
-                # "filter_columns": ["topic_1"],
-                # "filter_values": [filtered_value],
-                # "comparison_operators": ["equal"],
-                # "non_nullable_columns": [
-                #     model_card.model_params.selected_text,
-                #     "topic_1",
-                # ],
                 "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
                                 FROM "features"."pred_iptc_second_level"
                                 WHERE topic_1 = '{filtered_value}' """,
@@ -129,16 +112,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 ],
             },
             3: {
-                # "entity_name": "iptc_third_level",
-                # "feature_view_name": "iptc_third_level_feature_view",
-                # "filter_columns": ["topic_2"],
-                # "filter_values": [filtered_value],
-                # "comparison_operators": ["equal"],
-                # "non_nullable_columns": [
-                #     model_card.model_params.selected_text,
-                #     "topic_1",
-                #     "topic_2",
-                # ],
                 "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
                                 FROM "features"."pred_iptc_third_level"
                                 WHERE topic_2 = '{filtered_value}' """,
@@ -152,18 +125,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 ],
             },
             4: {
-                # "entity_name": "iptc_fourth_level",
-                # "feature_view_name": "iptc_third_level_feature_view",
-                # "redshift_table": "iptc_third_level",
-                # "filter_columns": ["topic_3"],
-                # "filter_values": [filtered_value],
-                # "comparison_operators": ["equal"],
-                # "non_nullable_columns": [
-                #     model_card.model_params.selected_text,
-                #     "topic_1",
-                #     "topic_2",
-                #     "topic_3",
-                # ],
                 "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
                                 FROM "features"."pred_iptc_third_level"
                                 WHERE topic_3 = '{filtered_value}' """,
@@ -178,8 +139,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             },
         }
         for key, value in data_fetch_configurations[self.level].items():
-            print(key)
-            print(value)
             setattr(self.data_fetch_params, key, value)
 
         super().__init__(
@@ -289,23 +248,24 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         column_name = (
             f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
         )
+
+        initial_row_count = len(self.dataset_df)
+        self.logger.info(f"Initial dataset size: {self.dataset_df.shape}")
+        # Apply the filter
         self.dataset_df = self.dataset_df[
             self.dataset_df[column_name].isin(valid_labels)
         ]
-        initial_row_count = len(self.dataset_df)
-        # Apply the filter
-        if self.is_on_demand:
-            # Log the size after removing invalid labels
-            filtered_row_count = len(self.dataset_df)
-            removed_rows = initial_row_count - filtered_row_count
-            self.logger.info(
-                f"Removed {removed_rows} rows with invalid labels. Filtered dataset size: {self.dataset_df.shape}"
-            )
+        # Log the size after removing invalid labels
+        filtered_row_count = len(self.dataset_df)
+        removed_rows = initial_row_count - filtered_row_count
+        self.logger.info(
+            f"Removed {removed_rows} rows with invalid labels. Filtered dataset size: {self.dataset_df.shape}"
+        )
 
-            if filtered_row_count == 0:
-                self.logger.warning(
-                    "No valid rows remaining after filtering. Please check the input data or candidate list."
-                )
+        if filtered_row_count == 0:
+            self.logger.warning(
+                "No valid rows remaining after filtering. Please check the input data or candidate list."
+            )
         # Display the first few rows of the filtered dataset
         self.logger.info(f"Final preprocessed dataset:\n{self.dataset_df.head()}")
         # fix the topic discrepencies
