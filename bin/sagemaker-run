@@ -326,7 +326,7 @@ def project_train(
                     **{'NEPTUNE_API_TOKEN':neptune_api_token},
                     **{'ONCLUSIVEML_FEATURE_STORE_PROJECT':onclusive_feature_store_project},
                     **{'ONCLUSIVEML_FEATURE_STORE_MYSQL_USER':onclusive_feature_store_mysql_user},
-                    **{'ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT':int(onclusive_feature_store_mysql_port)},
+                    **{'ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT':onclusive_feature_store_mysql_port},
                     **{'ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD':onclusive_feature_store_mysql_password},
                     **{'ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST':onclusive_feature_store_mysql_host},
                     **{'ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION':onclusive_feature_store_redshift_cluster_region},
