@@ -60,8 +60,8 @@ jobs:
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
       ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
-      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup
-      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/nutch-dendumrongsup-feature-store-developer-role
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: github-actions
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/kubeflow-cluster-prod-redshift-role
 
 
     steps:
@@ -118,7 +118,7 @@ jobs:
       - name: Create an s3 path environment variable
         run: |
           # Perform a transformation
-          ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY="s3://kubeflow-feast-backend-prod/${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER}"
+          ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY="s3://kubeflow-feast-backend-${{ inputs.environment }}/${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER}"
 
           # Set the new environment variable by appending it to the $GITHUB_ENV file
           echo "ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY" >> $GITHUB_ENV
