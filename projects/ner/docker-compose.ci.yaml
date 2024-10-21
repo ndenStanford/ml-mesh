@@ -170,7 +170,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: backfill
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - backfill-volume:/tmp/beam-artifact-staging
       - type: bind
@@ -251,7 +251,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
@@ -338,7 +338,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.9.4}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
