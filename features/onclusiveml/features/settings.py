@@ -4,14 +4,14 @@ from functools import lru_cache
 
 from pydantic import SecretStr
 from pydantic_settings import (
-    BaseSettings,
     SettingsConfigDict,
 )
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists
+from onclusiveml.core import OnclusiveBaseSettings
 
 
-class GlobalSettings(BaseSettings):
+class GlobalSettings(OnclusiveBaseSettings):
     """Feature store global settings."""
 
     project: str = "feature_store_dev"
@@ -45,6 +45,6 @@ class GlobalSettings(BaseSettings):
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()
