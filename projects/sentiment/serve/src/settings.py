@@ -93,7 +93,7 @@ class SentimentSettings(TrackingSettings):
     """Sentimentiment settings."""
 
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
-    MIN_CHARACTERS: int = 25
+    MIN_CHARACTERS: int = 10
 
 
 class TrackedCompiledModelSpecs(TrackedModelSettings):
