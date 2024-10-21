@@ -1,6 +1,7 @@
 """Prediction model."""
 
 # Standard Library
+import re
 from typing import Any, Dict, List, Optional, Type
 
 # Internal libraries
@@ -70,6 +71,24 @@ class ServedSentModel(ServedModel):
 
         self.ready = True
 
+    def validate_content(self, content: str) -> bool:
+        """Validate quality of input.
+
+        Args:
+            content (str): the requested string to run SA on
+
+        Returns:
+            bool: whether quality of input is good or not
+        """
+        # removes all punctuation
+        content_without_punctuation = re.sub(r"[^\w\s]", "", content).strip()
+        content_without_punctuation = " ".join(content_without_punctuation.split())
+        # Check if the length is at least min number of characters
+        if len(content_without_punctuation) < settings.MIN_CHARACTERS:
+            return False
+
+        return True
+
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded Sent model.
 
@@ -86,6 +105,11 @@ class ServedSentModel(ServedModel):
         if entities:
             entities = [dict(e) for e in entities]
         # Execute sentiment analysis in a language-aware context
+        # validate content
+        if not self.validate_content(attributes.content):
+            raise OnclusiveHTTPException(
+                status_code=204, detail="Content too short or contains no letters."
+            )
         try:
             sentiment = self._sentiment_analysis(
                 content=attributes.content,
