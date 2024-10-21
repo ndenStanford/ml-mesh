@@ -8,7 +8,7 @@ from pydantic_settings import (
 )
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists
-from onclusiveml.core import OnclusiveBaseSettings
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 
 class GlobalSettings(OnclusiveBaseSettings):
