@@ -83,7 +83,7 @@ class ServedSentModel(ServedModel):
         # removes all punctuation
         content_without_punctuation = re.sub(r"[^\w\s]", "", content).strip()
         content_without_punctuation = " ".join(content_without_punctuation.split())
-        # Check if the length is at least min number of characters
+        # Check if the length of content without punctuation is at least the threshold
         if len(content_without_punctuation) < settings.MIN_CHARACTERS:
             return False
 
