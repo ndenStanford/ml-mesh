@@ -338,7 +338,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${IMAGE_TAG:-latest}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
