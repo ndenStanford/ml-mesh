@@ -74,6 +74,10 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             f"Originally fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
         )
 
+        self.logger.info(
+            f"Originally fetched and filtered row from feature-store :\n{self.dataset_df.iloc[0]}"
+        )
+
         # Drop rows with NA values
         self.dataset_df = self.dataset_df.dropna()
 
