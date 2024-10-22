@@ -6,9 +6,9 @@ from typing import Any, List, Optional
 
 # 3rd party libraries
 import boto3
-import yaml
 import botocore
 import pandas as pd
+import yaml
 from boto3_type_annotations.s3 import Client
 from feast import Entity, FeatureStore, FeatureView
 from feast.data_source import DataSource
@@ -90,15 +90,14 @@ class FeatureStoreHandle:
         Args:
             yaml_file_path (str): The path of the downloaded YAML file.
         """
-        with open(yaml_file_path, 'r') as file:
+        with open(yaml_file_path, "r") as file:
             config = yaml.safe_load(file)
-
         # Update the database field
-        config['offline_store']['database'] = 'warehouse'
+        config["offline_store"]["database"] = "warehouse"
 
-        with open(yaml_file_path, 'w') as file:
+        with open(yaml_file_path, "w") as file:
             yaml.safe_dump(config, file, default_flow_style=False)
-    
+
     def s3_config_downloader(self) -> str:
         """Downloads feast-config yaml from s3 in local directory.
 

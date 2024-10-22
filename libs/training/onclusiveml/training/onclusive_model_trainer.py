@@ -3,12 +3,12 @@
 # Standard Library
 import io
 from abc import abstractmethod
+from datetime import datetime
 from io import BytesIO
 
 # 3rd party libraries
 import boto3
 from botocore.client import BaseClient
-from datetime import datetime
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -81,7 +81,6 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             f"{self.feature_view.name}:{feature.name}"
             for feature in self.feature_view.features
         ]
-
         # If the dataset is on-demand, add the corresponding on-demand features
         if self.data_fetch_params.is_on_demand:
             on_demand_feature_view = [
@@ -150,7 +149,12 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
         s3_model_version_prefix = "/".join(s3_model_version_full_prefix.split("/")[-3:])
 
-        file_name = self.tracked_model_version.get_url().split("/")[-1] + "_" + datetime.now().strftime("%Y%m%d_%H%M%S") + ".parquet"
+        file_name = (
+            self.tracked_model_version.get_url().split("/")[-1]
+            + "_"
+            + datetime.now().strftime("%Y%m%d_%H%M%S")
+            + ".parquet"
+        )
 
         self.neptune_attr_path = (
             f"{self.model_card.training_data_attribute_path}/{file_name}"
