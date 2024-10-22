@@ -70,7 +70,7 @@ services:
       - type: bind
         source: register/src
         target: /projects/visitor-estimation/register/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-register:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_features]
     profiles: [register]
     environment:
@@ -86,7 +86,7 @@ services:
       - type: bind
         source: register/
         target: /projects/visitor-estimation/register/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-register:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-register:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     env_file: register/config/prod.env

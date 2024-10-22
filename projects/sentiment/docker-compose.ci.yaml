@@ -19,7 +19,7 @@ services:
         PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -31,7 +31,7 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-train:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -63,7 +63,7 @@ services:
         PROJECT: sentiment
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG} #should have been v23.8.4?
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -73,7 +73,7 @@ services:
     networks: [onclusive-net]
 
   compile-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusive-ml
@@ -83,7 +83,7 @@ services:
   compile-download-model:
     volumes:
       - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
@@ -99,7 +99,7 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
@@ -111,7 +111,7 @@ services:
   compile-upload-model:
     volumes:
       - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
@@ -145,7 +145,7 @@ services:
         PROJECT: sentiment
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: false
@@ -167,7 +167,7 @@ services:
   serve-download-model:
     volumes:
       - serve-volume:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
@@ -183,7 +183,7 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -199,7 +199,7 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - serve-volume:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [integration]
@@ -213,7 +213,7 @@ services:
   serve-functional:
     volumes:
       - serve-volume:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
@@ -247,7 +247,7 @@ services:
       - type: bind
         source: backfill/src
         target: /projects/sentiment/backfill/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
     entrypoint: [python, -m, src.backfill.__main__]
     profiles: [backfill]
     network_mode: service:taskmanager
@@ -278,7 +278,7 @@ services:
       - type: bind
         source: backfill
         target: /projects/sentiment/backfill
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
