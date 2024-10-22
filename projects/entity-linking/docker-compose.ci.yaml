@@ -23,7 +23,7 @@ services:
         PROJECT: entity-linking
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -35,7 +35,7 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-train:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -66,7 +66,7 @@ services:
         PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     deploy:
       resources:
@@ -95,7 +95,7 @@ services:
   serve-download-model:
     volumes:
       - serve-vol:/projects/entity-linking/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve]
     environment:
@@ -118,7 +118,7 @@ services:
         PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -144,7 +144,7 @@ services:
         PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
@@ -170,7 +170,7 @@ services:
         PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     deploy:
@@ -216,7 +216,7 @@ services:
       - type: bind
         source: backfill/src
         target: /projects/entity-linking/backfill/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-backfill:${IMAGE_TAG}
     entrypoint: [python, -m, src.backfill.__main__]
     profiles: [backfill]
     network_mode: service:taskmanager
@@ -247,7 +247,7 @@ services:
       - type: bind
         source: backfill
         target: /projects/entity-linking/backfill
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-backfill:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
