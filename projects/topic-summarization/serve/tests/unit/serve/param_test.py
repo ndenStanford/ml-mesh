@@ -25,6 +25,31 @@ from src.serve.exceptions import (
     TopicSummarizationJSONDecodeException,
 )
 
+# List of modules to patch
+modules_to_patch = [
+    "src.serve.impact_quantification",
+    "src.serve.document_collector",
+    "src.serve.trend_detection",
+]
+
+# Mock return value
+mock_indices = [
+    "crawler-4-2024.03",
+    "crawler-4-2024.02",
+    "crawler-4-2023.12",
+    "crawler-4-2024.01",
+    "crawler-4-2023.11",
+]
+
+# Apply patches to all modules
+patchers = []
+for module in modules_to_patch:
+    patcher = patch(f"{module}.generate_crawler_indices", autospec=True)
+    mock_generate = patcher.start()
+    mock_generate.return_value = mock_indices
+    patchers.append(patcher)
+
+
 _service = TopicHandler()
 settings = get_settings()
 
@@ -445,3 +470,8 @@ def test_retrieve_lead_journalists_if_exists(
         leading_journalists_attributes_samples, {}
     )
     assert set(res) == set(leading_journalists_expected_output)
+
+
+# Stop all patchers after your tests
+for patcher in patchers:
+    patcher.stop()
