@@ -84,6 +84,9 @@ on  :
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV:
         required: true
         description: "MySQL password for dev account"
+      OPENAI_API_KEY:
+        required: true
+        description: OPENAI Api key.
 
 jobs:
   check-run-criteria:
@@ -113,7 +116,7 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
-      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: us-east-2
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
       ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: nutch.dendumrongsup
@@ -194,4 +197,5 @@ jobs:
             --onclusive-feature-store-redshift-database ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE} \
             --onclusive-feature-store-redshift-cluster-id ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID} \
             --onclusive-feature-store-redshift-s3-staging-directory ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY} \
+            --open-api-key ${{ secrets.OPENAI_API_KEY }} \
             python -m src.train_model
