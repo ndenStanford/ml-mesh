@@ -450,7 +450,7 @@ services:
         PROJECT: ner
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.2.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -479,7 +479,7 @@ services:
         PROJECT: ner
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
     command:
       - /bin/sh
       - -c
@@ -500,7 +500,7 @@ services:
       - type: bind
         source: compile/src
         target: /projects/ner/compile/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     env_file: compile/config/dev.env
@@ -515,7 +515,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/ner/compile/outputs
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
@@ -533,7 +533,7 @@ services:
       - type: bind
         source: compile
         target: /projects/ner/compile
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.compile]
     profiles: [pipeline]
     environment:
@@ -552,7 +552,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/ner/compile/outputs
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
     profiles: [pipeline]
     environment:
@@ -569,7 +569,7 @@ services:
       - type: bind
         source: ${HOME}/data
         target: /projects/ner/compile/outputs
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
