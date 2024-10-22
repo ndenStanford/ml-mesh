@@ -853,16 +853,16 @@ jobs       :
           # NOTE: list of project components to run
 
           # # train
-          # - name: train
-          #   download-model: false
-          #   integration: false
-          #   functional: false
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: ubuntu-22.04
-          #   use-cache: true
-          #   push-image: ${{ github.event_name != 'pull_request' }}
-          #   base-image: python-base
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-22.04
+            use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # backfill
           - name: backfill
