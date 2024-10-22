@@ -51,4 +51,4 @@ def test_get_training_dataset(settings):
     )
 
     assert len(dataset) > 0
-    assert set(["topic_1", "content", "title"]) <= set(dataset.columns)
+    assert set(["topic_1", "content", "language"]) <= set(dataset.columns)
