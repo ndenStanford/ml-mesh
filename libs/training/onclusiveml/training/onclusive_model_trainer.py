@@ -70,6 +70,10 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         # Logging the initial dataset size
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
+        self.logger.info(
+            f"Originally fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
+        )
+
         # Drop rows with NA values
         self.dataset_df = self.dataset_df.dropna()
 
