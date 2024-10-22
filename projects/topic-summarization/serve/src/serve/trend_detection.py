@@ -22,6 +22,7 @@ from src.serve.utils import (  # query_translation,
     topic_profile_query,
 )
 from src.settings import get_settings
+from src.es_utils import generate_crawler_indices
 
 settings = get_settings()
 
@@ -36,7 +37,9 @@ class TrendDetection:
             ],
             timeout=settings.ES_TIMEOUT,
         )
-        self.es_index = settings.es_index
+        self.es_index = generate_crawler_indices(
+            settings.ELASTICSEARCH_KEY.get_secret_value()
+        )
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove weekends.

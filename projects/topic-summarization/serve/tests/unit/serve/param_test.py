@@ -9,17 +9,6 @@ import pytest
 # 3rd party libraries
 import pandas as pd
 
-# Apply patches before any other imports
-patcher_generate = patch("src.settings.generate_crawler_indices", autospec=True)
-mock_generate = patcher_generate.start()
-mock_generate.return_value = [
-    "crawler-4-2024.03",
-    "crawler-4-2024.02",
-    "crawler-4-2023.12",
-    "crawler-4-2024.01",
-    "crawler-4-2023.11",
-]
-
 # Source
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection

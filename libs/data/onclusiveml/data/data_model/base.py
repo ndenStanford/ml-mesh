@@ -42,7 +42,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         Returns:
             List[T]: A list of all items in the data store.
         """
-        pass
 
     @abstractmethod
     def get_one(self, id: str) -> T:
@@ -58,7 +57,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             ItemNotFoundException: If the item does not exist.
             DataModelException: For other data-related errors.
         """
-        pass
 
     @abstractmethod
     def create(self, item: Any) -> T:
@@ -74,7 +72,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             ValidationException: If the input data is invalid.
             DataModelException: For other data-related errors.
         """
-        pass
 
     @abstractmethod
     def update(self, id: str, item: Any) -> T:
@@ -92,7 +89,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             ValidationException: If the input data is invalid.
             DataModelException: For other data-related errors.
         """
-        pass
 
     @abstractmethod
     def delete_one(self, id: str) -> T:
@@ -108,7 +104,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             ItemNotFoundException: If the item does not exist.
             DataModelException: For other data-related errors.
         """
-        pass
 
     @abstractmethod
     def delete_all(self) -> List[T]:
@@ -120,4 +115,3 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         Raises:
             DataModelException: For errors during deletion.
         """
-        pass

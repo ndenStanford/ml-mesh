@@ -44,8 +44,24 @@ def test_get_one_nonexistent_item(dynamo_db_model):
         retrieved_item = dynamo_db_model.get_one("nonexistent-id")  # noqa: F841
 
 
-def test_get_all_items(dynamo_db_model):
-    """Test retrieving all items."""
+def test_get_all_items_names(dynamo_db_model):
+    """Test retrieving all items and count."""
+    items_data = [
+        {"name": "Charlie", "age": 22},
+        {"name": "Diana", "age": 28},
+        {"name": "Eve", "age": 35},
+    ]
+    for item_data in items_data:
+        dynamo_db_model.create(item_data)
+
+    all_items = dynamo_db_model.get_all()
+    names = [item.name for item in all_items]
+    item_names_set = {item["name"] for item in items_data}
+    assert set(names) == item_names_set
+
+
+def test_get_all_items_type(dynamo_db_model):
+    """Test retrieving all items type."""
     items_data = [
         {"name": "Charlie", "age": 22},
         {"name": "Diana", "age": 28},
@@ -56,10 +72,7 @@ def test_get_all_items(dynamo_db_model):
 
     all_items = dynamo_db_model.get_all()
     assert len(all_items) == 3
-    names = [item.name for item in all_items]
-    assert "Charlie" in names
-    assert "Diana" in names
-    assert "Eve" in names
+    assert isinstance(all_items, list)
 
 
 def test_update_existing_item(dynamo_db_model):
@@ -96,6 +109,22 @@ def test_delete_existing_item(dynamo_db_model):
     # Verify the item is deleted
     with pytest.raises(ItemNotFoundException):
         retrieved_item = dynamo_db_model.get_one(created_item.id)  # noqa: F841
+
+
+def test_delete_all_items_empty(dynamo_db_model):
+    """Test deleting all items - check empty."""
+    items_data = [
+        {"name": "Ivan", "age": 31},
+        {"name": "Judy", "age": 27},
+    ]
+    for item_data in items_data:
+        dynamo_db_model.create(item_data)
+
+    all_items = dynamo_db_model.get_all()
+    assert len(all_items) == 2
+    dynamo_db_model.delete_all()
+    all_items = dynamo_db_model.get_all()
+    assert len(all_items) == 0
 
 
 def test_delete_nonexistent_item(dynamo_db_model):
