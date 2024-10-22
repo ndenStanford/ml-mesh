@@ -68,7 +68,7 @@ If you are on MacOS, you can run the script `./bin/bootstrap/darwin` that will s
 
 #### Setup AWS credentials
 
-Setup your aws credentials for dev and prod ML accounts (Default region name  should be us-east-1 and Default output format should be JSON). Ask @mlops on slack to get your credentials created if you
+Setup your aws credentials for dev and prod ML accounts (Default region name  should be us-east-2 and Default output format should be JSON). Ask @mlops on slack to get your credentials created if you
 don't have them already.
 
 For your dev credentials:
