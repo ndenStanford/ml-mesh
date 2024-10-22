@@ -141,3 +141,5 @@ class TrackedModelCard(TrackingSettings):
         return v
 
     github_action_context: TrackedGithubActionsSpecs = TrackedGithubActionsSpecs()
+
+    model_config = SettingsConfigDict(protected_namespaces=("settings_",))

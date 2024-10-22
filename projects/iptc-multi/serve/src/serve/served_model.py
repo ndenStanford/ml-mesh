@@ -4,7 +4,7 @@
 import random
 import re
 import time
-from typing import Any, Dict, List, Set, Type
+from typing import Any, Dict, List, Optional, Set, Type
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
@@ -325,21 +325,27 @@ class ServedIPTCMultiModel(ServedModel):
         return {p: score for p, score in prediction.items() if score > cutoff}
 
     def _process_combined_predictions(
-        self, prediction: Dict[str, float]
+        self,
+        prediction: Dict[str, float],
+        override_min_score_cutoff: Optional[float] = None,
     ) -> Dict[str, float]:
         """Processes and filters predictions based on a minimum score cutoff.
 
         Args:
             prediction (Dict[str, float]): The combined predictions to be processed.
+            override_min_score_cutoff (Optional[float]): parameter to override default min_score_cutoff
 
         Returns:
             Dict[str, float]: A dictionary of the top predictions sorted by score
             in descending order.
         """
+        min_cutoff = (
+            override_min_score_cutoff
+            if override_min_score_cutoff is not None
+            else settings.min_score_cutoff
+        )
         filtered_predictions = {
-            p: round(score, 3)
-            for p, score in prediction.items()
-            if score > settings.min_score_cutoff
+            p: round(score, 3) for p, score in prediction.items() if score > min_cutoff
         }
         return dict(
             sorted(filtered_predictions.items(), key=lambda x: x[1], reverse=True)[
@@ -394,7 +400,12 @@ class ServedIPTCMultiModel(ServedModel):
         raise_if_none=True,
     )
     def _predict(
-        self, content: str, language: str, levels: List[str], current_index: int = 0
+        self,
+        content: str,
+        language: str,
+        levels: List[str],
+        current_index: int = 0,
+        override_min_score_cutoff: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """Aggregated prediction method that filters unsupported languages.
 
@@ -405,6 +416,7 @@ class ServedIPTCMultiModel(ServedModel):
             predictions.
             current_index (int, optional): The current index in the levels list to process.
             Defaults to 0.
+            override_min_score_cutoff (Optional[float]): parameter to override default min_score_cutoff
 
         Returns:
             List[Dict[str, Any]]: A list of dictionaries, each containing 'label', 'score',
@@ -413,7 +425,9 @@ class ServedIPTCMultiModel(ServedModel):
         combined_prediction = self._get_combined_prediction(
             content=content, levels=levels
         )
-        processed_predictions = self._process_combined_predictions(combined_prediction)
+        processed_predictions = self._process_combined_predictions(
+            combined_prediction, override_min_score_cutoff
+        )
         iptc_topics = self._postprocess_predictions(processed_predictions)
         return iptc_topics
 
@@ -428,7 +442,10 @@ class ServedIPTCMultiModel(ServedModel):
         # Execute predictions in a language-aware context
         try:
             iptc_topics = self._predict(
-                content=inputs.content, language=parameters.language, levels=["root"]
+                content=inputs.content,
+                language=parameters.language,
+                levels=["root"],
+                override_min_score_cutoff=parameters.override_min_score_cutoff,
             )
         except (
             LanguageDetectionException,

@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 import boto3
@@ -16,6 +16,7 @@ from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
 )
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
@@ -39,6 +40,7 @@ class TranslationModel(ServedModel):
     bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
+        self.sentence_tokenizer = SentenceTokenizer()
         super().__init__(name="translation")
 
     def bio(self) -> BioResponseSchema:
@@ -54,6 +56,26 @@ class TranslationModel(ServedModel):
         text = re.sub("\n+", " ", text)
         return text
 
+    def _chunk_content(self, content: str, max_length: int, language: str) -> List[str]:
+        """Split the content into chunks, breaking only at sentence boundaries."""
+        sentences = self.sentence_tokenizer.tokenize(
+            content=content, language=language
+        )["sentences"]
+        chunks = []
+        current_chunk = ""
+
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) < max_length:
+                current_chunk += sentence + " "
+            else:
+                chunks.append(current_chunk.strip())
+                current_chunk = sentence + " "
+
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+
+        return [i for i in chunks if len(i) > 0]
+
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction."""
         attributes = payload.data.attributes
@@ -64,13 +86,18 @@ class TranslationModel(ServedModel):
         # reference language will serve as the provided language, source_language os the detected language # noqa
         source_language = reference_language = parameters.source_language
         translation = parameters.translation
+        # Raise error if the content is an empty string
+        if not content.strip():
+            raise ValueError("Input content cannot be an empty string.")
 
         content = self.pre_process(content)
         translated_text = None
+        # Detect language from the first 500 characters
+        language_detection_content = content[:500]
 
         if reference_language:
-            # getting the iso value of the provided language
             try:
+                # Convert the provided language to ISO value
                 reference_language = constants.LanguageIso.from_locale_and_language_iso(
                     reference_language
                 ).value
@@ -78,8 +105,9 @@ class TranslationModel(ServedModel):
                 reference_language = None
 
         try:
-            # detecting the language of the text
-            iso_language = self._detect_language(content=content, language=None)
+            iso_language = self._detect_language(
+                content=language_detection_content, language=None
+            )
             if iso_language:
                 source_language = iso_language.value
             else:
@@ -92,17 +120,31 @@ class TranslationModel(ServedModel):
 
         if translation is True:
             if reference_language != source_language:
-                # display warning if detected language is different from provided language
+                # Log warning if detected language is different from provided language
                 logger.warning(
                     f"Source language does not match detected language: '{source_language}'. Overriding with detected language."  # noqa
                 )
-            try:
-                # regardless, we are using the detecting language
-                output = self._predict(
-                    content=content,
-                    language=source_language,
-                    target_language=target_language,
+            # Split content into chunks if longer than max_length characters, break at sentence boundaries # noqa
+            if len(content) > settings.max_length:
+                content_chunks = self._chunk_content(
+                    content, max_length=settings.max_length, language=source_language
                 )
+            else:
+                content_chunks = [content]
+
+            try:
+                # Translate each chunk and concatenate the results
+                translated_chunks = []
+                for chunk in content_chunks:
+                    output = self._predict(
+                        content=chunk,
+                        language=source_language,
+                        target_language=target_language,
+                    )
+                    translated_chunks.append(output)
+                translated_text = " ".join(
+                    translated_chunks
+                )  # Join all translated chunks
             except (
                 LanguageDetectionException,
                 LanguageFilterException,
@@ -110,7 +152,6 @@ class TranslationModel(ServedModel):
                 raise OnclusiveHTTPException(
                     status_code=204, detail=language_exception.message
                 )
-            translated_text = output
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
