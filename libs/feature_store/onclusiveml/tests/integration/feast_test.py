@@ -17,8 +17,8 @@ def test_get_historical_features(settings, entity_df):
         ],
     )
 
-    print(dataset)
-    print(dataset.iloc[0])
+    assert len(dataset) > 0
+    assert set(["topic_1", "content", "title"]) <= set(dataset.columns)
 
 
 def test_get_historical_features_on_demand(settings, entity_df):
@@ -35,8 +35,8 @@ def test_get_historical_features_on_demand(settings, entity_df):
         ],
     )
 
-    print(dataset)
-    print(dataset.iloc[0])
+    assert len(dataset) > 0
+    assert set(["topic_1", "content", "title", "topic_1_llm"]) <= set(dataset.columns)
 
 
 def test_get_training_dataset(settings):
@@ -50,5 +50,5 @@ def test_get_training_dataset(settings):
         timestamp_field="created_at",
     )
 
-    print(dataset)
-    print(dataset.iloc[0])
+    assert len(dataset) > 0
+    assert set(["topic_1", "content", "language"]) <= set(dataset.columns)
