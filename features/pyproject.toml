@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "features"
+version = "0.1.0"
+description = "Feature store management"
+authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>", "Nutch Dendumrongsup <nutch.den@onclusive.com>"]
+packages = [{include = "onclusiveml"}]
+
+[tool.poetry.dependencies]
+python = "3.9.19"
+click = "^8.1.7"
+feast = {version = "^0.40.1", extras = ["aws"]}
+pydantic-settings = "^2.5.2"
+configparser = "^7.1.0"
+mysql-connector = "^2.2.9"
+pymysql = "^1.1.1"
+sqlalchemy-utils = "^0.41.2"
+core = {path = "../libs/core"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+parameterized = "0.9.0"
+s3cmd = "^2.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+# Extend the `pyproject.toml` file in the parent directory...
+extend = "../../pyproject.toml"

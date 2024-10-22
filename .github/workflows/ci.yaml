@@ -152,7 +152,7 @@ jobs       :
   run-libs-tests:
     name: Library
     uses: ./.github/workflows/_libs.yaml
-    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
+    needs: [get-environment, run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
     strategy:
       max-parallel: 10
@@ -190,7 +190,7 @@ jobs       :
             functional: false
 
           - name: feature_store
-            integration: false
+            integration: true
 
           - name: queries
             integration: false
@@ -200,11 +200,38 @@ jobs       :
 
 
     with:
+      environment: prod
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
+
+  # ===============================================
+  # TEST FEATURES
+  # ===============================================
+
+  run-features-test:
+    uses: ./.github/workflows/_features.yaml
+    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
+    with:
+      test: true
+      environment: prod
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
 
   # ===============================================
   # DOCKER
