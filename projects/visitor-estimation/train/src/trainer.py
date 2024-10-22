@@ -17,7 +17,7 @@ from sklearn.preprocessing import FunctionTransformer, OneHotEncoder
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
@@ -47,7 +47,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        data_fetch_params: FeastFeatureStoreSettings,
     ) -> None:
         """Initialize the VisitorEstimationTrainer."""
         self.dataset_dict = {}

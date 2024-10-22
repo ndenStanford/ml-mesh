@@ -9,7 +9,7 @@ from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
@@ -17,7 +17,7 @@ from onclusiveml.tracking import (
 )
 
 
-class DataFetchParams(FeatureStoreParams):
+class DataFetchParams(FeastFeatureStoreSettings):
     """Feature registration inputs."""
 
     dataset_upload_bucket: str

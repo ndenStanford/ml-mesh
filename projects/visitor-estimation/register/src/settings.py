@@ -8,10 +8,10 @@ from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 
 
-class FeatureRegistrationParams(FeatureStoreParams):
+class FeatureRegistrationParams(FeastFeatureStoreSettings):
     """Feature registration inputs."""
 
     feast_config_bucket: str

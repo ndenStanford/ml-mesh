@@ -11,6 +11,7 @@ neptune-sklearn = "2.1.4"
 tracking = {path = "../../../libs/tracking"}
 feature_store = {path = "../../../libs/feature_store"}
 training = {path = "../../../libs/training"}
+features = {path = "../../../features"}
 aiohttp = "<3.10.5"
 
 [tool.poetry.group.dev.dependencies]

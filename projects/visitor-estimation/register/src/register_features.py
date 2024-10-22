@@ -7,7 +7,8 @@ from typing import Any
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.logging.constants import OnclusiveService
-from onclusiveml.feature_store import FeastRepoBuilder, FeatureStoreParams
+from onclusiveml.feature_store import FeastRepoBuilder
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
@@ -75,7 +76,7 @@ def main() -> None:
 
 
 def register(
-    feature_registration_params: FeatureStoreParams,
+    feature_registration_params: FeastFeatureStoreSettings,
     ve_feature_registration_params: OnclusiveBaseSettings,
 ) -> None:
     """Register features."""

@@ -31,6 +31,9 @@ COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HO
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
 
+# copy features
+COPY --chown=${USER}:users features/ features/
+
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 

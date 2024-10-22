@@ -7,7 +7,7 @@ from abc import abstractmethod
 from transformers import EarlyStoppingCallback, Trainer, TrainingArguments
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
@@ -19,21 +19,21 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        data_fetch_params: FeastFeatureStoreSettings,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            data_fetch_params (FeastFeatureStoreSettings): Parameters for fetching data from feature store.
 
         Returns: None
         """
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
-            data_fetch_params=data_fetch_params,
+            settings=data_fetch_params,
         )
 
     @abstractmethod
@@ -125,9 +125,9 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
     def __call__(self) -> None:
         """Call Method."""
         super(OnclusiveHuggingfaceModelTrainer, self).__call__()
-        self.logger.info(
-            f"Training data uploaded to s3 location : {self.full_file_key}"
-        )
+        # self.logger.info(
+        #     f"Training data uploaded to s3 location : {self.full_file_key}"
+        # )
         self.initialize_model()
         self.optimize_model()
         self.save()

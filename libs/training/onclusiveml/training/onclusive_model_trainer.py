@@ -3,7 +3,6 @@
 # Standard Library
 import io
 from abc import abstractmethod
-from datetime import datetime
 from io import BytesIO
 
 # 3rd party libraries
@@ -12,7 +11,8 @@ from botocore.client import BaseClient
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.feature_store import FeatureStoreHandle, FeatureStoreParams
+from onclusiveml.feature_store.feast import FeastFeatureStore
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.tracking.optimization import OnclusiveModelOptimizer
 
@@ -24,18 +24,18 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        settings: FeastFeatureStoreSettings,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            settings (FeatureStoreParams): Parameters for fetching data from feature store.
 
         Returns: None
         """
-        self.data_fetch_params = data_fetch_params
+        self.data_fetch_params = settings
         self.logger = get_default_logger(__name__)
 
         super().__init__(
@@ -56,82 +56,35 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
 
         Returns: None
         """
-        self.logger.info("initializing feature-store handle...")
-        self.get_featurestore_handle()
-        self.logger.info(
-            f"Registered entities: {[entity.name for entity in self.fs_handle.list_entities()]}"
-        )
-        self.logger.info(
-            f"Registered datasources: "
-            f"{[datasource.name for datasource in self.fs_handle.list_data_sources()]}"
-        )
-        self.logger.info(
-            f"Registered feature views: "
-            f"{[feature_view.projection.name for feature_view in self.fs_handle.list_feature_views()]}"  # noqa: E501
-        )
+        self.logger.info("initializing feature-store...")
+        self.get_featurestore()
 
-        base_feature_view_name = self.data_fetch_params.feature_view_name
-        self.feature_view = [
-            feature_view
-            for feature_view in self.fs_handle.list_feature_views()
-            if feature_view.name == base_feature_view_name
-        ][0]
+        if self.num_samples != "-1":
+            entity_df = self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
 
-        features = [
-            f"{self.feature_view.name}:{feature.name}"
-            for feature in self.feature_view.features
-        ]
-        # If the dataset is on-demand, add the corresponding on-demand features
-        if self.data_fetch_params.is_on_demand:
-            on_demand_feature_view = [
-                feature_view
-                for feature_view in self.fs_handle.list_on_demand_feature_views()
-                if feature_view.name
-                == f"{self.data_fetch_params.entity_name}_on_demand_feature_view"
-            ][0]
-
-            on_demand_features = [
-                f"{on_demand_feature_view.name}:{feature.name}"
-                for feature in on_demand_feature_view.features
-            ]
-            features.extend(on_demand_features)
-            self.logger.info(f"Added on-demand features: {on_demand_features}")
-
-        self.dataset_df = self.fs_handle.fetch_historical_features(
-            features,
-            filter_columns=self.data_fetch_params.filter_columns,
-            filter_values=self.data_fetch_params.filter_values,
-            comparison_operators=self.data_fetch_params.comparison_operators,
-            non_nullable_columns=self.data_fetch_params.non_nullable_columns,
+        self.dataset_df = self.fs.get_historical_features(
+            entity_df=entity_df,
+            features=self.data_fetch_params.features,
         )
-        self.logger.info(self.dataset_df.head())
         self.logger.info(
             f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
         )
 
-        if "content" in self.dataset_df.columns:
-            self.docs = self.dataset_df["content"].apply(str).values.tolist()
+        self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
-    def get_featurestore_handle(self) -> None:
-        """Initialize feature store handle for the trainer class.
+    def get_featurestore(self) -> None:
+        """Initialize feature store for the trainer class.
 
         Returns: None
         """
         if self.data_fetch_params.save_artifact:
-            num_samples = str(self.data_fetch_params.n_records_full)
+            self.num_samples = str(self.data_fetch_params.n_records_full)
         else:
-            num_samples = str(self.data_fetch_params.n_records_sample)
+            self.num_samples = str(self.data_fetch_params.n_records_sample)
 
-        self.logger.info(f"fetching {num_samples} samples from feature-store")
+        self.logger.info(f"fetching {self.num_samples} samples from feature-store")
 
-        self.fs_handle = FeatureStoreHandle(
-            feast_config_bucket=self.data_fetch_params.feast_config_bucket,
-            config_file=self.data_fetch_params.config_file,
-            local_config_dir=self.data_fetch_params.local_config_dir,
-            data_source=self.data_fetch_params.redshift_table,
-            data_id_key=self.data_fetch_params.entity_join_key,
-            limit=num_samples,
-        )
+        self.fs = FeastFeatureStore.from_settings(self.data_fetch_params)
 
     def upload_training_data_to_s3(self) -> None:
         """Upload the training dataset to S3.
@@ -149,13 +102,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
         s3_model_version_prefix = "/".join(s3_model_version_full_prefix.split("/")[-3:])
 
-        file_name = (
-            self.tracked_model_version.get_url().split("/")[-1]
-            + "_"
-            + datetime.now().strftime("%Y%m%d_%H%M%S")
-            + ".parquet"
-        )
-
+        file_name = self.tracked_model_version.get_url().split("/")[-1] + ".parquet"
         self.neptune_attr_path = (
             f"{self.model_card.training_data_attribute_path}/{file_name}"
         )
