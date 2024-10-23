@@ -125,9 +125,9 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
     def __call__(self) -> None:
         """Call Method."""
         super(OnclusiveHuggingfaceModelTrainer, self).__call__()
-        # self.logger.info(
-        #     f"Training data uploaded to s3 location : {self.full_file_key}"
-        # )
+        self.logger.info(
+            f"Training data uploaded to s3 location : {self.full_file_key}"
+        )
         self.initialize_model()
         self.optimize_model()
         self.save()
