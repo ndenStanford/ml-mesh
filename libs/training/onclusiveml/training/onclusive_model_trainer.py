@@ -70,25 +70,15 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         # Logging the initial dataset size
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
+        self.logger.info(f"Raw dataset from feature-store :\n{self.dataset_df.head()}")
+
         self.logger.info(
-            f"Originally fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
+            f"Raw first row from feature-store :\n{self.dataset_df.iloc[0]}"
         )
 
         self.logger.info(
-            f"Originally fetched and filtered row from feature-store :\n{self.dataset_df.iloc[0]}"
+            f"Raw table columns from feature-store :\n{self.dataset_df.columns}"
         )
-
-        # Drop rows with NA values
-        self.dataset_df = self.dataset_df.dropna()
-
-        # Logging the size after filtering
-        self.logger.info(f"Filtered dataset size (no NAs): {self.dataset_df.shape}")
-
-        # Displaying the first few rows of the filtered dataset
-        self.logger.info(
-            f"Fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
-        )
-        print(self.dataset_df.columns)
 
         self.docs = self.dataset_df["content"].apply(str).values.tolist()
 

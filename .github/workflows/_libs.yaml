@@ -54,6 +54,9 @@ on  :
       ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV:
         required: true
         description: "MySQL password for dev account"
+      OPENAI_API_KEY:
+        required: true
+        description: OPENAI Api key.
 
 jobs:
   deploy:
@@ -67,6 +70,7 @@ jobs:
       ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: github-actions
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/kubeflow-cluster-prod-redshift-role
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
 
     steps:

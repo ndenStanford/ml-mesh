@@ -233,13 +233,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
-        # drop null
-        # self.dataset_df: DataFrame = self.dataset_df.dropna(
-        #     subset=self.data_fetch_params.non_nullable_columns
-        # )  # type: ignore
-        self.dataset_df: DataFrame = self.dataset_df.dropna()
-        print(self.dataset_df.columns)
-        print(self.dataset_df.iloc[0])
         # Filter out rows with invalid labels not in the candidate list
         self.logger.info("Filtering rows with invalid labels...")
         valid_labels = self.get_candidate_list(
@@ -251,6 +244,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
         initial_row_count = len(self.dataset_df)
         self.logger.info(f"Initial dataset size: {self.dataset_df.shape}")
+
+        # Drop empty rows
+        self.dataset_df: DataFrame = self.dataset_df.dropna()
+        filtered_row_count = len(self.dataset_df)
+        removed_rows = initial_row_count - filtered_row_count
+        self.logger.info(
+            f"Removed {removed_rows} empty rows. Filtered dataset size: {self.dataset_df.shape}"
+        )
+
         # Apply the filter
         self.dataset_df = self.dataset_df[
             self.dataset_df[column_name].isin(valid_labels)
