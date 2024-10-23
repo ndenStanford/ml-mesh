@@ -78,10 +78,10 @@ on  :
       NEPTUNE_API_TOKEN:
         required: true
         description: The API token for the neptune service account managing the model registry.
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV:
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST:
         required: true
         description: "MySQL host for dev account"
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV:
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD:
         required: true
         description: "MySQL password for dev account"
       OPENAI_API_KEY:
@@ -117,8 +117,8 @@ jobs:
     env:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: github-actions
       ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: arn:aws:iam::211212199399:role/kubeflow-cluster-prod-redshift-role
 
