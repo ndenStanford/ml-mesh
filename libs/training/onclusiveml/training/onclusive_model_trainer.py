@@ -191,4 +191,4 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     def __call__(self) -> None:
         """Call Method."""
         self.get_training_data()
-        # self.upload_training_data_to_s3()
+        self.upload_training_data_to_s3()

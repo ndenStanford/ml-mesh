@@ -37,7 +37,6 @@ def test_get_historical_features_on_demand(settings, entity_df):
 
     assert len(dataset) > 0
     assert set(["topic_1", "content", "title", "topic_1_llm"]) <= set(dataset.columns)
-    print(dataset.iloc[0])
 
 
 def test_get_training_dataset(settings):
