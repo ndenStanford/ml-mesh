@@ -3,22 +3,11 @@
 # isort: skip_file
 
 # Standard Library
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pytest
 
 # 3rd party libraries
 import pandas as pd
-
-# Apply patches before any other imports
-patcher_generate = patch("src.settings.generate_crawler_indices", autospec=True)
-mock_generate = patcher_generate.start()
-mock_generate.return_value = [
-    "crawler-4-2024.03",
-    "crawler-4-2024.02",
-    "crawler-4-2023.12",
-    "crawler-4-2024.01",
-    "crawler-4-2023.11",
-]
 
 # Source
 from src.serve.topic import TopicHandler
@@ -141,12 +130,16 @@ def test_handler_aggregate_with_boolean_query(
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
+@patch(
+    "src.serve.trend_detection.generate_crawler_indices",
+    return_value=["crawler-4-2024.03"],
+)
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
     [
         (
             StringQueryProfile(
-                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""
             ),
             562,
             pd.Timestamp.now(),
@@ -155,6 +148,7 @@ def test_handler_aggregate_with_boolean_query(
     ],
 )
 def test_not_trending(
+    mock_generate_crawler_indices,
     mock_elasticsearch,
     mock_get,
     mock_put,
@@ -172,14 +166,21 @@ def test_not_trending(
     mock_query_del,
 ):
     """Test single topic trend function."""
+    # Mock Elasticsearch
+    mock_es_instance = MagicMock()
+    mock_elasticsearch.return_value = mock_es_instance
+    mock_es_instance.indices.get_alias.return_value = {"mock-index": {}}
+    mock_es_instance.search.side_effect = [
+        mock_profile_es_result,
+        mock_topic_profile_es_result_not_trending,
+    ]
+
+    # Mock responses for requests
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
     mock_post.return_value = mock_add_query_to_database
     mock_delete.return_value = mock_query_del
-    mock_elasticsearch.return_value.search.side_effect = [
-        mock_profile_es_result,
-        mock_topic_profile_es_result_not_trending,
-    ]
+
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(
         profile,
@@ -198,12 +199,16 @@ def test_not_trending(
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
+@patch(
+    "src.serve.trend_detection.generate_crawler_indices",
+    return_value=["crawler-4-2024.03"],
+)
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
     [
         (
             StringQueryProfile(
-                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""
             ),
             562,
             pd.Timestamp.now(),
@@ -212,6 +217,7 @@ def test_not_trending(
     ],
 )
 def test_trending(
+    mock_generate_crawler_indices,
     mock_elasticsearch,
     mock_get,
     mock_put,
@@ -229,14 +235,21 @@ def test_trending(
     mock_query_del,
 ):
     """Test single topic trend function."""
+    # Mock Elasticsearch
+    mock_es_instance = MagicMock()
+    mock_elasticsearch.return_value = mock_es_instance
+    mock_es_instance.indices.get_alias.return_value = {"mock-index": {}}
+    mock_es_instance.search.side_effect = [
+        mock_profile_es_result,
+        mock_topic_profile_es_result_trending,
+    ]
+
+    # Mock responses for requests
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
     mock_post.return_value = mock_add_query_to_database
     mock_delete.return_value = mock_query_del
-    mock_elasticsearch.return_value.search.side_effect = [
-        mock_profile_es_result,
-        mock_topic_profile_es_result_trending,
-    ]
+
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(
         profile,
@@ -255,13 +268,17 @@ def test_trending(
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
+@patch(
+    "src.serve.trend_detection.generate_crawler_indices",
+    return_value=["crawler-4-2024.03"],
+)
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
     [
         (
             ProductionToolsQueryProfile(
                 version="1",
-                query_id="b529bdd8-47fd-4dbe-b105-53a02ced41cc",  # noqa: E501
+                query_id="b529bdd8-47fd-4dbe-b105-53a02ced41cc",
             ),
             562,
             pd.Timestamp.now(),
@@ -270,6 +287,7 @@ def test_trending(
     ],
 )
 def test_not_trending_query_id(
+    mock_generate_crawler_indices,
     mock_elasticsearch,
     mock_get,
     mock_put,
@@ -288,6 +306,16 @@ def test_not_trending_query_id(
     mock_query_del,
 ):
     """Test single topic trend function."""
+    # Mock Elasticsearch
+    mock_es_instance = MagicMock()
+    mock_elasticsearch.return_value = mock_es_instance
+    mock_es_instance.indices.get_alias.return_value = {"mock-index": {}}
+    mock_es_instance.search.side_effect = [
+        mock_profile_es_result,
+        mock_topic_profile_es_result_not_trending,
+    ]
+
+    # Mock responses for requests
     mock_get.side_effect = [
         mock_reponses_production_tool,
         mock_boolean_query_translated,
@@ -295,10 +323,7 @@ def test_not_trending_query_id(
     mock_put.return_value = mock_boolean_check
     mock_post.return_value = mock_add_query_to_database
     mock_delete.return_value = mock_query_del
-    mock_elasticsearch.return_value.search.side_effect = [
-        mock_profile_es_result,
-        mock_topic_profile_es_result_not_trending,
-    ]
+
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(
         profile,
@@ -317,13 +342,17 @@ def test_not_trending_query_id(
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
+@patch(
+    "src.serve.trend_detection.generate_crawler_indices",
+    return_value=["crawler-4-2024.03"],
+)
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
     [
         (
             ProductionToolsQueryProfile(
                 version="1",
-                query_id="b529bdd8-47fd-4dbe-b105-53a02ced41cc",  # noqa: E501
+                query_id="b529bdd8-47fd-4dbe-b105-53a02ced41cc",
             ),
             562,
             pd.Timestamp.now(),
@@ -332,6 +361,7 @@ def test_not_trending_query_id(
     ],
 )
 def test_trending_query_id(
+    mock_generate_crawler_indices,
     mock_elasticsearch,
     mock_get,
     mock_put,
@@ -350,6 +380,16 @@ def test_trending_query_id(
     mock_query_del,
 ):
     """Test single topic trend function."""
+    # Mock Elasticsearch
+    mock_es_instance = MagicMock()
+    mock_elasticsearch.return_value = mock_es_instance
+    mock_es_instance.indices.get_alias.return_value = {"mock-index": {}}
+    mock_es_instance.search.side_effect = [
+        mock_profile_es_result,
+        mock_topic_profile_es_result_trending,
+    ]
+
+    # Mock responses for requests
     mock_get.side_effect = [
         mock_reponses_production_tool,
         mock_boolean_query_translated,
@@ -357,10 +397,7 @@ def test_trending_query_id(
     mock_put.return_value = mock_boolean_check
     mock_post.return_value = mock_add_query_to_database
     mock_delete.return_value = mock_query_del
-    mock_elasticsearch.return_value.search.side_effect = [
-        mock_profile_es_result,
-        mock_topic_profile_es_result_trending,
-    ]
+
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(
         profile,
@@ -379,18 +416,23 @@ def test_trending_query_id(
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.impact_quantification.Elasticsearch")
+@patch(
+    "src.serve.impact_quantification.generate_crawler_indices",
+    return_value=["crawler-4-2024.03"],
+)
 @pytest.mark.parametrize(
     "profile, topic_id",
     [
         (
             StringQueryProfile(
-                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""
             ),
             562,
         ),
     ],
 )
 def test_impact_quantification(
+    mock_generate_crawler_indices,
     mock_elasticsearch,
     mock_get,
     mock_put,
@@ -407,17 +449,22 @@ def test_impact_quantification(
     mock_add_query_to_database,
     mock_query_del,
 ):
-    """Test single topic trend function."""
-    mock_get.return_value = mock_boolean_query_translated
-    mock_put.return_value = mock_boolean_check
-    mock_post.return_value = mock_add_query_to_database
-    mock_delete.return_value = mock_query_del
-    mock_elasticsearch.return_value.search.side_effect = [
+    """Test single topic impact quantification function."""
+    # Mock Elasticsearch
+    mock_es_instance = MagicMock()
+    mock_elasticsearch.return_value = mock_es_instance
+    mock_es_instance.indices.get_alias.return_value = {"mock-index": {}}
+    mock_es_instance.search.side_effect = [
         mock_all_global_query,
         mock_topic_global_query,
         mock_all_profile_boolean_query,
         mock_topic_profile_query,
     ]
+    # Mock responses for requests
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     trend_detector = ImpactQuantification()
     res = trend_detector.quantify_impact(profile, topic_id)
     assert res == ImpactCategoryLabel.LOW

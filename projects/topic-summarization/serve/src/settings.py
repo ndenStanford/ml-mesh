@@ -16,9 +16,8 @@ from onclusiveml.core.base import (
 )
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
-from pydantic import SecretStr, Field, root_validator
-from typing import Dict, List, Optional
-from src.es_utils import generate_crawler_indices
+from pydantic import SecretStr, Field
+from typing import Dict, Optional
 
 
 class ServerModelSettings(ServingParams):
@@ -117,15 +116,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     ELASTICSEARCH_KEY: SecretStr = Field(
         default="...", env="ELASTICSEARCH_KEY", exclude=True
     )
-    es_index: List = []
     ES_TIMEOUT: int = 90
-
-    @root_validator(pre=True)
-    def set_es_index(cls, values):
-        """Dynamic get es index."""
-        elasticsearch_key = values.get("ELASTICSEARCH_KEY")
-        values["es_index"] = generate_crawler_indices(elasticsearch_key)
-        return values
 
 
 class DynamoDBSettings(OnclusiveBaseSettings):
@@ -136,6 +127,7 @@ class DynamoDBSettings(OnclusiveBaseSettings):
     # table name should be referencing relevant table when deployed
     DYNAMODB_TABLE_NAME: str
     ENVIRONMENT: str = "dev"
+    DYNAMODB_DOCUMENT_TABLE_NAME: str
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):
