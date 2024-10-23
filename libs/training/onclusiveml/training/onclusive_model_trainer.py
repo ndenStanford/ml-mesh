@@ -191,4 +191,5 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     def __call__(self) -> None:
         """Call Method."""
         self.get_training_data()
+        # Disable model upload when running in EC2 as a temporary solution.
         self.upload_training_data_to_s3()

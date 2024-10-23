@@ -272,7 +272,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.logger.info(f"Final preprocessed dataset:\n{self.dataset_df.head()}")
         # fix the topic discrepencies
         self.dataset_df = topic_conversion(self.dataset_df)
-        # self.dataset_df = self.dataset_df.sample(n=50, random_state=42)
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
