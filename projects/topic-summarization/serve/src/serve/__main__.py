@@ -10,6 +10,7 @@ from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 # Source
 from src.serve._init import init
 from src.serve.model import ServedTopicModel
+from src.serve.report_generator import get_topic_summarization_report_router
 from src.serve.schema import PredictResponseSchema
 from src.serve.tables import PredictResponseSchemaWID, TopicSummaryResponseDB
 
@@ -39,6 +40,8 @@ def get_model_server() -> ModelServer:
             delete_all_route=False,
         )
     )
+
+    model_server.include_router(get_topic_summarization_report_router())
 
     return model_server
 
