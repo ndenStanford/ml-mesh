@@ -35,6 +35,15 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         """
         super().__init__(model=model)
 
+    @property
+    @abstractmethod
+    def table_name(self) -> str:
+        """Abstract property to get the table name of the data model.
+
+        Returns:
+            str: The name of the table or data store.
+        """
+
     @abstractmethod
     def get_all(self) -> List[T]:
         """Retrieve all items from the data store.

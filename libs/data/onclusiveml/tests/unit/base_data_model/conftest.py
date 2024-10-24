@@ -28,6 +28,11 @@ class MockDataModel(BaseDataModel[Item]):
         """Initialise MockDataModel with specific model."""
         super().__init__(model=model)
 
+    @property
+    def table_name(self):
+        """Return table name."""
+        return "Mock table name"
+
     def get_all(self):
         """Retrieve all items from in-memory store."""
         return list(self._store.values())
