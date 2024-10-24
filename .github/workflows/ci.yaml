@@ -1325,7 +1325,9 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-22.04
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
 
@@ -1341,6 +1343,8 @@ jobs       :
       upload-test-results: ${{ matrix.components.upload-test-results }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
     secrets:
