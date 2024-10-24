@@ -25,17 +25,15 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       SAVE_ARTIFACT: ${SAVE_ARTIFACT}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD}
     env_file: train/config/dev.env
-    depends_on:
-      prompt-backend:
-        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -50,6 +48,10 @@ services:
         PROJECT: iptc
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/iptc/train
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
     ports:
@@ -57,13 +59,14 @@ services:
     profiles: [debug]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      SAVE_ARTIFACT: ${SAVE_ARTIFACT}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD}
     env_file: train/config/dev.env
-    depends_on:
-      prompt-backend:
-        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -110,9 +113,6 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       REGISTER_FEATURES: ${REGISTER_FEATURES}
     env_file: register/config/dev.env
-    depends_on:
-      prompt-backend:
-        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -136,9 +136,6 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: register/config/dev.env
-    depends_on:
-      prompt-backend:
-        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -154,53 +151,6 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  prompt-backend:
-    build:
-      context: ../../
-      dockerfile: apps/prompt/backend/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        APP_NAME: prompt
-        APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [register, train, serve, integration, functional, debug]
-    ports:
-      - 4000:4000
-    volumes:
-      - type: bind
-        source: ~/.aws/
-        target: /apps/prompt/backend/.aws/
-    environment:
-      ENVIRONMENT: dev
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
-      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
-      DOCS_URL: /docs
-      REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DYNAMODB_HOST: http://dynamodb:8000
-      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    depends_on:
-      dynamodb:
-        condition: service_healthy
-      redisdb:
-        condition: service_healthy
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 10s || exit 1]
-      interval: 30s
-      timeout: 20s
-      retries: 5
-      start_period: 50s
-    networks:
-      - onclusive-net
-
   dynamodb:
     command: -jar DynamoDBLocal.jar -sharedDb
     image: amazon/dynamodb-local:latest
@@ -214,25 +164,6 @@ services:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
       test: [CMD-SHELL, sleep 6s || exit 1]
-      interval: 5s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
-    networks:
-      - onclusive-net
-
-  redisdb:
-    image: redis:7.0
-    restart: always
-    expose:
-      - 6379
-    ports:
-      - 6379:6379
-    profiles: [register, train, serve, integration, functional, debug]
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 3s || exit 1]
       interval: 5s
       retries: 5
       start_period: 5s

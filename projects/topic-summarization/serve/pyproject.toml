@@ -14,6 +14,7 @@ serving = {path = "../../../libs/serving"}
 nlp = {path = "../../../libs/nlp"}
 tracking = {path = "../../../libs/tracking"}
 queries = {path = "../../../libs/queries"}
+data = {path = "../../../libs/data"}
 ts = {path = "../../../libs/ts"}
 types-requests = "^2.31.0.2"
 requests = "^2.31.0"
