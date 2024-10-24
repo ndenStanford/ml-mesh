@@ -84,7 +84,7 @@ def app(dynamo_db_model, TestDyntasticModel):
             update_schema=UpdateItemSchema,
             model=dynamo_db_model,
             api_settings=api_settings(),
-            identifier="test_table",
+            entity_name="test_table",
             tags=["Items"],
         )
     )

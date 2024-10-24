@@ -40,7 +40,7 @@ def get_model_server() -> ModelServer:
             create_schema=PredictResponseSchema,
             update_schema=PredictResponseSchema,
             api_settings=settings,
-            identifier="topic-summary-document",
+            entity_name="topic-summary-document",
             tags=["Items"],
             delete_one_route=False,
             delete_all_route=False,
