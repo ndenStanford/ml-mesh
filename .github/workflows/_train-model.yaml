@@ -163,7 +163,7 @@ jobs:
 
           # Set the new environment variable by appending it to the $GITHUB_ENV file
           echo "ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY=$ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY" >> $GITHUB_ENV
-      
+
       - name: Run project train component on sagemaker
         run: |
           python bin/sagemaker-run \
