@@ -187,7 +187,7 @@ jobs:
             --onclusive-feature-store-mysql-port ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT} \
             --onclusive-feature-store-mysql-password ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD} \
             --onclusive-feature-store-mysql-host ${ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST} \
-            --onclusive-feature-store-redshift-cluster-region us-east-2 \
+            --onclusive-feature-store-redshift-cluster-region ${{ secrets.AWS_DEFAULT_REGION }} \
             --onclusive-feature-store-redshift-user ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER} \
             --onclusive-feature-store-redshift-iam-role ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE} \
             --onclusive-feature-store-redshift-database ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE} \
