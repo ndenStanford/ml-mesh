@@ -20,7 +20,6 @@ def get_model_server(artifacts: ServedModelArtifacts) -> ModelServer:
         ModelServer: Configured model server instance
     """
     # initialize model
-    print("test")
     sent_served_model = ServedTopicModel(served_model_artifacts=artifacts)
     # initialize model server
     model_server = ModelServer(configuration=settings, model=sent_served_model)

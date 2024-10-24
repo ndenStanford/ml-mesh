@@ -58,9 +58,16 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
             "VE-TRAINED-159",
             "model",
             "model_artifacts",
-            "model",
-            "model_artifacts",
         ]
+
+        def list_s3_contents(bucket, prefix):
+            result = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, Delimiter="/")
+            if "CommonPrefixes" in result:
+                return [common_prefix["Prefix"] for common_prefix in result["CommonPrefixes"]]
+            elif "Contents" in result:
+                return [content["Key"] for content in result["Contents"]]
+            else:
+                return []
 
         def check_s3_folder_exists(bucket, prefix):
             result = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, Delimiter="/")
@@ -73,6 +80,13 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
                 print(f"Folder {current_prefix} exists in S3.")
             else:
                 print(f"Folder {current_prefix} does not exist in S3.")
+                
+                # Print the contents of the previous folder
+                previous_prefix = "/".join(current_prefix.split("/")[:-2]) + "/"
+                contents = list_s3_contents(bucket_name, previous_prefix)
+                print(f"Contents of the previous folder ({previous_prefix}):")
+                for content in contents:
+                    print(f" - {content}")
                 break
         else:
             # Finally, check if the file exists
