@@ -169,3 +169,9 @@ def test_update_item_with_partial_data(dynamo_db_model):
     assert updated_item is not None
     assert updated_item.name == "Laura"  # Name should remain unchanged
     assert updated_item.age == 25
+
+
+def test_get_dynamodb_table_name(dynamo_db_model):
+    """Test get dynamodb table name."""
+    table_name = dynamo_db_model.table_name
+    assert isinstance(table_name, str)

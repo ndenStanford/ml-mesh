@@ -23,6 +23,15 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
     using the Dyntastic library for object mapping.
     """
 
+    @property
+    def table_name(self) -> str:
+        """Return the name of the DynamoDB table associated with the model.
+
+        Returns:
+            str: The name of the DynamoDB table.
+        """
+        return self.model.__table_name__
+
     def get_all(self) -> List[Dyntastic]:
         """Fetch all items from the DynamoDB table.
 

@@ -12,6 +12,10 @@ from src.serve._init import init
 from src.serve.model import ServedTopicModel
 from src.serve.schema import PredictResponseSchema
 from src.serve.tables import PredictResponseSchemaWID, TopicSummaryResponseDB
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 def get_model_server() -> ModelServer:
@@ -33,7 +37,8 @@ def get_model_server() -> ModelServer:
             model=response_model,
             create_schema=PredictResponseSchema,
             update_schema=PredictResponseSchema,
-            prefix=f"/{topic_served_model.name}/{serving_params.api_version}",
+            # prefix=f"/{settings.model_name}/{settings.api_version}"
+            api_settings=settings,
             tags=["Items"],
             delete_one_route=False,
             delete_all_route=False,
