@@ -54,7 +54,9 @@ services:
   # serving image
   serve:
     volumes:
-      - serve-volume:/projects/visitor-estimation/serve/models
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/visitor-estimation/serve/models
     build:
       context: ../../
       dockerfile: projects/visitor-estimation/serve/Dockerfile
