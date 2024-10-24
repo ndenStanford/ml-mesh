@@ -32,9 +32,9 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     )
     # model registry reference to the desired (compiled) model version
     # initialize client for specific model version
+    session = boto3.Session()
     s3 = session.client("s3")
     try:
-        session = boto3.Session()
         current_region = session.region_name
         # Print the current AWS region
         print(f"Current AWS region: {current_region}")
@@ -61,7 +61,6 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
             "model",
             "model_artifacts",
         ]
-        file_key = "relevancemap.pkl"
 
         def check_s3_folder_exists(bucket, prefix):
             result = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, Delimiter="/")
