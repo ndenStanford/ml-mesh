@@ -198,4 +198,4 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         """Call Method."""
         self.get_training_data()
         # Disable model upload when running in EC2 as a temporary solution.
-        self.upload_training_data_to_s3()
+        # self.upload_training_data_to_s3()
