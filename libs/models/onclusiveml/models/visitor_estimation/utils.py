@@ -10,7 +10,7 @@ def imputeClean(times, column):
     Args:
         times (list): List of times for which values need to be imputed.
         column (list): List of tuples where each tuple contains a time and a value.
-    
+
     Returns:
         list: List of imputed values for the given times.
     """
@@ -48,7 +48,7 @@ def imputeColumn(times, column):
     Args:
         times (list): List of times for which values need to be imputed.
         column (list): List of tuples where each tuple contains a time and a value.
-    
+
     Returns:
         list: List of imputed values for the given times.
     """
@@ -57,10 +57,10 @@ def imputeColumn(times, column):
 
 def maxOptions(rows):
     """Return the maximum values from each column across multiple rows.
-    
+
     Args:
         rows (list): List of rows, where each row is a list containing values for multiple columns.
-    
+
     Returns:
         list: A list of maximum values for each column.
     """
@@ -80,10 +80,10 @@ def maxOptions(rows):
 
 def mergeDuplicates(metadatas):
     """Merge duplicate rows by date, selecting the maximum value for each column.
-    
+
     Args:
         metadatas (list): List of tuples, where each tuple contains a date and metadata for that date.
-    
+
     Returns:
         list: A list of tuples with merged metadata for each unique date.
     """
@@ -95,11 +95,11 @@ def mergeDuplicates(metadatas):
 
 def imputeByColumns(times, metadatas):
     """Impute metadata by columns over the given time intervals.
-    
+
     Args:
         times (list): List of time intervals for which metadata needs to be imputed.
         metadatas (list): List of metadata entries for each time interval.
-    
+
     Returns:
         list: A list of imputed metadata for each time interval.
     """
@@ -115,14 +115,14 @@ def imputeByColumns(times, metadatas):
 
 def getRelevancePercentile(relevance_map, profile_id, relevance):
     """Get the relevance percentile for a given profile ID and relevance value.
-    
+
     Args:
         relevance_map (dict): A dictionary where keys are profile IDs (integers) and
                               values are sorted dictionaries (TreeMap equivalent) with
                               relevance values as keys and percentiles as values.
         profile_id (int): The ID of the profile for which relevance needs to be checked.
         relevance (float): The relevance value for which to find the closest percentile.
-    
+
     Returns:
         float: The percentile value if found, otherwise 0.0.
     """

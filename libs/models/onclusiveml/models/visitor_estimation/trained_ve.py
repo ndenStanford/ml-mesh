@@ -31,10 +31,10 @@ class TrainedVE:
     @classmethod
     def from_pretrained(cls, directory: Union[str, Path]) -> "TrainedVE":
         """Load the trained visitor estimation pipeline from a specified directory.
-        
+
         Args:
             directory (Union[str, Path]): The path to the file where the trained model pipeline is stored.
-        
+
         Returns:
             TrainedVE: The loaded trained VE object
         """
@@ -51,10 +51,10 @@ class TrainedVE:
 
     def preprocess(self, data: dict) -> pd.DataFrame:
         """Preprocess the input data to prepare it for the visitor estimation model.
-        
+
         Args:
             data (dict): The raw input data in JSON format containing analytics, social, and metadata information.
-        
+
         Returns:
             pd.DataFrame: The processed data, ready for prediction with the model.
         """
@@ -131,11 +131,11 @@ class TrainedVE:
 
     def inference(self, df: pd.DataFrame) -> List[float]:
         """Perform inference using the trained visitor estimation model.
-        
+
         Args:
             model: The trained model pipeline.
             df (pd.DataFrame): The preprocessed input data.
-        
+
         Returns:
             List[float]: The predicted visitor counts.
         """
@@ -151,10 +151,10 @@ class TrainedVE:
 
     def __call__(self, input: List[dict]) -> List[float]:
         """Run the full visitor estimation process on the input data.
-        
+
         Args:
             input (List[dict]): The raw input data in JSON format for which to estimate visitors.
-        
+
         Returns:
             List[float]: A list of predicted visitor counts.
         """
