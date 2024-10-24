@@ -21,22 +21,6 @@
             ]
         },
         {
-            "name": "visitor estimation register",
-            "type": "debugpy",
-            "request": "attach",
-            "justMyCode": false,
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/projects/visitor-estimation/register",
-                    "remoteRoot": "."
-                }
-            ]
-        },
-        {
             "name": "transcript segmentation serve",
             "type": "debugpy",
             "request": "attach",

@@ -90,3 +90,9 @@ def test_delete_all_empties_data_model(data_model, item, item2):
     data_model.create(item2)
     data_model.delete_all()
     assert data_model.get_all() == []
+
+
+def test_get_table_name(data_model):
+    """Test that get table name."""
+    table_name = data_model.table_name
+    assert isinstance(table_name, str)
