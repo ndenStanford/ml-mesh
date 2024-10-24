@@ -15,7 +15,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
@@ -27,7 +27,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        data_fetch_params: FeastFeatureStoreSettings,
         stopwords: List[str],
     ) -> None:
         """Initialize the BertopicTrainer.
@@ -35,7 +35,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            data_fetch_params (FeastFeatureStoreSettings): Parameters for fetching data from feature store.
             stopwords (List[str]): List of stopwords to be used in text processing.
 
         Returns: None

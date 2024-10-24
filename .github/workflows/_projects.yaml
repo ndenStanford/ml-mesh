@@ -140,6 +140,7 @@ on  :
         required: false
         description: Redis connect string.
 
+
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.project }}-${{ inputs.component }}'

@@ -41,6 +41,7 @@ services:
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       ENVIRONMENT: prod
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/prod.env
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
@@ -63,6 +64,7 @@ services:
     environment:
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     networks:
       - onclusive-net
 
@@ -84,6 +86,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: prod
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/test.env
     depends_on:
       prompt-backend:
@@ -113,6 +116,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: prod
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/test.env
     depends_on:
       serve:

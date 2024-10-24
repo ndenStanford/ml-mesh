@@ -203,7 +203,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 "data": {
                     "namespace": "sentiment",
                     "attributes": {
-                        "content": "北京是中国的首都。",
+                        "content": "北京是中国的首都。我很想去那里度假。",
                         "entities": [
                             {
                                 "entity_type": "LOC",
@@ -237,8 +237,8 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                             }
                         ],
                         "label": "positive",
-                        "negative_prob": 0.1478,
-                        "positive_prob": 0.3239,
+                        "negative_prob": 0.1914,
+                        "positive_prob": 0.3098,
                     },
                     "namespace": "sentiment",
                 },

@@ -28,6 +28,7 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
+from src.es_utils import generate_crawler_indices
 
 settings = get_settings()
 
@@ -42,7 +43,9 @@ class ImpactQuantification:
             ],
             timeout=settings.ES_TIMEOUT,
         )
-        self.es_index = settings.es_index
+        self.es_index = generate_crawler_indices(
+            settings.ELASTICSEARCH_KEY.get_secret_value()
+        )
 
     def decompose_trend(self, series_profile: ArrayLike) -> ArrayLike:
         """Decomposes trend component of a given time series profile using prophet.

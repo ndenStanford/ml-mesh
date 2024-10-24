@@ -210,14 +210,16 @@ jobs       :
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
   # ===============================================
   # TEST FEATURES
   # ===============================================
 
   run-features-test:
+    name: Run feast feature store test
     uses: ./.github/workflows/_features.yaml
     needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
     with:
@@ -230,8 +232,8 @@ jobs       :
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST_DEV }}
-      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD_DEV }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
 
   # ===============================================
   # DOCKER
@@ -352,7 +354,7 @@ jobs       :
 
         self-hosted-runner-neuron: [false]
         self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
-        use-cache: [false]
+        use-cache: [true]
 
     with:
       environment: prod
@@ -721,19 +723,6 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
-
           # train
           - name: train
             download-model: false
@@ -746,7 +735,7 @@ jobs       :
             self-hosted-runner-ami: ami-03e4816f04f417e5a
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: gpu-base
 
           # compile
@@ -1407,6 +1396,57 @@ jobs       :
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+  # ===============================================
+  # TRAIN MULTI MODELS
+  # ===============================================
+
+  run-multi-train-pipelines:
+    name: Train Multi-model
+    uses: ./.github/workflows/_train-multi-model.yaml
+    needs:
+      - get-environment
+      - run-repository-state
+      - run-iptc-project
+      - get-target-branch-name
+      - run-get-core-dependencies-versions
+
+    strategy:
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      max-parallel: 10
+      matrix:
+        models:
+          - project: iptc
+            sagemaker-runner-type: ml.g4dn.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/iptc-00000000
+            trained-model: IP00000000-TRAINED
+            parameters: "{}"
+            wait: false
+
+    with:
+      environment: prod
+      project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+      tag: ${{ matrix.models.tag }}
+      trained-project: ${{ matrix.models.trained-project}}
+      trained-model: ${{ matrix.models.trained-model}}
+      wait: ${{ matrix.models.wait}}
+      parameters: ${{ matrix.models.parameters}}
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
 
   # ===============================================

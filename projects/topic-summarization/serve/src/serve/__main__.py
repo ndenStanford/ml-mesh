@@ -1,13 +1,23 @@
 # type: ignore
+# isort: skip_file
+
 """Model server."""
 
 # Internal libraries
+from onclusiveml.data.data_model.dynamodb import DynamoDBModel
+from onclusiveml.serving.rest.crud._base import CRUDGenerator
 from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
 from src.serve._init import init
 from src.serve.model import ServedTopicModel
+from src.serve.schema import PredictResponseSchema
+from src.serve.tables import PredictResponseSchemaWID, TopicSummaryResponseDB
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 def get_model_server() -> ModelServer:
@@ -21,6 +31,20 @@ def get_model_server() -> ModelServer:
         configuration=serving_params, model=topic_served_model, on_startup=[init]
     )
     Instrumentator.enable(model_server, app_name="topic-summarization")
+
+    response_model = DynamoDBModel(model=TopicSummaryResponseDB)
+    model_server.include_router(
+        CRUDGenerator(
+            schema=PredictResponseSchemaWID,
+            model=response_model,
+            create_schema=PredictResponseSchema,
+            update_schema=PredictResponseSchema,
+            api_settings=settings,
+            tags=["Items"],
+            delete_one_route=False,
+            delete_all_route=False,
+        )
+    )
 
     return model_server
 
