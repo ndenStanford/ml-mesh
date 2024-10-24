@@ -84,7 +84,8 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
                 # Print the contents of the previous folder
                 previous_prefix = "/".join(current_prefix.split("/")[:-2]) + "/"
                 contents = list_s3_contents(bucket_name, previous_prefix)
-                print(f"Contents of the previous folder ({previous_prefix}):")
+                print(f"Contents of the previous folder ({previous_prefix}):", contents)
+                print('>>>>', s3.list_objects_v2(Bucket=bucket, Prefix=previous_prefix, Delimiter="/"))
                 for content in contents:
                     print(f" - {content}")
                 break
