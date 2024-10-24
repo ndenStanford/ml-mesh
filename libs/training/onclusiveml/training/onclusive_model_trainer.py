@@ -62,15 +62,25 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         if self.num_samples != "-1":
             entity_df = self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
 
+        self.logger.info(
+            f"entity_df query: \n {entity_df}"
+        )
+        
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
             features=self.data_fetch_params.features,
         )
+
         self.logger.info(
-            f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
+            f"head dataset from feature-store : \n {self.dataset_df.head().to_string()}"
+        )
+        
+        self.logger.info(
+            f"describe dataset from feature-store : \n {self.dataset_df.describe().to_string()}"
         )
 
-        self.docs = self.dataset_df["content"].apply(str).values.tolist()
+        if "content" in self.dataset_df:
+            self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
     def get_featurestore(self) -> None:
         """Initialize feature store for the trainer class.
@@ -181,4 +191,4 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     def __call__(self) -> None:
         """Call Method."""
         self.get_training_data()
-        self.upload_training_data_to_s3()
+        # self.upload_training_data_to_s3()

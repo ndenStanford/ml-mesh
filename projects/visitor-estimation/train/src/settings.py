@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # 3rd party libraries
 from pydantic_settings import SettingsConfigDict
@@ -20,12 +20,14 @@ from onclusiveml.tracking import (
 class DataFetchParams(FeastFeatureStoreSettings):
     """Feature registration inputs."""
 
-    dataset_upload_bucket: str
+    dataset_upload_bucket: str = "training-data-uploads-prod"
     dataset_upload_dir: str
     entity_name: str = "visitor-estimation"
     entity_join_key: str = "visitor_estimation_id"
     redshift_table: str = "stg_visitor_estimation"
     feature_view_name: str = "visitor_estimation_feature_view"
+    entity_df: str = ""
+    features: List[str] = []
     redshift_timestamp_field: str
     save_artifact: bool = True
     n_records_sample: int
@@ -43,6 +45,8 @@ class CrawlerItemsDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="crawler_items_")
 
@@ -54,6 +58,8 @@ class EclrLinksDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="eclr_links_")
 
@@ -65,6 +71,8 @@ class EntityConnectionsDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="entity_connections_")
 
@@ -76,6 +84,8 @@ class EntityEaPerDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="entity_ea_per_")
 
@@ -87,6 +97,8 @@ class EntityLinksLmdDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="entity_links_lmd_")
 
@@ -98,6 +110,8 @@ class EntityLinksDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="entity_links_")
 
@@ -109,6 +123,8 @@ class ProfileCompanySectorsDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="profile_company_sectors_")
 
@@ -120,6 +136,8 @@ class SearchSeedsDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="search_seeds_")
 
@@ -131,6 +149,8 @@ class DomainsDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="domains_")
 
@@ -142,6 +162,8 @@ class ProfileEntityRelationshipsDataFetchParams(OnclusiveBaseSettings):
     entity_join_key: str
     redshift_table: str
     feature_view_name: str
+    entity_df: str
+    features: List[str]
 
     model_config = SettingsConfigDict(env_prefix="profile_entity_relationships_")
 

@@ -50,6 +50,9 @@ def main() -> None:
         trainer.data_fetch_params.entity_join_key = params.entity_join_key
         trainer.data_fetch_params.redshift_table = params.redshift_table
         trainer.data_fetch_params.feature_view_name = params.feature_view_name
+        trainer.data_fetch_params.entity_df = params.entity_df
+        trainer.data_fetch_params.features = params.features
+        print('====================', trainer.data_fetch_params)
         trainer.build_dataset_dict()
     logger.info("Dataset dictionary creation complete.")
 
