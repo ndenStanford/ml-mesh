@@ -33,7 +33,6 @@ class CRUDGenerator(Generic[T], APIRouter):
     create_schema: Type[T]
     update_schema: Type[T]
     _base_path: str = "/"
-    PREDICTION_STORE: str = "prediction-store"
 
     def __init__(
         self,
@@ -42,6 +41,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         create_schema: Optional[Type[T]] = None,
         update_schema: Optional[Type[T]] = None,
         api_settings: OnclusiveFrozenSettings = None,
+        identifier: str = "",
         tags: Optional[List[str]] = None,
         get_all_route: Union[bool, depends] = True,
         get_one_route: Union[bool, depends] = True,
@@ -59,6 +59,7 @@ class CRUDGenerator(Generic[T], APIRouter):
             create_schema (Optional[Type[T]], optional): The schema used for create operations
             update_schema (Optional[Type[T]], optional): The schema used for update operations
             api_settings: OnclusiveFrozenSettings: Service settings used to make route prefix
+            identifier: str: string used at the end of route prefix
             tags (Optional[List[str]], optional): The list of tags for the routes.
             get_all_route (Union[bool, depends], optional): Whether to include the get_all route
             get_one_route (Union[bool, depends], optional): Whether to include the get_one route
@@ -73,7 +74,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         self.create_schema = create_schema or schema
         self.update_schema = update_schema or schema
 
-        prefix = f"/{api_settings.model_name}/{api_settings.api_version}/{self.PREDICTION_STORE}"
+        prefix = f"/{api_settings.model_name}/{api_settings.api_version}/{identifier}"
         prefix = self._base_path + prefix.strip("/")
         tags = tags or [prefix.strip("/").capitalize()]
 

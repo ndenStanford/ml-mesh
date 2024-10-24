@@ -23,7 +23,7 @@ def TestDyntasticModel():
     class TestDyntasticModelInner(Dyntastic):
         """A minimal Dyntastic model for testing DynamoDBModel."""
 
-        __table_name__ = "test_table"
+        __table_name__ = "test_table_1"
         __hash_key__ = "id"
         __table_region__ = "us-east-1"
 
@@ -84,6 +84,7 @@ def app(dynamo_db_model, TestDyntasticModel):
             update_schema=UpdateItemSchema,
             model=dynamo_db_model,
             api_settings=api_settings(),
+            identifier="test_table",
             tags=["Items"],
         )
     )
