@@ -1306,17 +1306,6 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
-            push-image: true
-            base-image: python-base
-
     with:
       project: visitor-estimation
       environment: prod
