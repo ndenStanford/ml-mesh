@@ -1,8 +1,13 @@
 """Download compiled model."""
 
+# Standard Library``
+
 # Standard Library
 import os
+
+# 3rd party libraries
 import boto3
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.pydantic import cast
@@ -36,19 +41,15 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
 
     session = boto3.Session()
     current_region = session.region_name
-
     # Print the current AWS region
     print(f"Current AWS region: {current_region}")
-
     # Create an S3 client
-    s3_client = session.client('s3')
-
+    s3_client = session.client("s3")
     # List all S3 buckets
     response = s3_client.list_buckets()
-
     # Print bucket names
     print("Available S3 buckets:")
-    for bucket in response['Buckets']:
+    for bucket in response["Buckets"]:
         print(f"- {bucket['Name']}")
 
     if not os.path.isdir(settings.model_directory):
