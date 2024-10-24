@@ -166,7 +166,7 @@ jobs:
 
       - name: Print Custom Environment Variable
         run: echo "The custom environment variable is $ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST"
-      
+
       - name: Run project train component on sagemaker
         run: |
           python bin/sagemaker-run \
