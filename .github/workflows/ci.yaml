@@ -1306,15 +1306,15 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
-            download-model: false
+          # serve
+          - name: serve
+            download-model: true
             integration: false
-            functional: false
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
-            push-image: true
+            push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
 
     with:
