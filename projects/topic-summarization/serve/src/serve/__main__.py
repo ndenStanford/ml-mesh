@@ -21,7 +21,7 @@ settings = get_settings()
 
 
 def get_model_server() -> ModelServer:
-    """Utility method for prepping a fully configured model server instance ready to serve."""
+    """Utility method for preparing a fully configured model server instance ready to serve."""
     # initialize model
     topic_served_model = ServedTopicModel()
     # initialize model server
