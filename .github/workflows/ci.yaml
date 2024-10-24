@@ -1369,7 +1369,7 @@ jobs       :
             wait: false
 
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
