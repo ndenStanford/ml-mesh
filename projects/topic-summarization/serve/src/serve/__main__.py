@@ -1,4 +1,6 @@
 # type: ignore
+# isort: skip_file
+
 """Model server."""
 
 # Internal libraries
@@ -13,6 +15,7 @@ from src.serve.model import ServedTopicModel
 from src.serve.schema import PredictResponseSchema
 from src.serve.tables import PredictResponseSchemaWID, TopicSummaryResponseDB
 from src.settings import get_settings
+
 
 settings = get_settings()
 
