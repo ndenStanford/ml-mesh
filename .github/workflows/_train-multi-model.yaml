@@ -59,6 +59,11 @@ on  :
         required: false
         type: string
         description: Parameters associated with the training.
+      skip:
+        required: false
+        default: false
+        type: boolean
+        description: Indicates whether to skip the training for the model.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -169,6 +174,7 @@ jobs:
         run: echo "The custom environment variable is $ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT"
 
       - name: Run project train component on sagemaker
+        if: ${{ !inputs.skip }}
         run: |
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
