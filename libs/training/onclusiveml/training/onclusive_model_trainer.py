@@ -70,7 +70,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
 
         self.logger.info(
-            f"describe dataset from feature-store : \n {self.dataset_df.describe().to_string()}")
+            f"describe dataset from feature-store : \n {self.dataset_df.describe().to_string()}"
+        )
 
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
@@ -82,7 +83,6 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
 
         self.logger.info(
             f"Raw table columns from feature-store :\n{self.dataset_df.columns}"
-
         )
 
         if "content" in self.dataset_df:
@@ -197,5 +197,5 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     def __call__(self) -> None:
         """Call Method."""
         self.get_training_data()
-        # Disable model upload when running in EC2 as a temporary solution.	
+        # Disable model upload when running in EC2 as a temporary solution.
         self.upload_training_data_to_s3()
