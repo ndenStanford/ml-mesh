@@ -55,7 +55,7 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
             "onclusive",
             "visitor-estimation",
             "VE-TRAINED",
-            "VE-TRAINED-197",
+            "VE-TRAINED-199",
             "model",
             "model_artifacts",
         ]
