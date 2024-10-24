@@ -101,7 +101,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         df_dom = df_dom.rename(columns={"id": "domain_id"})
         # manipulate df_ea and df_crl(temporary fix, needs to be removed)
         # Get the matching entity_id values from df_per by profile_id and replace in order
-        #TODO: remove this data manipulation
+        # TODO: remove this data manipulation
         df_ea["entity_id"] = df_ea.apply(
             lambda row: (
                 np.random.choice(
@@ -114,8 +114,8 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             ),
             axis=1,
         )
-        df_ent["domain_id"] = df_dom["domain_id"]  #TODO: remove this data manipulation
-        df_crl["entity_id"] = df_ent["entity_id"]  #TODO: remove this data manipulation
+        df_ent["domain_id"] = df_dom["domain_id"]  # TODO: remove this data manipulation
+        df_crl["entity_id"] = df_ent["entity_id"]  # TODO: remove this data manipulation
         # Step 1: Join entity analytics with link metadata
         profileDF = joinEntityAnalyticsWithLinkMetadata(
             df_lmd, df_ea, df_per, self.min_window, self.max_window

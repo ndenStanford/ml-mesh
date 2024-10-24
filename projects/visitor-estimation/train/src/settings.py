@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 # 3rd party libraries
 from pydantic_settings import SettingsConfigDict

@@ -62,10 +62,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         if self.num_samples != "-1":
             entity_df = self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
 
-        self.logger.info(
-            f"entity_df query: \n {entity_df}"
-        )
-        
+        self.logger.info(f"entity_df query: \n {entity_df}")
+
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
             features=self.data_fetch_params.features,
@@ -74,7 +72,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self.logger.info(
             f"head dataset from feature-store : \n {self.dataset_df.head().to_string()}"
         )
-        
+
         self.logger.info(
             f"describe dataset from feature-store : \n {self.dataset_df.describe().to_string()}"
         )
