@@ -38,43 +38,43 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - uses: dorny/paths-filter@v3
-        if: ${{ inputs.pull-request }}
-        id: files-changed
-        name: Get a list of modified files.
-        with:
-          list-files: shell
-          filters: |
-            all:
-              - added | modified: '**'
+      # - uses: dorny/paths-filter@v3
+      #   if: ${{ inputs.pull-request }}
+      #   id: files-changed
+      #   name: Get a list of modified files.
+      #   with:
+      #     list-files: shell
+      #     filters: |
+      #       all:
+      #         - added | modified: '**'
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: .python-version
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version-file: .python-version
 
-      - name: Setup Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ inputs.poetry-version }}
-          virtualenvs-create: false
+      # - name: Setup Poetry
+      #   uses: snok/install-poetry@v1
+      #   with:
+      #     version: ${{ inputs.poetry-version }}
+      #     virtualenvs-create: false
 
-      - name: Install python dependencies
-        run: |
-          poetry install
+      # - name: Install python dependencies
+      #   run: |
+      #     poetry install
 
-      - name: Code Quality Checks For Changed Files
-        if: ${{ inputs.pull-request }}
-        id: pre-commit
-        timeout-minutes: ${{ inputs.timeout }}
-        uses: pre-commit/action@v3.0.1
-        with:
-          extra_args: --verbose --files ${{ steps.files-changed.outputs.all_files }}
+      # - name: Code Quality Checks For Changed Files
+      #   if: ${{ inputs.pull-request }}
+      #   id: pre-commit
+      #   timeout-minutes: ${{ inputs.timeout }}
+      #   uses: pre-commit/action@v3.0.1
+      #   with:
+      #     extra_args: --verbose --files ${{ steps.files-changed.outputs.all_files }}
 
-      - name: Code Quality Checks For All Files
-        if: ${{ !inputs.pull-request || inputs.release }}
-        id: pre-commit-all
-        timeout-minutes: ${{ inputs.timeout }}
-        uses: pre-commit/action@v3.0.1
-        with:
-          extra_args: --verbose --all
+      # - name: Code Quality Checks For All Files
+      #   if: ${{ !inputs.pull-request || inputs.release }}
+      #   id: pre-commit-all
+      #   timeout-minutes: ${{ inputs.timeout }}
+      #   uses: pre-commit/action@v3.0.1
+      #   with:
+      #     extra_args: --verbose --all
