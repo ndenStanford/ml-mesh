@@ -51,7 +51,14 @@ def app(dynamo_db_model, TestDyntasticModel):
     from fastapi import FastAPI
 
     # Internal libraries
-    from onclusiveml.core.base import OnclusiveBaseModel
+    from onclusiveml.core.base import (
+        OnclusiveBaseModel,
+        OnclusiveFrozenSettings,
+    )
+
+    class api_settings(OnclusiveFrozenSettings):
+        model_name: str = "test-service"
+        api_version: str = "v1"
 
     # Define the schema
     class ItemSchema(OnclusiveBaseModel):
@@ -76,7 +83,7 @@ def app(dynamo_db_model, TestDyntasticModel):
             create_schema=CreateItemSchema,
             update_schema=UpdateItemSchema,
             model=dynamo_db_model,
-            prefix="/items",
+            api_settings=api_settings(),
             tags=["Items"],
         )
     )

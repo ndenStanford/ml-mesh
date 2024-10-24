@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.types import DecoratedCallable
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseModel
+from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveFrozenSettings
 from onclusiveml.data.data_model.base import BaseDataModel
 from onclusiveml.data.data_model.exception import (
     DataModelException,
@@ -40,7 +40,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         model: Type[BaseDataModel],
         create_schema: Optional[Type[T]] = None,
         update_schema: Optional[Type[T]] = None,
-        prefix: Optional[str] = None,
+        api_settings: OnclusiveFrozenSettings = None,
         tags: Optional[List[str]] = None,
         get_all_route: Union[bool, depends] = True,
         get_one_route: Union[bool, depends] = True,
@@ -57,7 +57,7 @@ class CRUDGenerator(Generic[T], APIRouter):
             model (Type[BaseDataModel]): Child of base data model used to interact with database.
             create_schema (Optional[Type[T]], optional): The schema used for create operations
             update_schema (Optional[Type[T]], optional): The schema used for update operations
-            prefix (Optional[str], optional): The URL prefix for the routes
+            api_settings: OnclusiveFrozenSettings: Service settings used to make route prefix
             tags (Optional[List[str]], optional): The list of tags for the routes.
             get_all_route (Union[bool, depends], optional): Whether to include the get_all route
             get_one_route (Union[bool, depends], optional): Whether to include the get_one route
@@ -72,7 +72,9 @@ class CRUDGenerator(Generic[T], APIRouter):
         self.create_schema = create_schema or schema
         self.update_schema = update_schema or schema
 
-        prefix = str(prefix if prefix else self.schema.__name__).lower()
+        prefix = (
+            f"/{api_settings.model_name}/{api_settings.api_version}/{model.table_name}"
+        )
         prefix = self._base_path + prefix.strip("/")
         tags = tags or [prefix.strip("/").capitalize()]
 
