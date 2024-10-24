@@ -11,7 +11,8 @@ from botocore.client import BaseClient
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.feature_store import FeatureStoreHandle, FeatureStoreParams
+from onclusiveml.feature_store.feast import FeastFeatureStore
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.tracking.optimization import OnclusiveModelOptimizer
 
@@ -23,18 +24,18 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        settings: FeastFeatureStoreSettings,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            settings (FeatureStoreParams): Parameters for fetching data from feature store.
 
         Returns: None
         """
-        self.data_fetch_params = data_fetch_params
+        self.data_fetch_params = settings
         self.logger = get_default_logger(__name__)
 
         super().__init__(
@@ -55,91 +56,45 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
 
         Returns: None
         """
-        self.logger.info("initializing feature-store handle...")
-        self.get_featurestore_handle()
-        self.logger.info(
-            f"Registered entities: {[entity.name for entity in self.fs_handle.list_entities()]}"
-        )
-        self.logger.info(
-            f"Registered datasources: "
-            f"{[datasource.name for datasource in self.fs_handle.list_data_sources()]}"
-        )
-        self.logger.info(
-            f"Registered feature views: "
-            f"{[feature_view.projection.name for feature_view in self.fs_handle.list_feature_views()]}"  # noqa: E501
+        self.logger.info("initializing feature-store...")
+        self.get_featurestore()
+
+        if self.num_samples != "-1":
+            entity_df = self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
+
+        self.dataset_df = self.fs.get_historical_features(
+            entity_df=entity_df,
+            features=self.data_fetch_params.features,
         )
 
-        base_feature_view_name = self.data_fetch_params.feature_view_name
-        self.feature_view = [
-            feature_view
-            for feature_view in self.fs_handle.list_feature_views()
-            if feature_view.name == base_feature_view_name
-        ][0]
-
-        features = [
-            f"{self.feature_view.name}:{feature.name}"
-            for feature in self.feature_view.features
-        ]
-
-        # If the dataset is on-demand, add the corresponding on-demand features
-        if self.data_fetch_params.is_on_demand:
-            on_demand_feature_view = [
-                feature_view
-                for feature_view in self.fs_handle.list_on_demand_feature_views()
-                if feature_view.name
-                == f"{self.data_fetch_params.entity_name}_on_demand_feature_view"
-            ][0]
-
-            on_demand_features = [
-                f"{on_demand_feature_view.name}:{feature.name}"
-                for feature in on_demand_feature_view.features
-            ]
-            features.extend(on_demand_features)
-            self.logger.info(f"Added on-demand features: {on_demand_features}")
-
-        self.dataset_df = self.fs_handle.fetch_historical_features(
-            features,
-            filter_columns=self.data_fetch_params.filter_columns,
-            filter_values=self.data_fetch_params.filter_values,
-            comparison_operators=self.data_fetch_params.comparison_operators,
-            non_nullable_columns=self.data_fetch_params.non_nullable_columns,
-        )
         # Logging the initial dataset size
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
-        # Drop rows with NA values
-        self.dataset_df = self.dataset_df.dropna()
+        self.logger.info(f"Raw dataset from feature-store :\n{self.dataset_df.head()}")
 
-        # Logging the size after filtering
-        self.logger.info(f"Filtered dataset size (no NAs): {self.dataset_df.shape}")
-
-        # Displaying the first few rows of the filtered dataset
         self.logger.info(
-            f"Fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
+            f"Raw first row from feature-store :\n{self.dataset_df.iloc[0]}"
+        )
+
+        self.logger.info(
+            f"Raw table columns from feature-store :\n{self.dataset_df.columns}"
         )
 
         self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
-    def get_featurestore_handle(self) -> None:
-        """Initialize feature store handle for the trainer class.
+    def get_featurestore(self) -> None:
+        """Initialize feature store for the trainer class.
 
         Returns: None
         """
         if self.data_fetch_params.save_artifact:
-            num_samples = str(self.data_fetch_params.n_records_full)
+            self.num_samples = str(self.data_fetch_params.n_records_full)
         else:
-            num_samples = str(self.data_fetch_params.n_records_sample)
+            self.num_samples = str(self.data_fetch_params.n_records_sample)
 
-        self.logger.info(f"fetching {num_samples} samples from feature-store")
+        self.logger.info(f"fetching {self.num_samples} samples from feature-store")
 
-        self.fs_handle = FeatureStoreHandle(
-            feast_config_bucket=self.data_fetch_params.feast_config_bucket,
-            config_file=self.data_fetch_params.config_file,
-            local_config_dir=self.data_fetch_params.local_config_dir,
-            data_source=self.data_fetch_params.redshift_table,
-            data_id_key=self.data_fetch_params.entity_join_key,
-            limit=num_samples,
-        )
+        self.fs = FeastFeatureStore.from_settings(self.data_fetch_params)
 
     def upload_training_data_to_s3(self) -> None:
         """Upload the training dataset to S3.
@@ -236,4 +191,5 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     def __call__(self) -> None:
         """Call Method."""
         self.get_training_data()
+        # Disable model upload when running in EC2 as a temporary solution.
         self.upload_training_data_to_s3()
