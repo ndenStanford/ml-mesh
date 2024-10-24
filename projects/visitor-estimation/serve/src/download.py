@@ -4,7 +4,10 @@
 
 # Standard Library
 import os
+
+# 3rd party libraries
 import boto3
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.pydantic import cast
@@ -29,68 +32,63 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     )
     # model registry reference to the desired (compiled) model version
     # initialize client for specific model version
-
-    s3 = session.client('s3')
+    s3 = session.client("s3")
     try:
         session = boto3.Session()
         current_region = session.region_name
-
         # Print the current AWS region
         print(f"Current AWS region: {current_region}")
-
         # Create an S3 client
-
         # List all S3 buckets
         response = s3.list_buckets()
-
         # Print bucket names
         print("Available S3 buckets:")
-        for bucket in response['Buckets']:
+        for bucket in response["Buckets"]:
             print(f"- {bucket['Name']}")
     except Exception as e:
-        print('=======================error', e)
+        print("=======================error", e)
 
     try:
-        bucket_name = 'onclusive-model-store-prod'
+        bucket_name = "onclusive-model-store-prod"
         folders = [
-            'neptune-ai-model-registry',
-            'onclusive',
-            'visitor-estimation',
-            'VE-TRAINED',
-            'VE-TRAINED-159',
-            'model',
-            'model_artifacts',
-            'model',
-            'model_artifacts'
+            "neptune-ai-model-registry",
+            "onclusive",
+            "visitor-estimation",
+            "VE-TRAINED",
+            "VE-TRAINED-159",
+            "model",
+            "model_artifacts",
+            "model",
+            "model_artifacts",
         ]
-        file_key = 'relevancemap.pkl'
+        file_key = "relevancemap.pkl"
 
         def check_s3_folder_exists(bucket, prefix):
-            result = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, Delimiter='/')
-            return 'CommonPrefixes' in result
-        
-        current_prefix = ''
+            result = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, Delimiter="/")
+            return "CommonPrefixes" in result
+
+        current_prefix = ""
         for folder in folders:
-            current_prefix = f'{current_prefix}{folder}/'
+            current_prefix = f"{current_prefix}{folder}/"
             if check_s3_folder_exists(bucket_name, current_prefix):
-                print(f'Folder {current_prefix} exists in S3.')
+                print(f"Folder {current_prefix} exists in S3.")
             else:
-                print(f'Folder {current_prefix} does not exist in S3.')
+                print(f"Folder {current_prefix} does not exist in S3.")
                 break
         else:
             # Finally, check if the file exists
-            full_file_key = f'{current_prefix}relevancemap.pkl'
+            full_file_key = f"{current_prefix}relevancemap.pkl"
             try:
                 s3.head_object(Bucket=bucket_name, Key=full_file_key)
-                print(f'File {full_file_key} exists in S3.')
+                print(f"File {full_file_key} exists in S3.")
             except s3.exceptions.ClientError as e:
-                if e.response['Error']['Code'] == "404":
-                    print(f'File {full_file_key} does not exist in S3.')
+                if e.response["Error"]["Code"] == "404":
+                    print(f"File {full_file_key} does not exist in S3.")
                 else:
                     raise
 
     except Exception as e:
-        print('>>>>>>>>>>>>>>>>>>>error', e)
+        print(">>>>>>>>>>>>>>>>>>>error", e)
 
     mv = TrackedModelVersion(
         with_id=settings.with_id,

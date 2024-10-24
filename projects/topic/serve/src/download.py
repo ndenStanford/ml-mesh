@@ -2,6 +2,8 @@
 
 # Standard Library
 import os
+
+# 3rd party libraries
 import boto3
 
 # Internal libraries
@@ -26,26 +28,21 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
     # initialize client for specific model version
-
     try:
         session = boto3.Session()
         current_region = session.region_name
-
         # Print the current AWS region
         print(f"Current AWS region: {current_region}")
-
         # Create an S3 client
-        s3_client = session.client('s3')
-
+        s3_client = session.client("s3")
         # List all S3 buckets
         response = s3_client.list_buckets()
-
         # Print bucket names
         print("Available S3 buckets:")
-        for bucket in response['Buckets']:
+        for bucket in response["Buckets"]:
             print(f"- {bucket['Name']}")
     except Exception as e:
-        print('=======================error', e)
+        print("=======================error", e)
 
     mv = TrackedModelVersion(
         with_id=settings.with_id,
