@@ -11,6 +11,7 @@ from feast.infra.offline_stores.redshift import (
     RedshiftOfflineStore,
     RedshiftOfflineStoreConfig,
 )
+from feast.infra.online_stores.dynamodb import DynamoDBOnlineStoreConfig
 from feast.infra.registry.registry import Registry
 from feast.infra.registry.sql import SqlRegistryConfig
 from pydantic import SecretStr
@@ -66,12 +67,17 @@ class FeastFeatureStore(BaseFeatureStore):
             s3_staging_location=self.redshift_s3_staging_directory,
             iam_role=self.redshift_iam_role,
         )
+        # Adding the online store configuration for DynamoDB
+        online_store = DynamoDBOnlineStoreConfig(
+            region=self.redshift_cluster_region  # Use the appropriate AWS region
+        )
 
         return RepoConfig(
             project=self.project,
             provider="aws",
             registry=registry_config,
             offline_store=offline_store,
+            online_store=online_store,  # Add the online store configuration
             entity_key_serialization_version=2,
         )
 
