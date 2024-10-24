@@ -21,7 +21,7 @@ def TestDyntasticModel():
     class TestDyntasticModelInner(Dyntastic):
         """A minimal Dyntastic model for testing DynamoDBModel."""
 
-        __table_name__ = "test_table"
+        __table_name__ = "test_dynamodb_table"
         __hash_key__ = "id"
         __table_region__ = "us-east-1"
 
