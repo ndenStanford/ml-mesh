@@ -3,6 +3,9 @@
 # Standard Library
 from unittest.mock import patch
 
+# 3rd party libraries
+import pytest
+
 # Internal libraries
 from onclusiveml.models.sentiment import CompiledSentiment
 
@@ -26,3 +29,23 @@ def test_served_model_load(mock_from_pretrained, served_model):
     mock_from_pretrained.assert_called_with(
         served_model.served_model_artifacts.model_artifact_directory
     )
+
+
+@pytest.mark.parametrize(
+    "content, expected_result",
+    [
+        ("Short", False),
+        ("This sentence is long enough.", True),
+        ("   Spaces   around   ", True),
+        ("!@#$%^&*()_+", False),
+        ("Valid with some !@#$% punctuation.", True),
+        ("", False),
+        (" ", False),
+        ("This is a sentence with numbers 123 and symbols !@#.", True),
+        ("Thísíßåñexåmple∑ithünicode", True),
+        ("北京是中国的首都。我很想去那里度假。", True),
+    ],
+)
+def test_validate_content(served_model, content, expected_result):
+    """Test validate content method."""
+    assert served_model.validate_content(content) == expected_result

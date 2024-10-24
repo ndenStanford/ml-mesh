@@ -18,20 +18,7 @@ from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
-from onclusiveml.feature_store.on_demand.iptc.class_dict import (
-    CANDIDATE_DICT_FIRST,
-    CANDIDATE_DICT_FOURTH,
-    CANDIDATE_DICT_SECOND,
-    CANDIDATE_DICT_THIRD,
-    ID_TO_LEVEL,
-    ID_TO_TOPIC,
-)
-from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
-    NAME_MAPPING_DICT_FIRST,
-    NAME_MAPPING_DICT_SECOND,
-    NAME_MAPPING_DICT_THIRD,
-)
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
@@ -39,7 +26,20 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
+from src.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+)
 from src.dataset import IPTCDataset
+from src.name_mapping_dict import (
+    NAME_MAPPING_DICT_FIRST,
+    NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
+)
 from src.utils import (
     compute_metrics,
     extract_model_id,
@@ -57,14 +57,14 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        data_fetch_params: FeastFeatureStoreSettings,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            data_fetch_params (FeastFeatureStoreSettings): Parameters for fetching data from feature store.
 
         Returns: None
         """
@@ -91,53 +91,50 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.data_fetch_params = data_fetch_params
         data_fetch_configurations = {
             1: {
-                "entity_name": "iptc_first_level",
-                "feature_view_name": "iptc_first_level_feature_view",
-                "redshift_table": "iptc_first_level",
-                "filter_columns": [],
-                "filter_values": [],
-                "comparison_operators": [],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
+                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """,
+                "features": [
+                    "iptc_first_level:topic_1",
+                    "iptc_first_level:content",
+                    "iptc_first_level:title",
+                    "iptc_first_level_on_demand_feature_view:topic_1_llm",
                 ],
             },
             2: {
-                "entity_name": "iptc_second_level",
-                "feature_view_name": "iptc_second_level_feature_view",
-                "redshift_table": "iptc_second_level",
-                "filter_columns": ["topic_1"],
-                "filter_values": [filtered_value],
-                "comparison_operators": ["equal"],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                    "topic_1",
+                "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
+                                FROM "features"."pred_iptc_second_level"
+                                WHERE topic_1 = '{filtered_value}' """,
+                "features": [
+                    "iptc_second_level:topic_1",
+                    "iptc_second_level:topic_2",
+                    "iptc_second_level:content",
+                    "iptc_second_level:title",
+                    "iptc_second_level_on_demand_feature_view:topic_2_llm",
                 ],
             },
             3: {
-                "entity_name": "iptc_third_level",
-                "feature_view_name": "iptc_third_level_feature_view",
-                "redshift_table": "iptc_third_level",
-                "filter_columns": ["topic_2"],
-                "filter_values": [filtered_value],
-                "comparison_operators": ["equal"],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                    "topic_1",
-                    "topic_2",
+                "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
+                                FROM "features"."pred_iptc_third_level"
+                                WHERE topic_2 = '{filtered_value}' """,
+                "features": [
+                    "iptc_third_level:topic_1",
+                    "iptc_third_level:topic_2",
+                    "iptc_third_level:topic_3",
+                    "iptc_third_level:content",
+                    "iptc_third_level:title",
+                    "iptc_third_level_on_demand_feature_view:topic_3_llm",
                 ],
             },
             4: {
-                "entity_name": "iptc_fourth_level",
-                "feature_view_name": "iptc_third_level_feature_view",
-                "redshift_table": "iptc_third_level",
-                "filter_columns": ["topic_3"],
-                "filter_values": [filtered_value],
-                "comparison_operators": ["equal"],
-                "non_nullable_columns": [
-                    model_card.model_params.selected_text,
-                    "topic_1",
-                    "topic_2",
-                    "topic_3",
+                "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
+                                FROM "features"."pred_iptc_third_level"
+                                WHERE topic_3 = '{filtered_value}' """,
+                "features": [
+                    "iptc_third_level:topic_1",
+                    "iptc_third_level:topic_2",
+                    "iptc_third_level:topic_3",
+                    "iptc_third_level:content",
+                    "iptc_third_level:title",
+                    "iptc_fourth_level_on_demand_feature_view:topic_4_llm",
                 ],
             },
         }
@@ -236,19 +233,29 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
-        # drop null
-        self.dataset_df: DataFrame = self.dataset_df.dropna(
-            subset=self.data_fetch_params.non_nullable_columns
-        )  # type: ignore
         # Filter out rows with invalid labels not in the candidate list
         self.logger.info("Filtering rows with invalid labels...")
         valid_labels = self.get_candidate_list(
             level=self.level
         )  # Implement this method to return the candidate dictionary
+        column_name = (
+            f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
+        )
+
         initial_row_count = len(self.dataset_df)
+        self.logger.info(f"Initial dataset size: {self.dataset_df.shape}")
+
+        # Drop empty rows
+        self.dataset_df: DataFrame = self.dataset_df.dropna()
+        filtered_row_count = len(self.dataset_df)
+        removed_rows = initial_row_count - filtered_row_count
+        self.logger.info(
+            f"Removed {removed_rows} empty rows. Filtered dataset size: {self.dataset_df.shape}"
+        )
+
         # Apply the filter
         self.dataset_df = self.dataset_df[
-            self.dataset_df[f"topic_{self.level}_llm"].isin(valid_labels)
+            self.dataset_df[column_name].isin(valid_labels)
         ]
         # Log the size after removing invalid labels
         filtered_row_count = len(self.dataset_df)
@@ -268,9 +275,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
-        class_distribution = self.dataset_df[
-            f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
-        ].value_counts(normalize=True)
+        class_distribution = self.dataset_df[column_name].value_counts(normalize=True)
         self.logger.info(
             f"Class distribution after dropping nulls: \n{class_distribution}"
         )
