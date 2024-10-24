@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/python-base:$BASE_IMAGE_TAG AS builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -42,12 +42,12 @@ RUN poetry install --no-interaction --no-ansi --only main && \
     poetry cache clear pypi --all -q
 
 # --- production stage
-FROM builder as production
+FROM builder AS production
 
 ENV PYTHONPATH=${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM builder AS development
 
 # install development dependencies
 RUN poetry install \
@@ -64,6 +64,6 @@ RUN poetry install \
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
 
 # --- debugger stage
-FROM builder as debugger
+FROM builder AS debugger
 
 RUN poetry install --no-interaction --with debug
