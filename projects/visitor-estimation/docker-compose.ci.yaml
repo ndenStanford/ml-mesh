@@ -47,5 +47,85 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    volumes:
+      - serve-volume:/projects/visitor-estimation/serve/models
+    build:
+      context: ../../
+      dockerfile: projects/visitor-estimation/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      cache_to:
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=visitor-estimation-serve,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=visitor-estimation-serve
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: visitor-estimation
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/visitor-estimation/v1/ready]
+      interval: 1m30s
+      retries: 3
+      start_period: 1m
+      timeout: 1m10s
+
+  # utility service: downloading the compiled model artifact that will be served
+  serve-download-model:
+    volumes:
+      - serve-volume:/projects/visitor-estimation/serve/models
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve, integration, functional, load]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
+    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
 networks:
   onclusive-net:
