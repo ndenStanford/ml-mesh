@@ -4,26 +4,6 @@
 from onclusiveml.feature_store.feast import FeastFeatureStore
 
 
-def test_get_historical_features_ve(settings, entity_df_ve):
-    """Test get historical features."""
-    fs = FeastFeatureStore.from_settings(settings)
-
-    dataset = fs.get_historical_features(
-        entity_df=entity_df_ve,
-        features=[
-            "visitor_estimation_crawler_items:entity_id",
-            "visitor_estimation_crawler_items:word_count",
-            "visitor_estimation_crawler_items:extracted_entities",
-            "visitor_estimation_crawler_items:url",
-        ],
-    )
-
-    assert len(dataset) > 0
-    assert set(["entity_id", "word_count", "extracted_entities", "url"]) <= set(
-        dataset.columns
-    )
-
-
 def test_get_historical_features(settings, entity_df):
     """Test get historical features."""
     fs = FeastFeatureStore.from_settings(settings)

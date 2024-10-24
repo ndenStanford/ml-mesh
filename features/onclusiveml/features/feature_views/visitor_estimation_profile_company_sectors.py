@@ -14,14 +14,14 @@ source = OnclusiveRedshiftSource(
     query="SELECT * FROM stage.stg_visitor_estimation__profile_company_sectors",
     schema="stage",
     table="stg_visitor_estimation__profile_company_sectors",
-    timestamp_field="created_at",
+    timestamp_field="event_timestamp",
 )
 
 # Define the feature view for profile_company_sectors
 feature_view = FeatureView(
     name="visitor_estimation_profile_company_sectors",
     entities=[entity],
-    ttl=timedelta(days=90),
+    ttl=timedelta(days=10000),
     schema=[
         Field(name="profile_id", dtype=types.String, description="Profile ID."),
         Field(name="url", dtype=types.String, description="URL."),
