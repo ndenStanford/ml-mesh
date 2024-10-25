@@ -39,6 +39,13 @@ def main(settings: OnclusiveBaseSettings) -> None:
     )
 
     logger.debug(f"Model card: {model_card}")
+    logger.debug("------------------------")
+    logger.debug("------------------------")
+    logger.debug("------------------------")
+    logger.debug(settings.model_directory(CompileWorkflowTasks.DOWNLOAD))
+    logger.debug("------------------------")
+    logger.debug("------------------------")
+    logger.debug("------------------------")
     # re-load the base model pipeline
     text_classification_pipeline = pipeline(
         task="text-classification",
