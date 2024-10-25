@@ -748,7 +748,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: neuron-inference
 
           # serve
