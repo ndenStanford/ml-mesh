@@ -3,9 +3,6 @@
 # Standard Library
 import os
 
-# 3rd party libraries
-import boto3
-
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.pydantic import cast

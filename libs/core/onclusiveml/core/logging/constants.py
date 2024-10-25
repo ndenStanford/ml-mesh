@@ -74,7 +74,6 @@ class OnclusiveService(OnclusiveStrEnum):
     # --- Transcript Segmentation
     TRANSCRIPT_SEGMENTATION = "transcript-segmentation-serve"
     # --- Visitor Estimation
-    VISITOR_ESTIMATION = "visitor-estimation-register"
     VISITOR_ESTIMATION_SERVE = "visitor-estimation-serve"
 
 
