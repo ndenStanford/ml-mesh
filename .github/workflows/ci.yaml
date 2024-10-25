@@ -1537,7 +1537,7 @@ jobs       :
       - get-target-branch-name
       - run-libs-tests
       - run-core-docker
-      - run-kubeflow-docker
+      # - run-kubeflow-docker
       - run-keywords-project
       - run-summarization-project
       - run-entity-linking-project
