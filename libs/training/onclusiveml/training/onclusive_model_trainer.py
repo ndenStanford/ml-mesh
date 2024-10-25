@@ -62,12 +62,17 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         if self.num_samples != "-1":
             entity_df = self.data_fetch_params.entity_df + f" LIMIT {self.num_samples}"
 
+        self.logger.info(f"entity_df query: \n {entity_df}")
+
         self.dataset_df = self.fs.get_historical_features(
             entity_df=entity_df,
             features=self.data_fetch_params.features,
         )
 
-        # Logging the initial dataset size
+        self.logger.info(
+            f"describe dataset from feature-store : \n {self.dataset_df.describe().to_string()}"
+        )
+
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
         self.logger.info(f"Raw dataset from feature-store :\n{self.dataset_df.head()}")
@@ -80,7 +85,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             f"Raw table columns from feature-store :\n{self.dataset_df.columns}"
         )
 
-        self.docs = self.dataset_df["content"].apply(str).values.tolist()
+        if "content" in self.dataset_df:
+            self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
     def get_featurestore(self) -> None:
         """Initialize feature store for the trainer class.

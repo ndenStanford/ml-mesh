@@ -2,7 +2,7 @@
 name = "training"
 version = "0.1.0"
 description = "Training module for OnclusiveML models."
- authors = ["vishal.singh <vishal.singh@onclusive.com>"]
+authors = ["vishal.singh <vishal.singh@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
