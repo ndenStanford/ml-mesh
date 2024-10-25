@@ -1415,8 +1415,6 @@ jobs       :
       compiled-project: ${{ matrix.models.compiled-project}}
       compiled-model: ${{ matrix.models.compiled-model}}
       runner-kind: ${{ matrix.models.runner-kind}}
-      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
-      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
