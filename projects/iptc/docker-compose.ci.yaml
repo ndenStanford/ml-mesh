@@ -104,7 +104,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-volume:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/iptc/compile/models/outputs # must be same as `IO_OUTPATH` env var
     build:
       context: ../../
       dockerfile: projects/iptc/compile/Dockerfile
@@ -147,7 +147,7 @@ services:
 
   compile-download-model:
     volumes:
-      - compile-volume:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/iptc/compile/models/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
@@ -167,7 +167,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-volume:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/iptc/compile/models/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/tests, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -183,7 +183,7 @@ services:
 
   compile-upload-model:
     volumes:
-      - compile-volume:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/iptc/compile/models/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
