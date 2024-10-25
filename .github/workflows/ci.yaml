@@ -723,20 +723,20 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # # train
-          # - name: train
-          #   download-model: false
-          #   integration: false
-          #   functional: false
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: custom
-          #   self-hosted-runner-type: g4dn.2xlarge
-          #   self-hosted-runner-ami: ami-03e4816f04f417e5a
-          #   self-hosted-runner-neuron: false
-          #   use-cache: true
-          #   push-image: true
-          #   base-image: gpu-base
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.2xlarge
+            self-hosted-runner-ami: ami-03e4816f04f417e5a
+            self-hosted-runner-neuron: false
+            use-cache: true
+            push-image: true
+            base-image: gpu-base
 
           # compile
           - name: compile
@@ -751,20 +751,20 @@ jobs       :
             push-image: true
             base-image: neuron-inference
 
-          # # serve
-          # - name: serve
-          #   download-model: true
-          #   integration: true
-          #   functional: true
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: custom
-          #   self-hosted-runner-type: inf1.xlarge
-          #   self-hosted-runner-ami: ami-00ca6f88d3e1669fb
-          #   self-hosted-runner-neuron: true
-          #   use-cache: true
-          #   push-image: ${{ github.event_name != 'pull_request' }}
-          #   base-image: neuron-inference
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-neuron: true
+            use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
 
     with:
       project: iptc
@@ -1508,32 +1508,32 @@ jobs       :
             compiled-model: IP00000000-COMPILED
             runner-kind: custom
 
-          # - project: iptc
-          #   tag: ${{ needs.run-repository-state.outputs.tag }}
-          #   uncompiled-project: onclusive/iptc-04000000
-          #   uncompiled-model: IP04000000-TRAINED
-          #   uncompiled-with-id: IP04000000-TRAINED-92
-          #   compiled-project: onclusive/iptc-04000000
-          #   compiled-model: IP04000000-COMPILED
-          #   runner-kind: custom
+          - project: iptc
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            uncompiled-project: onclusive/iptc-04000000
+            uncompiled-model: IP04000000-TRAINED
+            uncompiled-with-id: IP04000000-TRAINED-92
+            compiled-project: onclusive/iptc-04000000
+            compiled-model: IP04000000-COMPILED
+            runner-kind: custom
 
-          # - project: iptc
-          #   tag: ${{ needs.run-repository-state.outputs.tag }}
-          #   uncompiled-project: onclusive/iptc-20000170
-          #   uncompiled-model: IP20000170-TRAINED
-          #   uncompiled-with-id: IP20000170-TRAINED-35
-          #   compiled-project: onclusive/iptc-20000170
-          #   compiled-model: IP20000170-COMPILED
-          #   runner-kind: custom
+          - project: iptc
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            uncompiled-project: onclusive/iptc-20000170
+            uncompiled-model: IP20000170-TRAINED
+            uncompiled-with-id: IP20000170-TRAINED-35
+            compiled-project: onclusive/iptc-20000170
+            compiled-model: IP20000170-COMPILED
+            runner-kind: custom
 
-          # - project: iptc
-          #   tag: ${{ needs.run-repository-state.outputs.tag }}
-          #   uncompiled-project: onclusive/iptc-20000763
-          #   uncompiled-model: IP20000763-TRAINED
-          #   uncompiled-with-id: IP20000763-TRAINED-31
-          #   compiled-project: onclusive/iptc-20000763
-          #   compiled-model: IP20000763-COMPILED
-          #   runner-kind: custom
+          - project: iptc
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            uncompiled-project: onclusive/iptc-20000763
+            uncompiled-model: IP20000763-TRAINED
+            uncompiled-with-id: IP20000763-TRAINED-31
+            compiled-project: onclusive/iptc-20000763
+            compiled-model: IP20000763-COMPILED
+            runner-kind: custom
 
 
     with:
