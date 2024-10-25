@@ -1,6 +1,7 @@
 """DynamoDB Data Model."""
 
 # Standard Library
+from datetime import date
 from typing import Any, Dict, List
 
 # 3rd party libraries
@@ -120,6 +121,49 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             raise ValidationException(error=str(ve)) from ve
         except Exception as e:
             raise DataModelException(error=str(e)) from e
+
+    def get_query(self, query_profile: str, query_date: date) -> List:
+        """Get result for a certain query.
+
+        Args:
+            query_profile (str): query string.
+            query_date (date): Time for target query.
+
+        Returns:
+            T: The query related item, or None.
+
+        Raises:
+            QueryNotFoundException: If the query does not exist.
+            ValidationException: If the query is invalid.
+        """
+        try:
+            response = self.model.query(
+                IndexName="timestamp_date-index",
+                KeyConditionExpression=Key("timestamp_date").eq(query_date.isoformat()),
+            )
+
+            # Process the results
+            items = response["Items"]
+
+            # If there are more results (pagination), you can use the LastEvaluatedKey
+            while "LastEvaluatedKey" in response:
+                response = self.model.query(
+                    IndexName="timestamp_date-index",
+                    KeyConditionExpression=Key("timestamp_date").eq(
+                        query_date.isoformat()
+                    ),
+                    ExclusiveStartKey=response["LastEvaluatedKey"],
+                )
+                items.extend(response["Items"])
+
+            # get query items
+            query_items = []
+            for i in range(len(table_results)):
+                if table_results[i]["query_string"] == query_profile:
+                    query_items.append(table_results[i])
+            return query_items
+        except DoesNotExist:
+            raise QueryNotFoundException(query_profile=query_profile)
 
     def delete_one(self, id: str) -> Dyntastic:
         """Delete an item from the DynamoDB table by its ID.

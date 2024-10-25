@@ -1,6 +1,7 @@
 """Base CRUD Generator."""
 
 # Standard Library
+from datetime import date
 from typing import Any, Callable, Generic, List, Optional, Type, TypeVar, Union
 
 # 3rd party libraries
@@ -48,6 +49,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         update_route: Union[bool, depends] = True,
         delete_one_route: Union[bool, depends] = True,
         delete_all_route: Union[bool, depends] = True,
+        get_query_route: Union[bool, depends] = True,
         **kwargs: Any,
     ) -> None:
         """Initialize the CRUDGenerator.
@@ -65,6 +67,7 @@ class CRUDGenerator(Generic[T], APIRouter):
             update_route (Union[bool, depends], optional): Whether to include the update route
             delete_one_route (Union[bool, depends], optional): Whether to include the delete_one
             delete_all_route (Union[bool, depends], optional): Whether to include the delete_all
+            get_query_route (Union[bool, depends], optional): Whether to include the get_query route
             **kwargs: Additional keyword arguments passed to the APIRouter.
         """
         self.schema = schema
@@ -144,6 +147,18 @@ class CRUDGenerator(Generic[T], APIRouter):
                 ),
             )
 
+        if get_query_route:
+            self.add_api_route(
+                "/{query_profile}",
+                self.get_route_get_query(),
+                methods=["GET"],
+                response_model=self.schema,
+                summary="Get query",
+                dependencies=(
+                    get_query_route if isinstance(get_query_route, list) else []
+                ),
+            )
+
     def get_route_get_all(self) -> Callable[..., Any]:
         """Create the route_get_all function."""
 
@@ -220,6 +235,17 @@ class CRUDGenerator(Generic[T], APIRouter):
 
         return route_delete_one
 
+    def get_route_get_query(self) -> Callable[..., Any]:
+        """Create the route_get_query function."""
+
+        def route_get_query(query_profile: str, query_date: date):
+            try:
+                return self.model.get_query(query_profile, query_date)
+            except QueryNotFoundException:
+                raise HTTPException(404, f"Query {query_profile} does not exist.")
+
+        return route_get_query
+
     def _add_api_route(
         self,
         path: str,
@@ -290,4 +316,12 @@ class CRUDGenerator(Generic[T], APIRouter):
         Returns:
             List[str]: A list of route names.
         """
-        return ["get_all", "create", "delete_all", "get_one", "update", "delete_one"]
+        return [
+            "get_all",
+            "create",
+            "delete_all",
+            "get_one",
+            "update",
+            "delete_one",
+            "get_query",
+        ]

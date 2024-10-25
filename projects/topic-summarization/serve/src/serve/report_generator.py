@@ -1,46 +1,52 @@
 """Topic summarization report generator."""
 
 # 3rd party libraries
+
 # Standard Library
 from datetime import datetime
 
+# 3rd party libraries
 from fastapi import APIRouter, HTTPException
 
 # Internal libraries
 from onclusiveml.data.data_model.dynamodb import DynamoDBModel
 
-from src.serve.tables import TopicSummaryResponseDB
+# Source
+from src.serve.tables import TopicSummaryDynamoDB
 
 
 def get_topic_summarization_report_router() -> APIRouter:
     """Create a router for fetching filtered topic summarization reports."""
     # Initialize a FastAPI router
     router = APIRouter()
-
     # Initialize the DynamoDB model
-    response_model = DynamoDBModel(model=TopicSummaryResponseDB)
+    response_model = DynamoDBModel(model=TopicSummaryDynamoDB)
 
     # Define the route for the report
     @router.get("/topic-summarization/report")
     async def get_filtered_report(
         query_string: str,
         topic_id: int,
-        start_time: datetime,
-        end_time: datetime,
+        start_date: datetime,
+        end_date: datetime,
     ):
         try:
             # Fetch all items from DynamoDB
-            all_items = response_model.get_all()
+            all_items = []
+            current_date = start_date
+            while current_date <= end_date:
+                # Fetch results for the current date using get_query
+                query_results = response_model.get_query(
+                    query_profile=query_profile, query_date=current_date
+                )
+                all_items.extend(query_results)  # Combine results from each day
 
+                current_date += timedelta(days=1)
             # Apply filtering based on query_profile, topic_id, and time range
             filtered_items = [
                 item
                 for item in all_items
-                if item["query_string"] == query_string
-                and item["topic_id"] == topic_id
-                and item["trending"] is True
-                and (start_time is None or item["timestamp"] >= start_time)
-                and (end_time is None or item["timestamp"] <= end_time)
+                if item["topic_id"] == topic_id and item["trending"] is True
             ]
             report_list = [
                 {
@@ -55,7 +61,6 @@ def get_topic_summarization_report_router() -> APIRouter:
                 }
                 for item in filtered_items
             ]
-
             # Return the filtered items as a JSON response
             return report_list
 

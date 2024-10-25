@@ -2,6 +2,7 @@
 
 # Standard Library
 from abc import ABC, abstractmethod
+from datetime import date
 from typing import Any, Generic, List, Type, TypeVar
 
 # 3rd party libraries
@@ -97,6 +98,22 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             ItemNotFoundException: If the item does not exist.
             ValidationException: If the input data is invalid.
             DataModelException: For other data-related errors.
+        """
+
+    @abstractmethod
+    def get_query(self, query_profile: str, query_date: date) -> T:
+        """Get result for a certain query.
+
+        Args:
+            query_profile (str): query string.
+            query_date (date): Time for target query.
+
+        Returns:
+            T: The query related item, or None.
+
+        Raises:
+            QueryNotFoundException: If the query does not exist.
+            ValidationException: If the query is invalid.
         """
 
     @abstractmethod
