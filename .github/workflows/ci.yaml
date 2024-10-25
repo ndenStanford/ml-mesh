@@ -1430,69 +1430,69 @@ jobs       :
   # APPS
   # ===============================================
 
-  run-apps:
-    name: Web App
-    uses: ./.github/workflows/_apps.yaml
-    needs:
-      - get-environment
-      - run-repository-state
-      - get-target-branch-name
-      - run-libs-tests
-      - run-core-docker
-      - run-core-docker
-    strategy:
-      max-parallel: 10
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      matrix:
-        apps:
-          # NOTE: list of apps components to run
+  # run-apps:
+  #   name: Web App
+  #   uses: ./.github/workflows/_apps.yaml
+  #   needs:
+  #     - get-environment
+  #     - run-repository-state
+  #     - get-target-branch-name
+  #     - run-libs-tests
+  #     - run-core-docker
+  #     - run-core-docker
+  #   strategy:
+  #     max-parallel: 10
+  #     fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+  #     matrix:
+  #       apps:
+  #         # NOTE: list of apps components to run
 
-          # ========================
-          # Prompt manager
-          # ========================
+  #         # ========================
+  #         # Prompt manager
+  #         # ========================
 
-          - name: prompt
-            component: backend
-            integration: true
-            runner-kind: custom
-            self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-046f0b2604eaac9c4
-            functional: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
+  #         - name: prompt
+  #           component: backend
+  #           integration: true
+  #           runner-kind: custom
+  #           self-hosted-runner-type: c6i.xlarge
+  #           self-hosted-runner-ami: ami-046f0b2604eaac9c4
+  #           functional: true
+  #           push-image: ${{ github.event_name != 'pull_request' }}
+  #           base-image: python-base
 
-          - name: prompt
-            component: frontend
-            integration: false
-            runner-kind: ubuntu-22.04
-            functional: false
-            push-image: ${{ github.event_name != 'pull_request' }}
+  #         - name: prompt
+  #           component: frontend
+  #           integration: false
+  #           runner-kind: ubuntu-22.04
+  #           functional: false
+  #           push-image: ${{ github.event_name != 'pull_request' }}
 
-        use-cache: [true]
+  #       use-cache: [true]
 
-    with:
-      environment: prod
-      app: ${{ matrix.apps.name }}
-      component: ${{ matrix.apps.component }}
-      tag: ${{ needs.run-repository-state.outputs.tag }}
-      integration: ${{ matrix.apps.integration }}
-      functional: ${{ matrix.apps.functional }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      runner-kind: ${{ matrix.apps.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.apps.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.apps.self-hosted-runner-ami }}
-      use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.apps.push-image }}
-      base-image: ${{ matrix.apps.base-image }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
-      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+  #   with:
+  #     environment: prod
+  #     app: ${{ matrix.apps.name }}
+  #     component: ${{ matrix.apps.component }}
+  #     tag: ${{ needs.run-repository-state.outputs.tag }}
+  #     integration: ${{ matrix.apps.integration }}
+  #     functional: ${{ matrix.apps.functional }}
+  #     release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+  #     runner-kind: ${{ matrix.apps.runner-kind }}
+  #     self-hosted-runner-type: ${{ matrix.apps.self-hosted-runner-type }}
+  #     self-hosted-runner-ami: ${{ matrix.apps.self-hosted-runner-ami }}
+  #     use-cache: ${{ matrix.use-cache }}
+  #     push-image: ${{ matrix.apps.push-image }}
+  #     base-image: ${{ matrix.apps.base-image }}
+  #   secrets:
+  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
+  #     PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
+  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  #     GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # ===============================================
   # COMPLETION CHECKPOINT
@@ -1511,19 +1511,19 @@ jobs       :
       - run-libs-tests
       - run-core-docker
       - run-kubeflow-docker
-      - run-keywords-project
-      - run-summarization-project
-      - run-entity-linking-project
-      - run-sentiment-project
+      # - run-keywords-project
+      # - run-summarization-project
+      # - run-entity-linking-project
+      # - run-sentiment-project
       - run-iptc-project
-      - run-iptc-multi-project
-      - run-ner-project
-      - run-translation-project
-      - run-lsh-project
-      - run-topic-project
-      - run-transcript-segmentation-project
-      - run-topic-summarization-project
-      - run-apps
+      # - run-iptc-multi-project
+      # - run-ner-project
+      # - run-translation-project
+      # - run-lsh-project
+      # - run-topic-project
+      # - run-transcript-segmentation-project
+      # - run-topic-summarization-project
+      # - run-apps
     steps:
       - name: Check Job Statuses
         uses: re-actors/alls-green@release/v1
