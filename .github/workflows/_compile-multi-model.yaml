@@ -189,7 +189,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
             ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
             ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
@@ -205,7 +205,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
             ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
             ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
@@ -222,7 +222,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
             ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
             ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
@@ -240,7 +240,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
             ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
             ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
