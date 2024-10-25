@@ -1328,7 +1328,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
-            push-image: ${{ github.event_name == 'pull_request' }}
+            push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
 
     with:
