@@ -63,7 +63,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
     # get read-only base model version
     trained_model_version = TrackedModelVersion(
         with_id=settings.with_id,
-        mode=settings.mode,
+        # mode=settings.mode,
         api_token=settings.api_token.get_secret_value(),
         project=settings.project,
     )
