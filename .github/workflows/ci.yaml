@@ -747,7 +747,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-22.04
             self-hosted-runner-neuron: false
-            use-cache: true
+            use-cache: false
             push-image: true
             base-image: neuron-inference
 
