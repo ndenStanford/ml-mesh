@@ -49,11 +49,11 @@ services:
     depends_on:
       serve-iptc-00000000:
         condition: service_healthy
-      serve-iptc-02000000:
+      serve-iptc-04000000:
         condition: service_healthy
-      serve-iptc-20000082:
+      serve-iptc-20000170:
         condition: service_healthy
-      serve-iptc-20000121:
+      serve-iptc-20000763:
         condition: service_healthy
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/live]
@@ -101,11 +101,11 @@ services:
     depends_on:
       serve-iptc-00000000:
         condition: service_healthy
-      serve-iptc-02000000:
+      serve-iptc-04000000:
         condition: service_healthy
-      serve-iptc-20000082:
+      serve-iptc-20000170:
         condition: service_healthy
-      serve-iptc-20000121:
+      serve-iptc-20000763:
         condition: service_healthy
     healthcheck:
       test: [CMD, curl, -f, http://serve-debug:8000/iptc-multi/v1/live]
@@ -126,7 +126,13 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-113
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-00000000
+      ONCLUSIVEML_NEPTUNE_MODEL: 00000000-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-00000000
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP00000000-COMPILED-113
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
@@ -137,14 +143,14 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/iptc-00000000
       NEPTUNE_MODEL_ID: IPTC-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: IP00000000-COMPILED-4
+      NEPTUNE_MODEL_VERSION_ID: IP00000000-COMPILED-113
       IPTC_MODEL_NAME: iptc-00000000
       COMPILED_PROJECT: onclusive/iptc-00000000
       COMPILED_MODEL: IP00000000-COMPILED
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug, functional]
+    profiles: [serve, debug, functional]
     command:
       - /bin/sh
       - -c
@@ -163,7 +169,7 @@ services:
       start_period: 10s
       timeout: 30s
 
-  serve-iptc-02000000:
+  serve-iptc-04000000:
     devices:
       - /dev/neuron1:/dev/neuron1
     volumes:
@@ -175,7 +181,13 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP02000000-COMPILED-18
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP04000000-COMPILED-58
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-04000000
+      ONCLUSIVEML_NEPTUNE_MODEL: IP04000000-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-04000000
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP04000000-COMPILED-58
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
@@ -184,16 +196,16 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/iptc-02000000
+      NEPTUNE_PROJECT: onclusive/iptc-04000000
       NEPTUNE_MODEL_ID: IPTC-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: IP02000000-COMPILED-18
-      IPTC_MODEL_NAME: iptc-02000000
-      COMPILED_PROJECT: onclusive/iptc-02000000
-      COMPILED_MODEL: IP02000000-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP04000000-COMPILED-58
+      IPTC_MODEL_NAME: iptc-04000000
+      COMPILED_PROJECT: onclusive/iptc-04000000
+      COMPILED_MODEL: IP04000000-COMPILED
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug, functional]
+    profiles: [serve, debug, functional]
     command:
       - /bin/sh
       - -c
@@ -206,13 +218,13 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve-iptc-02000000:8000/iptc-02000000/v1/ready]
+      test: [CMD, curl, -f, http://serve-iptc-04000000:8000/iptc-04000000/v1/ready]
       interval: 15s
       retries: 5
       start_period: 10s
       timeout: 30s
 
-  serve-iptc-20000082:
+  serve-iptc-20000170:
     devices:
       - /dev/neuron2:/dev/neuron2
     volumes:
@@ -224,7 +236,13 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP20000082-COMPILED-5
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP20000170-COMPILED-9
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-20000170
+      ONCLUSIVEML_NEPTUNE_MODEL: IP20000170-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-20000170
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP20000170-COMPILED-9
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
@@ -233,16 +251,16 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/iptc-20000082
-      NEPTUNE_MODEL_ID: IP20000082-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: IP20000082-COMPILED-5
-      IPTC_MODEL_NAME: iptc-20000082
-      COMPILED_PROJECT: onclusive/iptc-20000082
-      COMPILED_MODEL: IP20000082-COMPILED
+      NEPTUNE_PROJECT: onclusive/iptc-20000170
+      NEPTUNE_MODEL_ID: IP20000170-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP20000170-COMPILED-9
+      IPTC_MODEL_NAME: iptc-20000170
+      COMPILED_PROJECT: onclusive/iptc-20000170
+      COMPILED_MODEL: IP20000170-COMPILED
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug, functional]
+    profiles: [serve, debug, functional]
     command:
       - /bin/sh
       - -c
@@ -255,14 +273,13 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve-iptc-20000082:8000/iptc-20000082/v1/ready]
+      test: [CMD, curl, -f, http://serve-iptc-20000170:8000/iptc-20000170/v1/ready]
       interval: 15s
       retries: 5
       start_period: 10s
       timeout: 30s
 
-
-  serve-iptc-20000121:
+  serve-iptc-20000763:
     devices:
       - /dev/neuron3:/dev/neuron3
     volumes:
@@ -274,7 +291,13 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP02000000-COMPILED-18
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP20000763-COMPILED-2
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-20000763
+      ONCLUSIVEML_NEPTUNE_MODEL: 20000763-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-20000763
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP20000763-COMPILED-2
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
@@ -283,16 +306,16 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/iptc-02000000
+      NEPTUNE_PROJECT: onclusive/iptc-20000763
       NEPTUNE_MODEL_ID: IPTC-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: IP02000000-COMPILED-18
-      IPTC_MODEL_NAME: iptc-02000000
-      COMPILED_PROJECT: onclusive/iptc-20000121
-      COMPILED_MODEL: IP02000000-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP20000763-COMPILED-2
+      IPTC_MODEL_NAME: iptc-20000763
+      COMPILED_PROJECT: onclusive/iptc-20000763
+      COMPILED_MODEL: IP20000763-COMPILED
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug, functional]
+    profiles: [serve, debug, functional]
     command:
       - /bin/sh
       - -c
@@ -305,7 +328,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve-iptc-20000121:8000/iptc-02000000/v1/ready]
+      test: [CMD, curl, -f, http://serve-iptc-20000763:8000/iptc-20000763/v1/ready]
       interval: 15s
       retries: 5
       start_period: 10s
