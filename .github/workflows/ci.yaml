@@ -819,11 +819,13 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-22.04
-            self-hosted-runner-neuron: false
+            runner-kind: custom
+            self-hosted-runner-neuron: true
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
+            self-hosted-runner-type: inf1.6xlarge
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            base-image: neuron-inference
 
     with:
       project: iptc-multi
