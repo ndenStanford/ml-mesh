@@ -311,3 +311,6 @@ services:
 
 networks:
   onclusive-net:
+
+volumes :
+  serve-volume:
