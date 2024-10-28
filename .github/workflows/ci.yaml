@@ -1339,6 +1339,8 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
+            self-hosted-runner-type: None
+            self-hosted-runner-neuron: false
             push-image: true
 
             base-image: python-base
