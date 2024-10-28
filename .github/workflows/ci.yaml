@@ -815,7 +815,7 @@ jobs       :
           - name: serve
             download-model: false
             integration: true
-            functional: false
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
