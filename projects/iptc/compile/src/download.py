@@ -25,7 +25,6 @@ def main(settings: OnclusiveBaseSettings) -> None:
     # initialize client for specific model version
     model_version = TrackedModelVersion(
         with_id=settings.with_id,
-        mode=settings.mode,
         api_token=settings.api_token.get_secret_value(),
         project=settings.project,
     )

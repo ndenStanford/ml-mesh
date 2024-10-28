@@ -75,6 +75,7 @@ class OnclusiveService(OnclusiveStrEnum):
     TRANSCRIPT_SEGMENTATION = "transcript-segmentation-serve"
     # --- Visitor Estimation
     VISITOR_ESTIMATION_SERVE = "visitor-estimation-serve"
+    VISITOR_ESTIMATION_TRAIN = "visitor-estimation-train"
 
 
 class OnclusiveLogMessageFormat(OnclusiveStrEnum):
