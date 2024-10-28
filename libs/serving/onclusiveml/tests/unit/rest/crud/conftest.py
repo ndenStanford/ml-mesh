@@ -23,7 +23,7 @@ def TestDyntasticModel():
     class TestDyntasticModelInner(Dyntastic):
         """A minimal Dyntastic model for testing DynamoDBModel."""
 
-        __table_name__ = "test_table"
+        __table_name__ = "test_table_1"
         __hash_key__ = "id"
         __table_region__ = "us-east-1"
 
@@ -51,7 +51,14 @@ def app(dynamo_db_model, TestDyntasticModel):
     from fastapi import FastAPI
 
     # Internal libraries
-    from onclusiveml.core.base import OnclusiveBaseModel
+    from onclusiveml.core.base import (
+        OnclusiveBaseModel,
+        OnclusiveFrozenSettings,
+    )
+
+    class api_settings(OnclusiveFrozenSettings):
+        model_name: str = "test-service"
+        api_version: str = "v1"
 
     # Define the schema
     class ItemSchema(OnclusiveBaseModel):
@@ -76,7 +83,8 @@ def app(dynamo_db_model, TestDyntasticModel):
             create_schema=CreateItemSchema,
             update_schema=UpdateItemSchema,
             model=dynamo_db_model,
-            prefix="/items",
+            api_settings=api_settings(),
+            entity_name="test_table",
             tags=["Items"],
         )
     )

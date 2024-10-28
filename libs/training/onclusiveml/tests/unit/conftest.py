@@ -4,7 +4,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
@@ -63,18 +63,10 @@ def tracked_model_card() -> TrackedModelCard:
 
 
 @pytest.fixture
-def feature_store_params() -> FeatureStoreParams:
-    """Generate FeatureStoreParams for testing purposes.
+def feature_store_params() -> FeastFeatureStoreSettings:
+    """Generate FeastFeatureStoreSettings for testing purposes.
 
     Returns:
-        FeatureStoreParams: An instance of FeatureStoreParams initialized with dummy data.
+        FeastFeatureStoreSettings: An instance of FeastFeatureStoreSettings initialized with dummy data.
     """
-    return FeatureStoreParams(
-        feast_config_bucket="feast_config_bucket",
-        config_file="feature_store.yaml",
-        local_config_dir="local-config-dir",
-        redshift_database="redshift_database",
-        redshift_schema="feastredshift_schema",
-        redshift_table="redshift_table",
-        redshift_timestamp_field="event_timestamp",
-    )  # Provide appropriate parameters
+    return FeastFeatureStoreSettings()  # Provide appropriate parameters
