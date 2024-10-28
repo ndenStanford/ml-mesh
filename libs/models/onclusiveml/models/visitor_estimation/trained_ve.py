@@ -13,8 +13,8 @@ import pandas as pd
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.visitor_estimation.utils import (
-    getRelevancePercentile,
-    imputeByColumns,
+    get_relevance_percentile,
+    impute_by_columns,
 )
 
 
@@ -74,7 +74,7 @@ class TrainedVE:
         ]
         # Transpose and zip the times with the metrics to create metadata tuples
         md = list(zip(metadata_times, zip(*social_metrics)))
-        imputed_metadata = imputeByColumns(times, md)
+        imputed_metadata = impute_by_columns(times, md)
         imputed_metadata = [
             (
                 date,
@@ -104,7 +104,7 @@ class TrainedVE:
         # Adding the additional columns to match Scala's code
         metadata_df["entityTimestamp"] = pd.Timestamp(data["entityTimestamp"])
         metadata_df["namedEntityCount"] = data["namedEntityCount"]
-        metadata_df["relevancePercentile"] = getRelevancePercentile(
+        metadata_df["relevancePercentile"] = get_relevance_percentile(
             self.relevance_map, data["profileID"], data["relevance"]
         )
         metadata_df["pageRank"] = data["pagerank"]

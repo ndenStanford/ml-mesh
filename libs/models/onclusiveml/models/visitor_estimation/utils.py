@@ -4,7 +4,7 @@
 from collections import defaultdict
 
 
-def imputeClean(times, column):
+def impute_clean(times, column):
     """Impute missing values in a column based on linear interpolation between known values.
 
     Args:
@@ -42,7 +42,7 @@ def imputeClean(times, column):
     return acc
 
 
-def imputeColumn(times, column):
+def impute_column(times, column):
     """Filter out None values from the column and impute missing values.
 
     Args:
@@ -52,10 +52,10 @@ def imputeColumn(times, column):
     Returns:
         list: List of imputed values for the given times.
     """
-    return imputeClean(times, [(time, val) for time, val in column if val is not None])
+    return impute_clean(times, [(time, val) for time, val in column if val is not None])
 
 
-def maxOptions(rows):
+def max_options(rows):
     """Return the maximum values from each column across multiple rows.
 
     Args:
@@ -78,7 +78,7 @@ def maxOptions(rows):
     return result
 
 
-def mergeDuplicates(metadatas):
+def merge_duplicates(metadatas):
     """Merge duplicate rows by date, selecting the maximum value for each column.
 
     Args:
@@ -90,10 +90,10 @@ def mergeDuplicates(metadatas):
     grouped = defaultdict(list)
     for date, meta in metadatas:
         grouped[date].append(meta)
-    return sorted((date, maxOptions(rows)) for date, rows in grouped.items())
+    return sorted((date, max_options(rows)) for date, rows in grouped.items())
 
 
-def imputeByColumns(times, metadatas):
+def impute_by_columns(times, metadatas):
     """Impute metadata by columns over the given time intervals.
 
     Args:
@@ -103,17 +103,17 @@ def imputeByColumns(times, metadatas):
     Returns:
         list: A list of imputed metadata for each time interval.
     """
-    metadatas_new = mergeDuplicates(metadatas)
+    metadatas_new = merge_duplicates(metadatas)
     if all(len(x[1]) == 0 for x in metadatas_new):
         return [(time, []) for time in times]
-    rowData = [[(date, val) for val in metadata] for date, metadata in metadatas_new]
-    columns = list(zip(*rowData))
-    imputed_columns = [imputeColumn(times, column) for column in columns]
+    row_data = [[(date, val) for val in metadata] for date, metadata in metadatas_new]
+    columns = list(zip(*row_data))
+    imputed_columns = [impute_column(times, column) for column in columns]
     transposed_result = list(zip(*imputed_columns))
     return list(zip(times, transposed_result))
 
 
-def getRelevancePercentile(relevance_map, profile_id, relevance):
+def get_relevance_percentile(relevance_map, profile_id, relevance):
     """Get the relevance percentile for a given profile ID and relevance value.
 
     Args:
