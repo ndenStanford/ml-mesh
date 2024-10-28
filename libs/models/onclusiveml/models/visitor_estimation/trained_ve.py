@@ -13,6 +13,7 @@ import pandas as pd
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.visitor_estimation.utils import (
+    convert_df_columns_to_camel,
     get_relevance_percentile,
     impute_by_columns,
 )
@@ -59,18 +60,18 @@ class TrainedVE:
             pd.DataFrame: The processed data, ready for prediction with the model.
         """
         missing_placeholder = -1
-        times = pd.to_datetime(data["analyticsTimestamp"], errors="coerce")
+        times = pd.to_datetime(data["analytics_timestamp"], errors="coerce")
         social = data["social"]
-        metadata_times = pd.to_datetime(social["metadataTimestamp"], errors="coerce")
+        metadata_times = pd.to_datetime(social["metadata_timestamp"], errors="coerce")
         # Creating a list of social metrics as in Scala code
         social_metrics = [
-            social["fbLikes"],
-            social["fbComments"],
-            social["fbTotal"],
-            social["fbShares"],
-            social["linkedInShares"],
-            social["googlePlusones"],
-            social["twitterRetweets"],
+            social["fb_likes"],
+            social["fb_comments"],
+            social["fb_total"],
+            social["fb_shares"],
+            social["linkedIn_shares"],
+            social["google_plusones"],
+            social["twitter_retweets"],
         ]
         # Transpose and zip the times with the metrics to create metadata tuples
         md = list(zip(metadata_times, zip(*social_metrics)))
@@ -87,45 +88,50 @@ class TrainedVE:
         ]
         # Converting the imputed metadata into a DataFrame
         metadata_df = pd.DataFrame(
-            imputed_metadata, columns=["analyticsTimestamp", "metrics"]
+            imputed_metadata, columns=["analytics_timestamp", "metrics"]
         )
         social_cols = [
-            "fbLikes",
-            "fbComments",
-            "fbTotal",
-            "fbShares",
-            "linkedInShares",
-            "googlePlusones",
-            "twitterRetweets",
+            "fb_likes",
+            "fb_comments",
+            "fb_total",
+            "fb_shares",
+            "linkedIn_shares",
+            "google_plusones",
+            "twitter_retweets",
         ]
         for i, col in enumerate(social_cols):
             metadata_df[col] = metadata_df["metrics"].apply(lambda x: x[i])
         metadata_df.drop(columns="metrics", inplace=True)
         # Adding the additional columns to match Scala's code
-        metadata_df["entityTimestamp"] = pd.Timestamp(data["entityTimestamp"])
-        metadata_df["namedEntityCount"] = data["namedEntityCount"]
-        metadata_df["relevancePercentile"] = get_relevance_percentile(
-            self.relevance_map, data["profileID"], data["relevance"]
+        metadata_df = metadata_df.assign(
+            entity_timestamp=pd.Timestamp(data["entity_timestamp"]),
+            named_entity_count=data["named_entity_count"],
+            relevance_percentile=get_relevance_percentile(
+                self.relevance_map, data["profile_id"], data["relevance"]
+            ),
+            page_rank=data["page_rank"],
+            company_sector_id=data["company_sector_id"],
+            type=data["type_cd"],
+            category_id=data["category"],
+            word_count=data["word_count"],
+            domain_link_count=data["domain_link_count"],
+            non_domain_link_count=data["non_domain_link_count"],
+            is_syndicate_parent=data["is_syndicate_parent"],
+            is_syndicate_child=data["is_syndicate_child"],
         )
-        metadata_df["pageRank"] = data["pagerank"]
-        metadata_df["company_sector_id"] = data["companySectorId"]
-        metadata_df["type"] = data["typeCd"]
-        metadata_df["category_id"] = data["category"]
-        metadata_df["wordCount"] = data["wordCount"]
-        metadata_df["domainLinkCount"] = data["domainLinkCount"]
-        metadata_df["nonDomainLinkCount"] = data["nonDomainLinkCount"]
-        metadata_df["isSyndicateParent"] = data["isSyndicateParent"]
-        metadata_df["isSyndicateChild"] = data["isSyndicateChild"]
         # Calculating the maximum values for the social metrics
         social_maxes = (
             metadata_df[social_cols]
             .max()
-            .add_suffix("Max")
+            .add_suffix("_max")
             .to_frame()
             .T.reset_index(drop=True)
         )
         # Cross join the original DataFrame with the max values DataFrame
         result_df = metadata_df.merge(social_maxes, how="cross")
+        result_df = convert_df_columns_to_camel(
+            result_df, excluded_columns=["company_sector_id", "category_id"]
+        )
 
         return result_df
 

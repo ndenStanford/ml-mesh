@@ -132,3 +132,41 @@ def get_relevance_percentile(relevance_map, profile_id, relevance):
         return tree_map[closest_key] if closest_key is not None else 0.0
     else:
         return 0.0
+
+
+def snake_to_camel(snake_str):
+    """Convert a snake_case string to camelCase.
+
+    Args:
+        snake_str (str): The input string in snake_case format.
+
+    Returns:
+        str: The converted string in camelCase format.
+    """
+    components = snake_str.split("_")
+    camel_str = components[0] + "".join(x.title() for x in components[1:])
+    return camel_str
+
+
+def convert_df_columns_to_camel(df, excluded_columns=None):
+    """Convert the snake_case column names of a DataFrame to camelCase.
+
+    Args:
+        df (pd.DataFrame): The input DataFrame with column names in snake_case.
+        excluded_columns (list, optional): A list of columns to be excluded from conversion.
+
+    Returns:
+        pd.DataFrame: A DataFrame with column names converted to camelCase (except the excluded ones).
+    """
+    if excluded_columns is None:
+        excluded_columns = []
+
+    new_columns = []
+    for col in df.columns:
+        if col in excluded_columns:
+            new_columns.append(col)
+        else:
+            new_columns.append(snake_to_camel(col))
+
+    df.columns = new_columns
+    return df
