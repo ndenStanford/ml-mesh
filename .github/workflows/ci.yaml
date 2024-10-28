@@ -805,6 +805,7 @@ jobs       :
       - get-target-branch-name
       - run-libs-tests
       - run-core-docker
+      - run-iptc-project
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
