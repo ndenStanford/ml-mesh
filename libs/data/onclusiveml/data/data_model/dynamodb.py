@@ -1,7 +1,6 @@
 """DynamoDB Data Model."""
 
 # Standard Library
-from datetime import date
 from typing import Any, Dict, List
 
 # 3rd party libraries
@@ -122,12 +121,11 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def get_query(self, query_profile: str, query_date: date) -> List:
-        """Get result for a certain query.
+    def get_query(self, db_query: dict) -> List:
+        """Get result for a certain dynamodb search query.
 
         Args:
             query_profile (str): query string.
-            query_date (date): Time for target query.
 
         Returns:
             T: The query related item, or None.
@@ -137,30 +135,27 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             ValidationException: If the query is invalid.
         """
         try:
-            response = self.model.query(
-                IndexName="timestamp_date-index",
-                KeyConditionExpression=Key("timestamp_date").eq(query_date.isoformat()),
-            )
-
-            # Process the results
-            items = response["Items"]
-
-            # If there are more results (pagination), you can use the LastEvaluatedKey
-            while "LastEvaluatedKey" in response:
-                response = self.model.query(
-                    IndexName="timestamp_date-index",
-                    KeyConditionExpression=Key("timestamp_date").eq(
-                        query_date.isoformat()
-                    ),
-                    ExclusiveStartKey=response["LastEvaluatedKey"],
-                )
-                items.extend(response["Items"])
-
-            # get query items
-            query_items = []
-            for i in range(len(table_results)):
-                if table_results[i]["query_string"] == query_profile:
-                    query_items.append(table_results[i])
+            # Determin use query or scan
+            # if "KeyConditionExpression" in db_query or "IndexName" in db_query:
+            #     response = self.model.query(**db_query)
+            # else:
+            #     response = self.model.scan(**db_query)
+            # response = self.model.query(
+            #     #hash_key=db_query["name"],  # Specify the secondary index
+            #     #hash_key=Key("name").eq(db_query["name"]),
+            #     A.name==db_query["name"],
+            #     index="name-index"
+            #     #KeyConditionExpression=Key("name").eq("Ivan")
+            # )
+            response = self.model.query(**db_query)
+            # print('*********')
+            # print('*********')
+            # print('*********')
+            # print("Query results:")
+            query_items = [item.__dict__ for item in response]
+            # print('*********')
+            # print(query_items)
+            # query_items = response["Items"]
             return query_items
         except DoesNotExist:
             raise QueryNotFoundException(query_profile=query_profile)

@@ -2,7 +2,6 @@
 
 # Standard Library
 from abc import ABC, abstractmethod
-from datetime import date
 from typing import Any, Generic, List, Type, TypeVar
 
 # 3rd party libraries
@@ -101,12 +100,11 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         """
 
     @abstractmethod
-    def get_query(self, query_profile: str, query_date: date) -> T:
+    def get_query(self, db_query: dict) -> T:
         """Get result for a certain query.
 
         Args:
-            query_profile (str): query string.
-            query_date (date): Time for target query.
+            db_query (dict): dynamodb search query.
 
         Returns:
             T: The query related item, or None.

@@ -2,6 +2,7 @@
 
 # 3rd party libraries
 import pytest
+from boto3.dynamodb.conditions import Key
 
 # Internal libraries
 from onclusiveml.data.data_model.exception import (
@@ -175,3 +176,22 @@ def test_get_dynamodb_table_name(dynamo_db_model):
     """Test get dynamodb table name."""
     table_name = dynamo_db_model.table_name
     assert isinstance(table_name, str)
+
+
+def test_get_query(dynamo_db_model):
+    """Test get query from dynamodb table."""
+    items_data = [
+        {"name": "Name1", "age": 25},
+        {"name": "Name2", "age": 26},
+    ]
+    for item_data in items_data:
+        dynamo_db_model.create(item_data)
+    # db_query ={'FilterExpression':Attr("name").eq('Ivan')}
+    # db_query = {'index_name':"name-index",'name':'Ivan'}
+    # db_query = {'name':'Name1'}
+    # db_query = {A.name:'Name1',"index":"name-index"}
+    key_condition = Key("name").eq("Name1")
+    db_query = {"hash_key": key_condition, "index": "name-index"}
+
+    query_item = dynamo_db_model.get_query(db_query)
+    assert query_item[0]["age"] == 25

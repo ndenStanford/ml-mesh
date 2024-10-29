@@ -8,7 +8,7 @@ packages = [{include = "onclusiveml"}]
 [tool.poetry.dependencies]
 python = "3.9.19"
 core = {path = "../core"}
-dyntastic = "^0.14.0"
+dyntastic = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
 
