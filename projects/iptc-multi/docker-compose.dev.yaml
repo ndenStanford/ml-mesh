@@ -24,7 +24,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-client
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ENVIRONMENT: dev
