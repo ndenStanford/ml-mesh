@@ -18,7 +18,7 @@ multi_article_content = [
     "In 2019, the DFG had a budget of €3.3 billion for research funding.",
 ]  # noqa: E501
 
-keywords = ['German', 'funding']
+keywords = ["German", "funding"]
 
 unsupported_language_content = """
         Elon Musk was de tweede persoon ooit die een persoonlijk fortuin van meer dan 200 miljard dollar vergaarde en die drempel overschreed in januari 2021, maanden na Jeff Bezos.
@@ -246,6 +246,7 @@ def test_no_input_language(test_client, payload):
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
 
+
 @pytest.mark.parametrize(
     "payload",
     [
@@ -269,6 +270,7 @@ def test_single_article_auto_summary(test_client, payload):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
+
 
 @pytest.mark.parametrize(
     "payload",
@@ -320,6 +322,7 @@ def test_single_article_snippet_summary(test_client, payload):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
+
 
 @pytest.mark.parametrize(
     "payload",

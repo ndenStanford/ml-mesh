@@ -180,21 +180,10 @@ class SummarizationServedModel(ServedModel):
             raise PromptBackendException(message=str(q.content))
 
     def find_snippets(self, text: str, keywords: List[str]) -> List[str]:
-        """
-        Generates snippets of 150 characters around each occurrence of any keyword in the text.
-        If no keywords are found, returns the first 150 characters of the text once.
-
-        Args:
-            text (str): The text to search for keywords and extract snippets.
-            keywords (List[str]): A list of keywords to look for within the text.
-
-        Returns:
-            List[str]: A list of 150-character snippets, each centered around a keyword if found.
-                    If no keywords are present, the list contains the first 150 characters once.
-        """
+        """Generates snippets of 150 characters around each occurrence of any keyword in the text."""
         snippets = []
         text_len = len(text)
-        
+
         # Track if keywords exist in text
         keyword_found = False
 
@@ -210,9 +199,40 @@ class SummarizationServedModel(ServedModel):
         # If no keyword was found, add the first 150 characters once
         if not keyword_found and text_len > 0:
             snippets.append(text[:150].strip())
-        
+
         return snippets
-        
+
+    def _find_snippets(self, content, keywords, multiple_article_summary):
+        """Extract snippets based on keywords."""
+        if multiple_article_summary:
+            all_snippets = []
+            for text in content:
+                all_snippets.extend(self.find_snippets(text, keywords))
+            return all_snippets
+        else:
+            return self.find_snippets(content, keywords)
+
+    def _prepare_content(self, content, parameters):
+        """Prepare and validate content, handling multiple article cases."""
+        if isinstance(content, list):
+            multiple_article_summary = True
+        elif isinstance(content, str):
+            multiple_article_summary = False
+        else:
+            raise ValueError("Content must be a string or a list of strings.")
+
+        if parameters.summary_type == settings.snippet_summary_type:
+            content = self._find_snippets(
+                content, parameters.keywords, multiple_article_summary
+            )
+
+        if multiple_article_summary:
+            content = {
+                f"Article {i}": f"```{article}```" for i, article in enumerate(content)
+            }
+
+        return content, multiple_article_summary
+
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction.
 
@@ -220,32 +240,10 @@ class SummarizationServedModel(ServedModel):
             payload (PredictRequestSchema): prediction request payload.
         """
         parameters = payload.parameters
-        content = payload.attributes.content
-        # identify language (needed to retrieve the appropriate prompt)
-        
-        if isinstance(content, list):
-            multiple_article_summary = True
-        elif isinstance(content, str):
-             multiple_article_summary = False
-        else:
-            raise ValueError("Content must be a string or a list of strings.")
+        content, multiple_article_summary = self._prepare_content(
+            payload.attributes.content, parameters
+        )
 
-        
-        if parameters.summary_type == settings.snippet_summary_type:
-            if multiple_article_summary:            
-                all_snippets = []
-                for text in content:
-                    all_snippets.extend(self.find_snippets(text, parameters.keywords))
-                content = all_snippets
-            else:
-                content = self.find_snippets(content, parameters.keywords)
-            
-        if multiple_article_summary:
-            content = {
-                f"Article {i}": f"```{article}```"
-                for i, article in enumerate(content)
-            }
-     
         # detect content language
         detected_language = self._identify_language(str(content))
         logger.debug(f"Detected content language: {detected_language}")

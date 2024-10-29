@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
