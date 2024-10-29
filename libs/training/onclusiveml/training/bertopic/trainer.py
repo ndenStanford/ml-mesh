@@ -8,11 +8,11 @@ from typing import List
 import numpy as np
 from bertopic import BERTopic
 from bertopic.representation import MaximalMarginalRelevance
-from cuml.cluster import HDBSCAN
-from cuml.manifold import UMAP
+from hdbscan import HDBSCAN
 from neptune import init_run
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
+from umap import UMAP
 
 # Internal libraries
 from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
@@ -45,7 +45,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
-            data_fetch_params=data_fetch_params,
+            settings=data_fetch_params,
         )
 
     def initialize_embedding_model(self) -> None:
@@ -147,9 +147,9 @@ class BertopicTrainer(OnclusiveModelTrainer):
     def __call__(self) -> None:
         """Call Method."""
         super(BertopicTrainer, self).__call__()
-        self.logger.info(
-            f"Training data uploaded to s3 location : {self.full_file_key}"
-        )
+        # self.logger.info(
+        #     f"Training data uploaded to s3 location : {self.full_file_key}"
+        # )
         self.run = init_run()
         self.initialize_model()
         self.optimize_model()
