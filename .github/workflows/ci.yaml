@@ -822,7 +822,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-neuron: true
             self-hosted-runner-ami: ami-00ca6f88d3e1669fb
-            self-hosted-runner-type: inf6.xlarge
+            self-hosted-runner-type: inf1.6xlarge
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
