@@ -179,6 +179,40 @@ class SummarizationServedModel(ServedModel):
         else:
             raise PromptBackendException(message=str(q.content))
 
+    def find_snippets(self, text: str, keywords: List[str]) -> List[str]:
+        """
+        Generates snippets of 150 characters around each occurrence of any keyword in the text.
+        If no keywords are found, returns the first 150 characters of the text once.
+
+        Args:
+            text (str): The text to search for keywords and extract snippets.
+            keywords (List[str]): A list of keywords to look for within the text.
+
+        Returns:
+            List[str]: A list of 150-character snippets, each centered around a keyword if found.
+                    If no keywords are present, the list contains the first 150 characters once.
+        """
+        snippets = []
+        text_len = len(text)
+        
+        # Track if keywords exist in text
+        keyword_found = False
+
+        for keyword in keywords:
+            keyword_pos = text.lower().find(keyword.lower())
+            if keyword_pos != -1:
+                keyword_found = True
+                start = max(keyword_pos - 75, 0)
+                end = min(keyword_pos + 75, text_len)
+                snippet = text[start:end].strip()
+                snippets.append(snippet)
+
+        # If no keyword was found, add the first 150 characters once
+        if not keyword_found and text_len > 0:
+            snippets.append(text[:150].strip())
+        
+        return snippets
+        
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction.
 
@@ -188,17 +222,30 @@ class SummarizationServedModel(ServedModel):
         parameters = payload.parameters
         content = payload.attributes.content
         # identify language (needed to retrieve the appropriate prompt)
-        multiple_article_summary = False
-        try:
-            if isinstance(content, list):
-                multiple_article_summary = True
-                content = {
-                    f"Article {i}": f"```{article}```"
-                    for i, article in enumerate(content)
-                }
-        except Exception as e:
-            logger.warn("Cannot eval content. Assuming it to be string type.", e)
+        
+        if isinstance(content, list):
+            multiple_article_summary = True
+        elif isinstance(content, str):
+             multiple_article_summary = False
+        else:
+            raise ValueError("Content must be a string or a list of strings.")
 
+        
+        if parameters.summary_type == settings.snippet_summary_type:
+            if multiple_article_summary:            
+                all_snippets = []
+                for text in content:
+                    all_snippets.extend(self.find_snippets(text, parameters.keywords))
+                content = all_snippets
+            else:
+                content = self.find_snippets(content, parameters.keywords)
+            
+        if multiple_article_summary:
+            content = {
+                f"Article {i}": f"```{article}```"
+                for i, article in enumerate(content)
+            }
+     
         # detect content language
         detected_language = self._identify_language(str(content))
         logger.debug(f"Detected content language: {detected_language}")
@@ -233,7 +280,7 @@ class SummarizationServedModel(ServedModel):
 
         # retrieve prompt
         # depending on request parameters, we can determine what prompt to use.
-        if parameters.summary_type not in ("bespoke", "section"):
+        if parameters.summary_type not in settings.supported_summary_types:
             raise SummaryTypeNotSupportedException(summary_type=parameters.summary_type)
 
         try:
