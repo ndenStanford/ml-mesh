@@ -179,7 +179,9 @@ class SummarizationServedModel(ServedModel):
         else:
             raise PromptBackendException(message=str(q.content))
 
-    def find_snippets(self, text: str, keywords: List[str]) -> List[str]:
+    def find_snippets(
+        self, text: str, keywords: List[str], snippet_length: int
+    ) -> List[str]:
         """Generates snippets of 150 characters around each occurrence of any keyword in the text."""
         snippets = []
         text_len = len(text)
@@ -191,28 +193,34 @@ class SummarizationServedModel(ServedModel):
             keyword_pos = text.lower().find(keyword.lower())
             if keyword_pos != -1:
                 keyword_found = True
-                start = max(keyword_pos - 75, 0)
-                end = min(keyword_pos + 75, text_len)
+                start = max(keyword_pos - int(snippet_length / 2), 0)
+                end = min(keyword_pos + int(snippet_length / 2), text_len)
                 snippet = text[start:end].strip()
                 snippets.append(snippet)
 
         # If no keyword was found, add the first 150 characters once
         if not keyword_found and text_len > 0:
-            snippets.append(text[:150].strip())
+            snippets.append(text[:snippet_length].strip())
 
         return snippets
 
-    def _find_snippets(self, content, keywords, multiple_article_summary):
+    def _find_snippets(
+        self,
+        content: Union[List, str],
+        keywords: List[str],
+        multiple_article_summary: bool,
+        snippet_length: int,
+    ):
         """Extract snippets based on keywords."""
         if multiple_article_summary:
             all_snippets = []
             for text in content:
-                all_snippets.extend(self.find_snippets(text, keywords))
+                all_snippets.extend(self.find_snippets(text, keywords, snippet_length))
             return all_snippets
         else:
-            return self.find_snippets(content, keywords)
+            return self.find_snippets(content, keywords, snippet_length)
 
-    def _prepare_content(self, content, parameters):
+    def _prepare_content(self, content: Union[List, str], parameters: dict):
         """Prepare and validate content, handling multiple article cases."""
         if isinstance(content, list):
             multiple_article_summary = True
@@ -223,7 +231,10 @@ class SummarizationServedModel(ServedModel):
 
         if parameters.summary_type == settings.snippet_summary_type:
             content = self._find_snippets(
-                content, parameters.keywords, multiple_article_summary
+                content,
+                parameters.keywords,
+                multiple_article_summary,
+                settings.snippet_length,
             )
 
         if multiple_article_summary:

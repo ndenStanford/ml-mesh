@@ -38,7 +38,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
 
     supported_summary_types: List[str] = ["section", "bespoke", "auto", "snippet"]
     snippet_summary_type: str = "snippet"
-    snippet_summary_length: int = 50
+    snippet_length: int = 150
 
     summarization_prompts: Dict[LanguageIso, Dict[str, Union[str, Dict[str, str]]]] = {
         LanguageIso.EN: {
