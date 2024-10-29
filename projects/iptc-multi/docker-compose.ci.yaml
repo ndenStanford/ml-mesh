@@ -102,17 +102,7 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - serve-volume:/projects/iptc/serve/models
-    build:
-      context: ../../
-      dockerfile: projects/iptc/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: iptc
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -165,17 +155,7 @@ services:
       - /dev/neuron1:/dev/neuron1
     volumes:
       - serve-volume:/projects/iptc/serve/models
-    build:
-      context: ../../
-      dockerfile: projects/iptc/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: iptc
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -228,17 +208,7 @@ services:
       - /dev/neuron2:/dev/neuron2
     volumes:
       - serve-volume:/projects/iptc/serve/models
-    build:
-      context: ../../
-      dockerfile: projects/iptc/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: iptc
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -291,17 +261,7 @@ services:
       - /dev/neuron3:/dev/neuron3
     volumes:
       - serve-volume:/projects/iptc/serve/models
-    build:
-      context: ../../
-      dockerfile: projects/iptc/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: iptc
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10

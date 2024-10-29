@@ -748,7 +748,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: neuron-inference
 
           # serve
@@ -805,6 +805,7 @@ jobs       :
       - get-target-branch-name
       - run-libs-tests
       - run-core-docker
+      - run-iptc-project
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
