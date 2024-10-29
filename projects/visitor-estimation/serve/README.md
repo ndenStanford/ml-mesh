@@ -33,41 +33,41 @@ curl -X 'POST' 'http://0.0.0.0:8000/v1/visitor-estimation/predict' \
             "namespace": "visitor-estimation",
             "attributes": {
                 "input": [
-                    {
-                        "profileID": 2252,
-                        "analyticsTimestamp": [
-                            "2016-08-12T00:00:00",
-                            "2016-08-11T00:00:00",
-                            "2016-08-13T00:00:00",
+                            {
+                                "profile_id": 2252,
+                                "analytics_timestamp": [
+                                    "2016-08-12T00:00:00",
+                                    "2016-08-11T00:00:00",
+                                    "2016-08-13T00:00:00",
+                                ],
+                                "entity_timestamp": "2016-08-10T07:46:59",
+                                "social": {
+                                    "metadata_timestamp": [
+                                        "2016-08-11T00:00:00",
+                                        "2016-08-11T18:00:00",
+                                        "2016-08-12T10:00:00",
+                                    ],
+                                    "fb_likes": [1000, 1000, 1000],
+                                    "fb_comments": [1000, 1000, 1000],
+                                    "fb_total": [1000, 1000, 1000],
+                                    "fb_shares": [1000, 1000, 1000],
+                                    "linkedIn_shares": [1000, None, 1000],
+                                    "google_plusones": [1000, None, 1100],
+                                    "twitter_retweets": [1000, 1000, 1200],
+                                },
+                                "word_count": 500,
+                                "domain_link_count": 2,
+                                "non_domain_link_count": 0,
+                                "named_entity_count": 3,
+                                "relevance": 0.92,
+                                "page_rank": 7.3,
+                                "company_sector_id": 16,
+                                "type_cd": 3,
+                                "category": 2,
+                                "is_syndicate_child": False,
+                                "is_syndicate_parent": True,
+                            }
                         ],
-                        "entityTimestamp": "2016-08-10T07:46:59",
-                        "social": {
-                            "metadataTimestamp": [
-                                "2016-08-11T00:00:00",
-                                "2016-08-11T18:00:00",
-                                "2016-08-12T10:00:00",
-                            ],
-                            "fbLikes": [1000, 1000, 1000],
-                            "fbComments": [1000, 1000, 1000],
-                            "fbTotal": [1000, 1000, 1000],
-                            "fbShares": [1000, 1000, 1000],
-                            "linkedInShares": [1000, None, 1000],
-                            "googlePlusones": [1000, None, 1100],
-                            "twitterRetweets": [1000, 1000, 1200],
-                        },
-                        "wordCount": 500,
-                        "domainLinkCount": 2,
-                        "nonDomainLinkCount": 0,
-                        "namedEntityCount": 3,
-                        "relevance": 0.92,
-                        "pagerank": 7.3,
-                        "companySectorId": 10,
-                        "typeCd": 3,
-                        "category": 2,
-                        "isSyndicateChild": False,
-                        "isSyndicateParent": True,
-                    }
-                ],
             },
         }
     },'
