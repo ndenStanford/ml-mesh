@@ -26,7 +26,7 @@ services:
     ports:
       - 8000:8000
     environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-client
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ENVIRONMENT: dev
