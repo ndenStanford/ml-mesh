@@ -814,17 +814,17 @@ jobs       :
 
           # serve
           - name: serve
-            download-model: false
+            download-model: true
             integration: true
             functional: true
             load: false
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-neuron: true
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-type: inf6.xlarge
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
-            self-hosted-runner-type: inf1.6xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             base-image: neuron-inference
 
     with:
@@ -840,6 +840,8 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
