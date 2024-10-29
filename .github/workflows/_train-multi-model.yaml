@@ -117,7 +117,7 @@ jobs:
     name: '(Train &) register model: ${{ inputs.project }}'
     needs: check-run-criteria
     runs-on: ubuntu-22.04
-    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' && !inputs.skip }}
     environment: ${{ inputs.environment }}
     env:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
@@ -174,7 +174,6 @@ jobs:
         run: echo "The custom environment variable is $ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT"
 
       - name: Run project train component on sagemaker
-        if: ${{ !inputs.skip }}
         run: |
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
