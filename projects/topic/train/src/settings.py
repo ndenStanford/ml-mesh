@@ -5,7 +5,7 @@ import os
 from typing import List, Tuple
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
@@ -17,8 +17,8 @@ from onclusiveml.tracking import (
 class TrackedTopicModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
-    project: str = "onclusive/organic-topic"
-    model: str = "TOPICS-TRAINED"
+    project: str = "onclusive/topic"
+    model: str = "TOPIC-TRAINED"
 
 
 class TopicModelParams(TrackingSettings):
@@ -64,18 +64,22 @@ class TrackedTopicBaseModelCard(TrackedModelCard):
     logging_level: str = "INFO"
 
 
-class DataFetchParams(FeatureStoreParams):
+class DataFetchParams(FeastFeatureStoreSettings):
     """Feature registration inputs."""
 
-    entity_name: str
-    entity_join_key: str
-    feature_view_name: str
     dataset_upload_bucket: str
     dataset_upload_dir: str
-    save_artifact: bool = False
+    entity_name: str
+    entity_join_key: str
+    redshift_table: str
+    feature_view_name: str
+    entity_df: str = ""
+    features: List[str] = []
+    redshift_timestamp_field: str
+    save_artifact: bool = True
     n_records_sample: int
     n_records_full: int
-    filter_columns: List[str] = []
-    filter_values: List[str] = []
-    comparison_operators: List[str] = []
-    non_nullable_columns: List[str] = ["content"]
+    entity_name: str
+    entity_join_key: str
+    redshift_table: str
+    feature_view_name: str

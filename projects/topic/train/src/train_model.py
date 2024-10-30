@@ -25,6 +25,19 @@ def main() -> None:
     model_card = TrackedTopicBaseModelCard()
     data_fetch_params = DataFetchParams()
 
+    data_fetch_configurations = {
+        "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """,
+        "features": [
+            "topic_feature_view:topic_1",
+            "topic_feature_view:content",
+            "topic_feature_view:title",
+            "topic_feature_view:language",
+        ],
+    }
+
+    data_fetch_params.entity_df = data_fetch_configurations["entity_df"]
+    data_fetch_params.features = data_fetch_configurations["features"]
+
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
 
