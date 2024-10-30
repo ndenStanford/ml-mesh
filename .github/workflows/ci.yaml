@@ -1430,6 +1430,7 @@ jobs       :
             trained-model: IP00000000-TRAINED
             parameters: "{}"
             wait: false
+            skip: true
 
           - project: iptc
             sagemaker-runner-type: ml.g4dn.4xlarge
@@ -1438,6 +1439,7 @@ jobs       :
             trained-model: IP04000000-TRAINED
             parameters: "{}"
             wait: false
+            skip: true
 
           - project: iptc
             sagemaker-runner-type: ml.g4dn.4xlarge
@@ -1446,6 +1448,7 @@ jobs       :
             trained-model: IP20000170-TRAINED
             parameters: "{}"
             wait: false
+            skip: true
 
           - project: iptc
             sagemaker-runner-type: ml.g4dn.4xlarge
@@ -1454,6 +1457,7 @@ jobs       :
             trained-model: IP20000763-TRAINED
             parameters: "{}"
             wait: false
+            skip: true
 
     with:
       environment: prod
@@ -1464,6 +1468,7 @@ jobs       :
       trained-model: ${{ matrix.models.trained-model}}
       wait: ${{ matrix.models.wait}}
       parameters: ${{ matrix.models.parameters}}
+      skip: ${{ matrix.models.skip }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
