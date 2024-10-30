@@ -763,7 +763,7 @@ jobs       :
             self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             self-hosted-runner-neuron: true
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: neuron-inference
 
     with:
@@ -805,6 +805,7 @@ jobs       :
       - get-target-branch-name
       - run-libs-tests
       - run-core-docker
+      - run-iptc-project
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -818,11 +819,13 @@ jobs       :
             functional: false
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-22.04
-            self-hosted-runner-neuron: false
+            runner-kind: custom
+            self-hosted-runner-neuron: true
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-type: inf1.6xlarge
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
+            base-image: neuron-inference
 
     with:
       project: iptc-multi
@@ -837,6 +840,8 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}

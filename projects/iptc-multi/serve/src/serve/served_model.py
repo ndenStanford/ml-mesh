@@ -190,7 +190,7 @@ class ServedIPTCMultiModel(ServedModel):
     def _get_current_model(
         self, model_client: OnclusiveApiClient, model_id: str
     ) -> Any:
-        """Retrieves a model-specific method from the API client based on the model ID.
+        """Retrieves a model specific method from the API client based on the model ID.
 
         Args:
             model_client (OnclusiveApiClient): The API client instance.
