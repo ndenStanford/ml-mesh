@@ -1099,7 +1099,7 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: gpu-base
 
           # serve
@@ -1126,7 +1126,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: true
+            push-image: ${{ github.event_name != 'pull_request' }}
             base-image: beam-backfill
 
     with:
