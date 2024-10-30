@@ -84,7 +84,6 @@ class FeastFeatureStore(BaseFeatureStore):
     @property
     def feature_store(self) -> FeatureStore:
         """Returns feature store instance."""
-        print("=====================", self.repo_config)
         return FeatureStore(config=self.repo_config)
 
     def get_historical_features(

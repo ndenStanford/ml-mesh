@@ -1359,11 +1359,20 @@ jobs       :
       max-parallel: 5
       matrix:
         models:
+
           - project: visitor-estimation
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/visitor-estimation
             trained-model: VE-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: topic
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/topic
+            trained-model: TOPIC-TRAINED
             parameters: "{}"
             wait: false
 

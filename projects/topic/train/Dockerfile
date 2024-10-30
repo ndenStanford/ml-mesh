@@ -35,14 +35,6 @@ RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-# ARG BERTOPIC_PATH=/pyenv/versions/3.9.19/lib/python3.9/site-packages/bertopic
-
-# COPY "${HOME}/modify_bertopic_files.sh" "/usr/local/bin/modify_bertopic_files.sh"
-
-# # modify bertopic files
-# RUN chmod +x /usr/local/bin/modify_bertopic_files.sh && \
-#     /usr/local/bin/modify_bertopic_files.sh $BERTOPIC_PATH
-
 # --- production stage
 FROM builder as production
 

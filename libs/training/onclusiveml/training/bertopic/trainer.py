@@ -147,9 +147,9 @@ class BertopicTrainer(OnclusiveModelTrainer):
     def __call__(self) -> None:
         """Call Method."""
         super(BertopicTrainer, self).__call__()
-        # self.logger.info(
-        #     f"Training data uploaded to s3 location : {self.full_file_key}"
-        # )
+        self.logger.info(
+            f"Training data uploaded to s3 location : {self.full_file_key}"
+        )
         self.run = init_run()
         self.initialize_model()
         self.optimize_model()
