@@ -337,6 +337,7 @@ jobs:
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             REDIS_CONNECTION_STRING="${{ secrets.REDIS_CONNECTION_STRING }}" \
             ENVIRONMENT="ci" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}

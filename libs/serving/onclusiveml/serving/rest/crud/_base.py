@@ -41,6 +41,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         create_schema: Optional[Type[T]] = None,
         update_schema: Optional[Type[T]] = None,
         api_settings: OnclusiveFrozenSettings = None,
+        entity_name: str = "",
         tags: Optional[List[str]] = None,
         get_all_route: Union[bool, depends] = True,
         get_one_route: Union[bool, depends] = True,
@@ -59,6 +60,7 @@ class CRUDGenerator(Generic[T], APIRouter):
             create_schema (Optional[Type[T]], optional): The schema used for create operations
             update_schema (Optional[Type[T]], optional): The schema used for update operations
             api_settings: OnclusiveFrozenSettings: Service settings used to make route prefix
+            entity_name: str: string used at the end of route prefix
             tags (Optional[List[str]], optional): The list of tags for the routes.
             get_all_route (Union[bool, depends], optional): Whether to include the get_all route
             get_one_route (Union[bool, depends], optional): Whether to include the get_one route
@@ -74,9 +76,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         self.create_schema = create_schema or schema
         self.update_schema = update_schema or schema
 
-        prefix = (
-            f"/{api_settings.model_name}/{api_settings.api_version}/{model.table_name}"
-        )
+        prefix = f"/{api_settings.model_name}/{api_settings.api_version}/{entity_name}"
         prefix = self._base_path + prefix.strip("/")
         tags = tags or [prefix.strip("/").capitalize()]
 

@@ -5,7 +5,7 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/neuron-inference:${BASE_I
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 ENV HOME="${PROJECT_DIR}"
 
@@ -16,7 +16,7 @@ WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ${HOME}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/

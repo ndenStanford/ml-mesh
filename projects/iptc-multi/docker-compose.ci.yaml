@@ -26,7 +26,7 @@ services:
     ports:
       - 8000:8000
     environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-client
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ENVIRONMENT: dev
@@ -36,9 +36,19 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       PROMETHEUS_MULTIPROC_DIR: /tmp
+    env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
       - onclusive-net
+    depends_on:
+      serve-iptc-00000000:
+        condition: service_healthy
+      serve-iptc-04000000:
+        condition: service_healthy
+      serve-iptc-20000170:
+        condition: service_healthy
+      serve-iptc-20000763:
+        condition: service_healthy
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/ready]
       interval: 10s
@@ -86,5 +96,221 @@ services:
       serve:
         condition: service_healthy
 
+
+  serve-iptc-00000000:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - serve-volume:/projects/iptc/serve
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: ./IP00000000-COMPILED-113
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-00000000
+      ONCLUSIVEML_NEPTUNE_MODEL: 00000000-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-00000000
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP00000000-COMPILED-113
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      NEURON_RT_NUM_CORES: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc-00000000
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP00000000-COMPILED-113
+      IPTC_MODEL_NAME: iptc-00000000
+      COMPILED_PROJECT: onclusive/iptc-00000000
+      COMPILED_MODEL: IP00000000-COMPILED
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    profiles: [serve, functional]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download
+        python -m src.serve.__main__
+    ports:
+      - 8001:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve-iptc-00000000:8000/iptc-00000000/v1/ready]
+      interval: 15s
+      retries: 5
+      start_period: 30s
+      timeout: 30s
+
+  serve-iptc-04000000:
+    devices:
+      - /dev/neuron1:/dev/neuron1
+    volumes:
+      - serve-volume:/projects/iptc/serve
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: ./IP04000000-COMPILED-58
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-04000000
+      ONCLUSIVEML_NEPTUNE_MODEL: IP04000000-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-04000000
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP04000000-COMPILED-58
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      NEURON_RT_NUM_CORES: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc-04000000
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP04000000-COMPILED-58
+      IPTC_MODEL_NAME: iptc-04000000
+      COMPILED_PROJECT: onclusive/iptc-04000000
+      COMPILED_MODEL: IP04000000-COMPILED
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    profiles: [serve, functional]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download
+        python -m src.serve.__main__
+    ports:
+      - 8002:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve-iptc-04000000:8000/iptc-04000000/v1/ready]
+      interval: 15s
+      retries: 5
+      start_period: 30s
+      timeout: 30s
+
+  serve-iptc-20000170:
+    devices:
+      - /dev/neuron2:/dev/neuron2
+    volumes:
+      - serve-volume:/projects/iptc/serve
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: ./IP20000170-COMPILED-9
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-20000170
+      ONCLUSIVEML_NEPTUNE_MODEL: IP20000170-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-20000170
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP20000170-COMPILED-9
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      NEURON_RT_NUM_CORES: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc-20000170
+      NEPTUNE_MODEL_ID: IP20000170-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP20000170-COMPILED-9
+      IPTC_MODEL_NAME: iptc-20000170
+      COMPILED_PROJECT: onclusive/iptc-20000170
+      COMPILED_MODEL: IP20000170-COMPILED
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    profiles: [serve, functional]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download
+        python -m src.serve.__main__
+    ports:
+      - 8003:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve-iptc-20000170:8000/iptc-20000170/v1/ready]
+      interval: 15s
+      retries: 5
+      start_period: 30s
+      timeout: 30s
+
+  serve-iptc-20000763:
+    devices:
+      - /dev/neuron3:/dev/neuron3
+    volumes:
+      - serve-volume:/projects/iptc/serve
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: ./IP20000763-COMPILED-2
+      ONCLUSIVEML_NEPTUNE_PROJECT: onclusive/iptc-20000763
+      ONCLUSIVEML_NEPTUNE_MODEL: 20000763-COMPILED
+      ONCLUSIVEML_SERVING_MODEL_NAME: iptc-20000763
+      ONCLUSIVEML_NEPTUNE_WITH_ID: IP20000763-COMPILED-2
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_ENVIRONMENT: prod
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      NEURON_RT_NUM_CORES: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc-20000763
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IP20000763-COMPILED-2
+      IPTC_MODEL_NAME: iptc-20000763
+      COMPILED_PROJECT: onclusive/iptc-20000763
+      COMPILED_MODEL: IP20000763-COMPILED
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    profiles: [serve, functional]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download
+        python -m src.serve.__main__
+    ports:
+      - 8004:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve-iptc-20000763:8000/iptc-20000763/v1/ready]
+      interval: 15s
+      retries: 5
+      start_period: 30s
+      timeout: 30s
+
 networks:
   onclusive-net:
+
+volumes :
+  serve-volume:
