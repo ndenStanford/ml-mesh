@@ -1,7 +1,6 @@
 """Base CRUD Generator."""
 
 # Standard Library
-from datetime import date
 from typing import Any, Callable, Generic, List, Optional, Type, TypeVar, Union
 
 # 3rd party libraries
@@ -149,7 +148,7 @@ class CRUDGenerator(Generic[T], APIRouter):
 
         if get_query_route:
             self.add_api_route(
-                "/{query_profile}",
+                "/{db_query}",
                 self.get_route_get_query(),
                 methods=["GET"],
                 response_model=self.schema,
@@ -238,11 +237,11 @@ class CRUDGenerator(Generic[T], APIRouter):
     def get_route_get_query(self) -> Callable[..., Any]:
         """Create the route_get_query function."""
 
-        def route_get_query(query_profile: str, query_date: date):
+        def route_get_query(db_query: dict):
             try:
-                return self.model.get_query(query_profile, query_date)
-            except QueryNotFoundException:
-                raise HTTPException(404, f"Query {query_profile} does not exist.")
+                return self.model.get_query(db_query)
+            except ValidationException:
+                raise HTTPException(404, f"Query {db_query} is not valid.")
 
         return route_get_query
 

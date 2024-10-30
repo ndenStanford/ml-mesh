@@ -158,7 +158,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             # query_items = response["Items"]
             return query_items
         except DoesNotExist:
-            raise QueryNotFoundException(query_profile=query_profile)
+            raise QueryNotFoundException(db_query=db_query)
 
     def delete_one(self, id: str) -> Dyntastic:
         """Delete an item from the DynamoDB table by its ID.

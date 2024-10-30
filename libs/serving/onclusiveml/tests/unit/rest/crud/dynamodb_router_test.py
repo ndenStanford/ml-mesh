@@ -216,3 +216,20 @@ def test_extra_fields_in_update(client):
         f"/test-service/v1/test_table/{item_id}", json={"extra": "field"}
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_get_query(client):
+    """Test get item via search query."""
+    # Create multiple items
+    items = [
+        {"name": "Name1", "age": 25},
+        {"name": "Name2", "age": 26},
+    ]
+    for item in items:
+        client.post("/test-service/v1/test_table", json=item)
+
+    # test search query
+    key_condition = Key("name").eq("Name1")
+    db_query = {"hash_key": key_condition, "index": "name-index"}
+    response = client.get(f"/test-service/v1/test_table/{db_query}", json=db_query)
+    assert response.status_code == HTTPStatus.OK

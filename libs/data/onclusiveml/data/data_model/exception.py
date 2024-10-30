@@ -19,7 +19,7 @@ class ItemNotFoundException(OnclusiveException):
 class QueryNotFoundException(OnclusiveException):
     """Exception raised when an query is not found."""
 
-    message_format = "Query {query_profile}"
+    message_format = "Query {db_query}"
 
 
 class ValidationException(OnclusiveException):
