@@ -1100,7 +1100,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: true
-            base-image: gpu-base
+            base-image: python-base
 
           # serve
           - name: serve

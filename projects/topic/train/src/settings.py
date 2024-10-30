@@ -17,8 +17,8 @@ from onclusiveml.tracking import (
 class TrackedTopicModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
-    project: str = "onclusive/organic-topic"
-    model: str = "TOPICS-TRAINED"
+    project: str = "onclusive/topic"
+    model: str = "TOPIC-TRAINED"
 
 
 class TopicModelParams(TrackingSettings):
