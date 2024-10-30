@@ -262,17 +262,15 @@ class ServedIPTCMultiModel(ServedModel):
 
         try:
             prediction_response = self._invoke_model(client, model_id, content)
-            # If prediction response is None or its 'iptc' attribute is empty, return early
-            if prediction_response is None or not prediction_response.attributes.iptc:
-                logger.warning(
-                    f"No output from sub-model {model_id}, skipping further predictions."
-                )
-                return combined_prediction
             processed_prediction = self._process_prediction_response(
                 prediction_response
             )
             filtered_prediction = self._filter_prediction(processed_prediction)
-
+            if next(iter(filtered_prediction)) == "none":
+                logger.warning(
+                    f"No output from sub-model {model_id}, skipping further predictions."
+                )
+                return combined_prediction
             for label, score in filtered_prediction.items():
                 combined_label = " > ".join(
                     levels[1 : current_index + 1] + [label]  # noqa: E203
