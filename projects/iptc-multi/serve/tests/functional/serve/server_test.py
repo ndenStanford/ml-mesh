@@ -65,7 +65,7 @@ def test_model_server_bio():
                             },
                             {
                                 "label": "economy, business and finance > market and exchange > business governance",
-                                "mediatopic_id": None,
+                                "mediatopic_id": "20000199",
                                 "score": 0.85,
                             },
                         ]
