@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/gpu-base:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -30,6 +30,9 @@ COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HO
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
+
+# copy features
+COPY --chown=${USER}:users features/ features/
 
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"

@@ -74,7 +74,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     topic: Optional[Topic] = None
-    impact_category: Optional[ImpactCategoryLabel]
+    impact_category: Optional[ImpactCategoryLabel] = None
     trending: Optional[bool] = None
     timestamp: datetime
     topic_summary_quality: Optional[bool] = None

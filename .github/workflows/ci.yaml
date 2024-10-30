@@ -152,7 +152,7 @@ jobs       :
   run-libs-tests:
     name: Library
     uses: ./.github/workflows/_libs.yaml
-    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
+    needs: [get-environment, run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
     strategy:
       max-parallel: 10
@@ -190,7 +190,7 @@ jobs       :
             functional: false
 
           - name: feature_store
-            integration: false
+            integration: true
 
           - name: queries
             integration: false
@@ -200,11 +200,40 @@ jobs       :
 
 
     with:
+      environment: prod
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  # ===============================================
+  # TEST FEATURES
+  # ===============================================
+
+  run-features-test:
+    name: Run feast feature store test
+    uses: ./.github/workflows/_features.yaml
+    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
+    with:
+      test: true
+      environment: prod
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
 
   # ===============================================
   # DOCKER
@@ -225,25 +254,25 @@ jobs       :
         image:
 
           - name: python-base
-            region: us-east-1
+            region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
 
           - name: gpu-base
-            region: us-east-1
+            region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
 
           - name: beam-backfill
-            region: us-east-1
+            region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
 
           - name: neuron-inference
-            region: us-east-1
+            region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
@@ -251,7 +280,7 @@ jobs       :
             base-region: us-east-2
 
           - name: beam-worker
-            region: us-east-1
+            region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -303,7 +332,7 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
-            base-region: us-east-1
+            base-region: us-east-2
 
           # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
@@ -312,7 +341,7 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: gpu-base
-            base-region: us-east-1
+            base-region: us-east-2
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -321,11 +350,11 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
-            base-region: us-east-1
+            base-region: us-east-2
 
         self-hosted-runner-neuron: [false]
         self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
-        use-cache: [false]
+        use-cache: [true]
 
     with:
       environment: prod
@@ -694,19 +723,6 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
-
           # train
           - name: train
             download-model: false
@@ -719,7 +735,7 @@ jobs       :
             self-hosted-runner-ami: ami-03e4816f04f417e5a
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: gpu-base
 
           # compile
@@ -851,6 +867,18 @@ jobs       :
       matrix:
         components:
           # NOTE: list of project components to run
+
+          # # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-22.04
+            use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # backfill
           - name: backfill
@@ -1060,19 +1088,6 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
-
           # train
           - name: train
             download-model: false
@@ -1084,8 +1099,8 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: gpu-base
+            push-image: true
+            base-image: python-base
 
           # serve
           - name: serve
@@ -1290,8 +1305,8 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
+          # train
+          - name: train
             download-model: false
             integration: false
             functional: false
@@ -1326,48 +1341,139 @@ jobs       :
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
-  # REGISTER FEATURES
+  # TRAIN MODELS
   # ===============================================
 
-  run-register-pipelines:
-    name: Register features
-    uses: ./.github/workflows/_register-features.yaml
+  run-train-pipelines:
+    name: Train Model
+    uses: ./.github/workflows/_train-model.yaml
     needs:
+      - get-environment
       - run-repository-state
-      - run-keywords-project
-      - run-summarization-project
-      - run-sentiment-project
-      - run-ner-project
-      - run-lsh-project
-      - run-entity-linking-project
-      - run-iptc-multi-project
-      - run-iptc-project
-      - run-topic-project
-      - run-translation-project
-      - run-transcript-segmentation-project
-      - run-topic-summarization-project
       - run-visitor-estimation-project
+      - get-target-branch-name
+      - run-get-core-dependencies-versions
 
     strategy:
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      max-parallel: 5
       matrix:
         models:
+
           - project: visitor-estimation
+            sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/visitor-estimation
+            trained-model: VE-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: topic
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/topic
+            trained-model: TOPIC-TRAINED
+            parameters: "{}"
+            wait: false
+
     with:
       environment: prod
       project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
+      trained-project: ${{ matrix.models.trained-project}}
+      trained-model: ${{ matrix.models.trained-model}}
+      wait: ${{ matrix.models.wait}}
+      parameters: ${{ matrix.models.parameters}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  # ===============================================
+  # TRAIN MULTI MODELS
+  # ===============================================
+
+  run-multi-train-pipelines:
+    name: Train Multi-model
+    uses: ./.github/workflows/_train-multi-model.yaml
+    needs:
+      - get-environment
+      - run-repository-state
+      - run-iptc-project
+      - get-target-branch-name
+      - run-get-core-dependencies-versions
+
+    strategy:
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      max-parallel: 10
+      matrix:
+        models:
+          - project: iptc
+            sagemaker-runner-type: ml.g4dn.4xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/iptc-00000000
+            trained-model: IP00000000-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: iptc
+            sagemaker-runner-type: ml.g4dn.4xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/iptc-04000000
+            trained-model: IP04000000-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: iptc
+            sagemaker-runner-type: ml.g4dn.4xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/iptc-20000170
+            trained-model: IP20000170-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: iptc
+            sagemaker-runner-type: ml.g4dn.4xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/iptc-20000763
+            trained-model: IP20000763-TRAINED
+            parameters: "{}"
+            wait: false
+
+    with:
+      environment: prod
+      project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+      tag: ${{ matrix.models.tag }}
+      trained-project: ${{ matrix.models.trained-project}}
+      trained-model: ${{ matrix.models.trained-model}}
+      wait: ${{ matrix.models.wait}}
+      parameters: ${{ matrix.models.parameters}}
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST }}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${{ secrets.ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
 
   # ===============================================
@@ -1468,6 +1574,7 @@ jobs       :
       - run-transcript-segmentation-project
       - run-topic-summarization-project
       - run-apps
+      - run-train-pipelines
     steps:
       - name: Check Job Statuses
         uses: re-actors/alls-green@release/v1

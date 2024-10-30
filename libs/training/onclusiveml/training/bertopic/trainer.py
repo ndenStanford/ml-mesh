@@ -8,14 +8,14 @@ from typing import List
 import numpy as np
 from bertopic import BERTopic
 from bertopic.representation import MaximalMarginalRelevance
-from cuml.cluster import HDBSCAN
-from cuml.manifold import UMAP
+from hdbscan import HDBSCAN
 from neptune import init_run
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
+from umap import UMAP
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
@@ -27,7 +27,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        data_fetch_params: FeastFeatureStoreSettings,
         stopwords: List[str],
     ) -> None:
         """Initialize the BertopicTrainer.
@@ -35,7 +35,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            data_fetch_params (FeastFeatureStoreSettings): Parameters for fetching data from feature store.
             stopwords (List[str]): List of stopwords to be used in text processing.
 
         Returns: None
@@ -45,7 +45,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
-            data_fetch_params=data_fetch_params,
+            settings=data_fetch_params,
         )
 
     def initialize_embedding_model(self) -> None:

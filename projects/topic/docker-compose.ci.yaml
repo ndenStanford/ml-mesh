@@ -1,68 +1,12 @@
 ---
 
 services:
-  # =============================================
-  # REGISTER
-  # =============================================
-
-  register:
-    build:
-      context: ../../
-      dockerfile: projects/topic/register/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=topic-register,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=topic-register
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: topic
-        COMPONENT: register
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    volumes:
-      - type: bind
-        source: register/src
-        target: /projects/topic/register/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG:-latest}
-    command: [python, -m, src.register_features]
-    profiles: [register]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      REGISTER_FEATURES: ${REGISTER_FEATURES}
-    env_file: register/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  register-unit:
-    volumes:
-      - type: bind
-        source: register/
-        target: /projects/topic/register/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
-    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [register, unit]
-    hostname: onclusive-ml
-    networks: [onclusive-net]
 
   # =============================================
   # TRAIN
   # =============================================
 
   train:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              # that's the closest analogue to --gpus; provide
-              # an integer amount of devices or 'all'
-              count: 1
-              # Devices are reserved using a list of capabilities, making
-              # capabilities the only required field. A device MUST
-              # satisfy all the requested capabilities for a successful
-              # reservation.
-              capabilities: [gpu]
     build:
       context: ../../
       dockerfile: projects/topic/train/Dockerfile
@@ -76,7 +20,7 @@ services:
         PROJECT: topic
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -84,16 +28,53 @@ services:
       NEPTUNE_PROJECT: onclusive/topic
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_FEATURE_STORE_PROJECT: ${ONCLUSIVEML_FEATURE_STORE_PROJECT}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_USER: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_USER}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE}
+      ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_BUCKET: ${ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_BUCKET}
+      ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_DIR: ${ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_DIR}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_TIMESTAMP_FIELD: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_TIMESTAMP_FIELD}
+      ONCLUSIVEML_FEATURE_STORE_N_RECORDS_SAMPLE: ${ONCLUSIVEML_FEATURE_STORE_N_RECORDS_SAMPLE}
+      ONCLUSIVEML_FEATURE_STORE_N_RECORDS_FULL: ${ONCLUSIVEML_FEATURE_STORE_N_RECORDS_FULL}
     env_file: train/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   train-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-train:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_PROJECT: ${ONCLUSIVEML_NEPTUNE_PROJECT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_FEATURE_STORE_PROJECT: ${ONCLUSIVEML_FEATURE_STORE_PROJECT}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_HOST}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_USER: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_USER}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PORT}
+      ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD: ${ONCLUSIVEML_FEATURE_STORE_MYSQL_PASSWORD}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_ID}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_CLUSTER_REGION}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_DATABASE}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_USER}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_S3_STAGING_DIRECTORY}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_IAM_ROLE}
+      ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_BUCKET: ${ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_BUCKET}
+      ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_DIR: ${ONCLUSIVEML_FEATURE_STORE_DATASET_UPLOAD_DIR}
+      ONCLUSIVEML_FEATURE_STORE_REDSHIFT_TIMESTAMP_FIELD: ${ONCLUSIVEML_FEATURE_STORE_REDSHIFT_TIMESTAMP_FIELD}
+      ONCLUSIVEML_FEATURE_STORE_N_RECORDS_SAMPLE: ${ONCLUSIVEML_FEATURE_STORE_N_RECORDS_SAMPLE}
+      ONCLUSIVEML_FEATURE_STORE_N_RECORDS_FULL: ${ONCLUSIVEML_FEATURE_STORE_N_RECORDS_FULL}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -118,7 +99,7 @@ services:
         PROJECT: topic
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [serve, functional, load]
@@ -138,7 +119,7 @@ services:
   serve-download-model:
     volumes:
       - serve-volume:/projects/topic/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
@@ -154,7 +135,7 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -166,7 +147,7 @@ services:
   # - include model artifact
   # - include REST model server process
   serve-functional:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
@@ -199,7 +180,7 @@ services:
       - type: bind
         source: backfill/src
         target: /projects/topic/backfill/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-backfill:${IMAGE_TAG}
     entrypoint: [python, -m, src.backfill.__main__]
     profiles: [backfill]
     network_mode: service:taskmanager
@@ -230,7 +211,7 @@ services:
       - type: bind
         source: backfill
         target: /projects/topic/backfill
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/topic-backfill:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:

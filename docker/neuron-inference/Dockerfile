@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${BASE_IMAGE_TAG} as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/python-base:${BASE_IMAGE_TAG} as builder
 
 ARG IMAGE_NAME
 
@@ -53,7 +53,7 @@ RUN poetry install \
     poetry cache clear pypi --all -q
 
 # --- production stage
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${BASE_IMAGE_TAG} as production
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/python-base:${BASE_IMAGE_TAG} as production
 
 ENV HOME="/home"
 ENV PATH="/opt/aws/neuron/bin:$PATH"

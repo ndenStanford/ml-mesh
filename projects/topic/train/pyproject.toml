@@ -12,6 +12,7 @@ tracking = {path = "../../../libs/tracking"}
 feature_store = {path = "../../../libs/feature_store"}
 nlp = {path = "../../../libs/nlp"}
 training = {path = "../../../libs/training"}
+features = {path = "../../../features"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

@@ -2,7 +2,7 @@
 name = "training"
 version = "0.1.0"
 description = "Training module for OnclusiveML models."
- authors = ["vishal.singh <vishal.singh@onclusive.com>"]
+authors = ["vishal.singh <vishal.singh@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
@@ -11,27 +11,12 @@ tracking = {path = "../tracking"}
 feature_store = {path = "../../libs/feature_store"}
 core = {path = "../core"}
 sentence-transformers = "2.2.2"
-cuda-python = "11.8.2"
 bertopic = "0.15.0"
 torch = "1.12.1"
-cubinlinker-cu11 = { version = "0.3.0.post2", source = "pypi-nvidia" }
-ucx-py-cu11 = { version = "0.36.0", source = "pypi-nvidia" }
-ptxcompiler-cu11 = { version = "0.7.0.post1", source = "pypi-nvidia" }
-rmm-cu11 = { version = "24.2.0", source = "pypi-nvidia" }
-raft-dask-cu11 = { version = "24.2.0", source = "pypi-nvidia" }
-dask-cudf-cu11 = { version = "24.2.0", source = "pypi-nvidia" }
-cudf-cu11 = { version = "24.2.0", source = "pypi-nvidia" }
-pylibraft-cu11 = { version = "24.2.0", source = "pypi-nvidia" }
-cuml-cu11 = { version = "24.2.0", source = "pypi-nvidia" }
+huggingface-hub = "0.10.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
-
-
-[[tool.poetry.source]]
-name = "pypi-nvidia"
-url = "https://pypi.nvidia.com"
-priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
