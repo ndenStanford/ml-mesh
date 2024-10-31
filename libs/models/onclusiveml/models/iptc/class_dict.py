@@ -537,7 +537,7 @@ ID_TO_TOPIC = {
     "20000167": "emergency planning",
     "20000168": "emergency response",
     "20000170": "business information",
-    "20000209": "economic sector",
+    "20000209": "products and services",  # previous economic sector
     "20000344": "economy",
     "20000385": "market and exchange",
     "20000412": "curriculum",
@@ -720,7 +720,7 @@ ID_TO_TOPIC = {
     "20000162": "transport incident",
     "20000171": "business finance",
     "20000188": "human resources",
-    "20000192": "strategy and marketing",
+    "20000192": "business strategy and marketing",  # previous strategy and marketing
     "20000210": "agriculture",
     "20000217": "chemicals",
     "20000223": "pharmaceutical",
@@ -1181,6 +1181,12 @@ ID_TO_TOPIC = {
     "20001355": "developmental disorder",
     "20001359": "pregnancy and childbirth",
     "20001360": "fraternal and community group",
+    "20000349": "business enterprise",
+    "20000183": "business financing",
+    "20000199": "business governance",
+    "20001365": "business reporting and performance",
+    "20001366": "business restructuring",
+    "20001298": "artificial intelligence",
 }
 
 TOPIC_TO_ID = {value: key for key, value in ID_TO_TOPIC.items()}

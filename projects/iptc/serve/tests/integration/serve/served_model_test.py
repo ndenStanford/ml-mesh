@@ -64,7 +64,7 @@ def test_served_iptc_model_predict(
     input = PredictRequestSchema.from_data(
         namespace=settings.model_name,
         attributes={"content": test_inputs[test_record_index]},
-        parameters=test_inference_params,
+        parameters={},
     )
 
     actual_output = served_iptc_model.predict(input)
