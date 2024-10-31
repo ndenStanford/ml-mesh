@@ -3,7 +3,7 @@
 # 3rd party libraries
 
 # Standard Library
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 
 # 3rd party libraries
 from boto3.dynamodb.conditions import Key
@@ -23,16 +23,11 @@ def get_topic_summarization_report_router() -> APIRouter:
     # Initialize the DynamoDB model
     response_model = DynamoDBModel(model=TopicSummaryDynamoDB)
 
-    print("^^^^^^")
-    print("^^^^^^")
-    print("^^^^^^")
-    print("RESPONSE MODEL :", response_model.table_name)
-
     # Define the route for the report
     @router.get("/topic-summarization/report")
     async def get_filtered_report(
-        start_date: datetime,
-        end_date: datetime,
+        start_date: date,
+        end_date: date,
     ):
         try:
             # Fetch all items from DynamoDB
@@ -42,31 +37,26 @@ def get_topic_summarization_report_router() -> APIRouter:
                 # Fetch results for the current date using get_query
                 key_condition = Key("timestamp_date").eq(current_date.isoformat())
                 db_query = {"hash_key": key_condition, "index": "timestamp_date-index"}
-                # db_query = {
-                #     "hash_key": {"attribute": "timestamp_date", "value": current_date.isoformat(), "operation": "eq"},
-                #     "index": "timestamp_date-index"
-                # }
                 query_results = response_model.get_query(db_query=db_query)
                 all_items.extend(query_results)
-
-                print("**********")
-                print("**********")
-                print("**********")
-                print("First ALL ITEM LENTGH :", len(all_items))
+                # print("**********")
+                # print("**********")
+                # print("**********")
+                # print("FIRST ALL ITEM LENTGH :", len(all_items))
 
                 while "LastEvaluatedKey" in query_results:
                     db_query = {
                         "hash_key": key_condition,
                         "index": "timestamp_date-index",
-                        "last_evaluated_key": response.get("LastEvaluatedKey"),
+                        "last_evaluated_key": query_results.get("LastEvaluatedKey"),
                     }
                     query_results = response_model.get_query(db_query=db_query)
                     all_items.extend(query_results)
                 # all_items.extend(query_results)  # Combine results from each day
-                print("**********")
-                print("**********")
-                print("**********")
-                print("SECOND ALL ITEM LENTGH :", len(all_items))
+                # print("**********")
+                # print("**********")
+                # print("**********")
+                # print("SECOND ALL ITEM LENTGH :", len(all_items))
 
                 current_date += timedelta(days=1)
             # Apply filtering based on query_profile, topic_id, and time range

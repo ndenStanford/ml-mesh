@@ -12,6 +12,7 @@ from onclusiveml.data.data_model.base import BaseDataModel
 from onclusiveml.data.data_model.exception import (
     DataModelException,
     ItemNotFoundException,
+    QueryNotFoundException,
     ValidationException,
 )
 
@@ -135,27 +136,13 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             ValidationException: If the query is invalid.
         """
         try:
-            # Determin use query or scan
+            # To do: add scan; then Determin use query or scan
             # if "KeyConditionExpression" in db_query or "IndexName" in db_query:
             #     response = self.model.query(**db_query)
             # else:
             #     response = self.model.scan(**db_query)
-            # response = self.model.query(
-            #     #hash_key=db_query["name"],  # Specify the secondary index
-            #     #hash_key=Key("name").eq(db_query["name"]),
-            #     A.name==db_query["name"],
-            #     index="name-index"
-            #     #KeyConditionExpression=Key("name").eq("Ivan")
-            # )
             response = self.model.query(**db_query)
-            # print('*********')
-            # print('*********')
-            # print('*********')
-            # print("Query results:")
             query_items = [item.__dict__ for item in response]
-            # print('*********')
-            # print(query_items)
-            # query_items = response["Items"]
             return query_items
         except DoesNotExist:
             raise QueryNotFoundException(db_query=db_query)
