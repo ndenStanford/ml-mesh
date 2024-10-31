@@ -816,7 +816,7 @@ jobs       :
           - name: serve
             download-model: false
             integration: true
-            functional: false
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: custom
@@ -824,7 +824,7 @@ jobs       :
             self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             self-hosted-runner-type: inf1.6xlarge
             use-cache: true
-            push-image: true
+            push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
 
     with:
