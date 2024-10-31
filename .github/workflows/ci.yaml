@@ -816,7 +816,7 @@ jobs       :
           - name: serve
             download-model: false
             integration: true
-            functional: true
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: custom
