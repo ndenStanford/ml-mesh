@@ -179,6 +179,72 @@ class SummarizationServedModel(ServedModel):
         else:
             raise PromptBackendException(message=str(q.content))
 
+    @staticmethod
+    def _find_snippets(
+        text: str, keywords: List[str], snippet_length: int
+    ) -> List[str]:
+        """Generates snippets of 150 characters around each occurrence of any keyword in the text."""
+        snippets = []
+        text_len = len(text)
+
+        # Track if keywords exist in text
+        keyword_found = False
+
+        for keyword in keywords:
+            keyword_pos = text.lower().find(keyword.lower())
+            if keyword_pos != -1:
+                keyword_found = True
+                start = max(keyword_pos - int(snippet_length / 2), 0)
+                end = min(keyword_pos + int(snippet_length / 2), text_len)
+                snippet = text[start:end].strip()
+                snippets.append(snippet)
+
+        # If no keyword was found, add the first 150 characters once
+        if not keyword_found and text_len > 0:
+            snippets.append(text[:snippet_length].strip())
+
+        return snippets
+
+    def find_snippets(
+        self,
+        content: Union[List, str],
+        keywords: List[str],
+        multiple_article_summary: bool,
+        snippet_length: int,
+    ):
+        """Extract snippets based on keywords."""
+        if multiple_article_summary:
+            all_snippets = []
+            for text in content:
+                all_snippets.extend(self._find_snippets(text, keywords, snippet_length))
+            return all_snippets
+        else:
+            return self._find_snippets(content, keywords, snippet_length)
+
+    def _prepare_content(self, content: Union[List, str], parameters: dict):
+        """Prepare and validate content, handling multiple article cases."""
+        if isinstance(content, list):
+            multiple_article_summary = True
+        elif isinstance(content, str):
+            multiple_article_summary = False
+        else:
+            raise ValueError("Content must be a string or a list of strings.")
+
+        if parameters.summary_type == settings.snippet_summary_type:
+            content = self.find_snippets(
+                content,
+                parameters.keywords,
+                multiple_article_summary,
+                settings.snippet_length,
+            )
+
+        if multiple_article_summary:
+            content = {
+                f"Article {i}": f"```{article}```" for i, article in enumerate(content)
+            }
+
+        return content, multiple_article_summary
+
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction.
 
@@ -186,18 +252,9 @@ class SummarizationServedModel(ServedModel):
             payload (PredictRequestSchema): prediction request payload.
         """
         parameters = payload.parameters
-        content = payload.attributes.content
-        # identify language (needed to retrieve the appropriate prompt)
-        multiple_article_summary = False
-        try:
-            if isinstance(content, list):
-                multiple_article_summary = True
-                content = {
-                    f"Article {i}": f"```{article}```"
-                    for i, article in enumerate(content)
-                }
-        except Exception as e:
-            logger.warn("Cannot eval content. Assuming it to be string type.", e)
+        content, multiple_article_summary = self._prepare_content(
+            payload.attributes.content, parameters
+        )
 
         # detect content language
         detected_language = self._identify_language(str(content))
@@ -233,7 +290,7 @@ class SummarizationServedModel(ServedModel):
 
         # retrieve prompt
         # depending on request parameters, we can determine what prompt to use.
-        if parameters.summary_type not in ("bespoke", "section"):
+        if parameters.summary_type not in settings.supported_summary_types:
             raise SummaryTypeNotSupportedException(summary_type=parameters.summary_type)
 
         try:
