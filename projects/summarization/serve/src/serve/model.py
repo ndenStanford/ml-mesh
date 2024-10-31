@@ -179,8 +179,9 @@ class SummarizationServedModel(ServedModel):
         else:
             raise PromptBackendException(message=str(q.content))
 
-    def find_snippets(
-        self, text: str, keywords: List[str], snippet_length: int
+    @staticmethod
+    def _find_snippets(
+        text: str, keywords: List[str], snippet_length: int
     ) -> List[str]:
         """Generates snippets of 150 characters around each occurrence of any keyword in the text."""
         snippets = []
@@ -204,7 +205,7 @@ class SummarizationServedModel(ServedModel):
 
         return snippets
 
-    def _find_snippets(
+    def find_snippets(
         self,
         content: Union[List, str],
         keywords: List[str],
@@ -215,10 +216,10 @@ class SummarizationServedModel(ServedModel):
         if multiple_article_summary:
             all_snippets = []
             for text in content:
-                all_snippets.extend(self.find_snippets(text, keywords, snippet_length))
+                all_snippets.extend(self._find_snippets(text, keywords, snippet_length))
             return all_snippets
         else:
-            return self.find_snippets(content, keywords, snippet_length)
+            return self._find_snippets(content, keywords, snippet_length)
 
     def _prepare_content(self, content: Union[List, str], parameters: dict):
         """Prepare and validate content, handling multiple article cases."""
@@ -230,7 +231,7 @@ class SummarizationServedModel(ServedModel):
             raise ValueError("Content must be a string or a list of strings.")
 
         if parameters.summary_type == settings.snippet_summary_type:
-            content = self._find_snippets(
+            content = self.find_snippets(
                 content,
                 parameters.keywords,
                 multiple_article_summary,
