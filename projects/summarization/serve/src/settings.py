@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, List, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -36,14 +36,22 @@ class ApplicationSettings(OnclusiveBaseSettings):
         "title": "Consolidated title of the article(s).",
     }
 
+    supported_summary_types: List[str] = ["section", "bespoke", "auto", "snippet"]
+    snippet_summary_type: str = "snippet"
+    snippet_length: int = 150
+
     summarization_prompts: Dict[LanguageIso, Dict[str, Union[str, Dict[str, str]]]] = {
         LanguageIso.EN: {
             "section": "ml-summarization-english",
             "bespoke": "bespoke-summary-uk",
             "multi-article-summary": {
                 "section": "ml-multi-articles-summarization",
+                "auto": "ml-multi-articles-summarization",
+                "snippet": "ml-multi-articles-summarization",
                 "bespoke": "ml-multi-articles-summarization-bespoke",
             },
+            "auto": "ml-multi-articles-summarization",
+            "snippet": "ml-multi-articles-summarization",
         },
         LanguageIso.FR: {
             "section": "ml-summarization-french",
