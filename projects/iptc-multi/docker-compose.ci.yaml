@@ -51,10 +51,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/ready]
-      interval: 10s
+      interval: 15s
       retries: 5
-      start_period: 5s
-      timeout: 10s
+      start_period: 200s
+      timeout: 30s
 
   # unit tests
   serve-unit:
