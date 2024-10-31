@@ -101,7 +101,7 @@ services:
         PROJECT: visitor-estimation
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [serve, functional, load]
@@ -121,7 +121,7 @@ services:
   serve-download-model:
     volumes:
       - serve-volume:/projects/visitor-estimation/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
@@ -137,7 +137,7 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -149,7 +149,7 @@ services:
   # - include model artifact
   # - include REST model server process
   serve-functional:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/visitor-estimation-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
