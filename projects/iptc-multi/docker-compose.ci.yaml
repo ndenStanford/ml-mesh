@@ -53,8 +53,8 @@ services:
       test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/ready]
       interval: 15s
       retries: 5
-      start_period: 200s
-      timeout: 30s
+      start_period: 400s
+      timeout: 100s
 
   # unit tests
   serve-unit:
