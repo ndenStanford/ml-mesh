@@ -229,7 +229,12 @@ def test_get_query(client):
         client.post("/test-service/v1/test_table", json=item)
 
     # test search query
-    key_condition = Key("name").eq("Name1")
-    db_query = {"hash_key": key_condition, "index": "name-index"}
-    response = client.get(f"/test-service/v1/test_table/{db_query}", json=db_query)
+    # To Do: Dyntastic only accept this format, but url need a JSON serializable input
+    # key_condition = Key("name").eq("Name1")
+    # db_query = {"hash_key": key_condition, "index": "name-index"}
+    db_query = {
+        "hash_key": {"attribute": "name", "value": "Name1", "operation": "eq"},
+        "index": "name-index",
+    }
+    response = client.post("/test-service/v1/test_table/query", json=db_query)
     assert response.status_code == HTTPStatus.OK

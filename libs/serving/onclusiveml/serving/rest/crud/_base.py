@@ -4,6 +4,7 @@
 from typing import Any, Callable, Generic, List, Optional, Type, TypeVar, Union
 
 # 3rd party libraries
+from boto3.dynamodb.conditions import Key
 from fastapi import APIRouter, HTTPException
 from fastapi.types import DecoratedCallable
 
@@ -148,10 +149,10 @@ class CRUDGenerator(Generic[T], APIRouter):
 
         if get_query_route:
             self.add_api_route(
-                "/{db_query}",
+                "/query",
                 self.get_route_get_query(),
-                methods=["GET"],
-                response_model=self.schema,
+                methods=["POST"],
+                response_model=List[self.schema],
                 summary="Get query",
                 dependencies=(
                     get_query_route if isinstance(get_query_route, list) else []
@@ -239,7 +240,16 @@ class CRUDGenerator(Generic[T], APIRouter):
 
         def route_get_query(db_query: dict):
             try:
-                return self.model.get_query(db_query)
+                attribute, value, operation = (
+                    db_query["hash_key"]["attribute"],
+                    db_query["hash_key"]["value"],
+                    db_query["hash_key"]["operation"],
+                )
+                target_index = db_query["index"]
+                if operation == "eq":
+                    key_condition = Key(attribute).eq(value)
+                input_query = {"hash_key": key_condition, "index": target_index}
+                return self.model.get_query(input_query)
             except ValidationException:
                 raise HTTPException(404, f"Query {db_query} is not valid.")
 

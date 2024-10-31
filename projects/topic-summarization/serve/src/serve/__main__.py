@@ -45,6 +45,7 @@ def get_model_server() -> ModelServer:
             tags=["Items"],
             delete_one_route=False,
             delete_all_route=False,
+            get_query_route=True,
         )
     )
 

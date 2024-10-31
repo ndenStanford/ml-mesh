@@ -47,7 +47,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_TABLE_NAME: topic-summary-prod-4
       DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
       ENVIRONMENT: dev
 
@@ -109,7 +109,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: dev
-      DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_TABLE_NAME: topic-summary-prod-4
       DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/dev.env
     depends_on:
@@ -132,7 +132,7 @@ services:
         target: /projects/topic-summarization/serve/tests
     hostname: onclusiveml
     environment:
-      DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_TABLE_NAME: topic-summary-prod-4
       DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     networks:
@@ -162,7 +162,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: dev
-      DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_TABLE_NAME: topic-summary-prod-4
       DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/dev.env
     depends_on:
@@ -199,7 +199,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: dev
-      DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_TABLE_NAME: topic-summary-prod-4
 
     env_file: serve/config/dev.env
     depends_on:

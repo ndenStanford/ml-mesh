@@ -3,9 +3,10 @@
 # 3rd party libraries
 
 # Standard Library
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # 3rd party libraries
+from boto3.dynamodb.conditions import Key
 from fastapi import APIRouter, HTTPException
 
 # Internal libraries
@@ -22,11 +23,14 @@ def get_topic_summarization_report_router() -> APIRouter:
     # Initialize the DynamoDB model
     response_model = DynamoDBModel(model=TopicSummaryDynamoDB)
 
+    print("^^^^^^")
+    print("^^^^^^")
+    print("^^^^^^")
+    print("RESPONSE MODEL :", response_model.table_name)
+
     # Define the route for the report
     @router.get("/topic-summarization/report")
     async def get_filtered_report(
-        query_string: str,
-        topic_id: int,
         start_date: datetime,
         end_date: datetime,
     ):
@@ -36,18 +40,37 @@ def get_topic_summarization_report_router() -> APIRouter:
             current_date = start_date
             while current_date <= end_date:
                 # Fetch results for the current date using get_query
-                query_results = response_model.get_query(
-                    query_profile=query_profile, query_date=current_date
-                )
-                all_items.extend(query_results)  # Combine results from each day
+                key_condition = Key("timestamp_date").eq(current_date.isoformat())
+                db_query = {"hash_key": key_condition, "index": "timestamp_date-index"}
+                # db_query = {
+                #     "hash_key": {"attribute": "timestamp_date", "value": current_date.isoformat(), "operation": "eq"},
+                #     "index": "timestamp_date-index"
+                # }
+                query_results = response_model.get_query(db_query=db_query)
+                all_items.extend(query_results)
+
+                print("**********")
+                print("**********")
+                print("**********")
+                print("First ALL ITEM LENTGH :", len(all_items))
+
+                while "LastEvaluatedKey" in query_results:
+                    db_query = {
+                        "hash_key": key_condition,
+                        "index": "timestamp_date-index",
+                        "last_evaluated_key": response.get("LastEvaluatedKey"),
+                    }
+                    query_results = response_model.get_query(db_query=db_query)
+                    all_items.extend(query_results)
+                # all_items.extend(query_results)  # Combine results from each day
+                print("**********")
+                print("**********")
+                print("**********")
+                print("SECOND ALL ITEM LENTGH :", len(all_items))
 
                 current_date += timedelta(days=1)
             # Apply filtering based on query_profile, topic_id, and time range
-            filtered_items = [
-                item
-                for item in all_items
-                if item["topic_id"] == topic_id and item["trending"] is True
-            ]
+            filtered_items = [item for item in all_items if item["trending"] is True]
             report_list = [
                 {
                     "Query": item["query_string"],
