@@ -132,45 +132,20 @@ CLASS_DICT_SECOND = {
 
 CLASS_DICT_THIRD = {
     # removed economy
-    "economy": {
-        0: "central bank",  # new Field
-        1: "currency",
-        2: "economic organisation",  # new Field
-        3: "economic trends and indicators",  # new Field
-        4: "emerging market",  # new Field
-        5: "international economic institution",  # new Field
-        6: "international trade",  # new Field
-        7: "monetary policy",  # new Field
-        8: "mutual funds",  # new Field
-        9: "sharing economy",  # new Field
-    },
     "products and services": {
-        0: "agriculture",
-        1: "business service",  # name update
-        2: "chemicals",
-        3: "commercial fishing",  # name update
-        4: "computing and information technology",
-        5: "construction and property",
-        6: "consumer goods",
-        7: "energy and resource",
-        8: "financial and business service",
-        9: "financial service",  # name update
-        10: "forestry and timber",  # name update
-        11: "healthcare industry",  # name update
-        12: "manufacturing and engineering",
-        13: "media and entertainment industry",  # name update
-        14: "metal and mineral mining and refining",  # name update
-        15: "plastic",  # new Field
-        16: "process industry",
-        17: "sales channel",  # new Field
-        18: "tourism and leisure industry",  # name update
-        19: "transport",
-        20: "utilities",  # new Field
-    },
-    "business enterprise": {
-        0: "cooperative",  # new Field
-        1: "small and medium enterprise",  # new Field
-        2: "start-up and entrepreneurial business",  # new Field
+        0: "energy and resource",  # changed order
+        1: "computing and information technology",
+        2: "transport",
+        3: "media",
+        4: "consumer goods",
+        5: "agriculture",
+        6: "construction and property",
+        7: "financial and business service",
+        8: "chemicals",
+        9: "tourism and leisure",
+        10: "metal and mineral",
+        11: "manufacturing and engineering",
+        12: "process industry",
     },
     "business information": {
         0: "business finance",
