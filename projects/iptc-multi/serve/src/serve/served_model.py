@@ -266,7 +266,11 @@ class ServedIPTCMultiModel(ServedModel):
                 prediction_response
             )
             filtered_prediction = self._filter_prediction(processed_prediction)
-
+            if next(iter(filtered_prediction)) == "none":
+                logger.warning(
+                    f"No output from sub-model {model_id}, skipping further predictions."
+                )
+                return combined_prediction
             for label, score in filtered_prediction.items():
                 combined_label = " > ".join(
                     levels[1 : current_index + 1] + [label]  # noqa: E203
