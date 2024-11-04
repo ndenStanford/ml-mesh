@@ -27,9 +27,17 @@ def build_json(text: str, keys: list) -> dict:
         json_raw = text
 
     try:
-        return json.loads(json_raw)
+        parsed_json = json.loads(json_raw)
     except json.JSONDecodeError:
-        json_out = {}
+        parsed_json = None
+
+    json_out = {}
+    # if JSON object made, we iterate over it return output
+    if parsed_json is not None:
+        for key in keys:
+            json_out[key] = parsed_json.get(key, None)
+        return json_out
+    else:
         n_keys = len(keys)
         for i, key in enumerate(keys):
             # This is the main body of logic, we look
@@ -131,13 +139,23 @@ def clean_string(string: str) -> str:
     A great deal of punctuation and special characters that are used to structure
     the JSON can be removed to improve readability of the final product.
     """
-    value = re.sub("[\n\t]", "", string)  # removing new lines and tabs
-    value = re.sub('^"', "", value)  # removing starting quote
+    # removing new lines and tabs
+    value = re.sub("[\n\t]", "", string)
+    # removing starting quote
+    value = re.sub('^"', "", value)
     # The order for removing junk at the end of a string
     # matters, first we want to remove the obvious problem,
     # which is the quote. That exposes a bunch of other problems
-    value = re.sub('"$', "", value)  # removing trailing quote
-    value = value.strip()  # removing leading and trailing white space
-    value = re.sub('",$', "", value)  # removing unneeded end quote
-    value = re.sub('"}$', "", value)  # removing unneeded brackets
+    # removing trailing quote
+    value = re.sub('"$', "", value)
+    # removing leading and trailing white space
+    value = value.strip()
+    # removing unneeded end quote
+    value = re.sub('",$', "", value)
+    # removing unneeded brackets
+    value = re.sub('"}$', "", value)
+
+    # Add a check to return None if the value is invalid
+    if value in ("}", "}", ","):
+        return None
     return value
