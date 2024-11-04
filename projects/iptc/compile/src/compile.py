@@ -29,7 +29,6 @@ def main(settings: OnclusiveBaseSettings) -> None:
     # get read-only base model version
     model_version = TrackedModelVersion(
         with_id=settings.with_id,
-        mode=settings.mode,
         api_token=settings.api_token.get_secret_value(),
         project=settings.project,
     )
@@ -39,7 +38,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
     )
 
     logger.debug(f"Model card: {model_card}")
-    # re-load base model pipeline
+    # re-load the base model pipeline
     text_classification_pipeline = pipeline(
         task="text-classification",
         model=settings.model_directory(CompileWorkflowTasks.DOWNLOAD),

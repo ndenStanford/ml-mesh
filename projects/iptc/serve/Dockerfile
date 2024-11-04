@@ -5,7 +5,7 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/neuron-inference:$BASE_IM
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 ENV HOME="${PROJECT_DIR}"
 
@@ -41,7 +41,7 @@ USER "${USER}"
 FROM builder as production
 
 # --- test build stage
-FROM production as development
+FROM builder as development
 
 WORKDIR "/"
 

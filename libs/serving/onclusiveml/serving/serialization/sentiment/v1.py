@@ -20,12 +20,12 @@ class InputEntity(OnclusiveBaseModel):
         end (Optiona[int]): End position of entity in the sentence
     """
 
-    entity_type: Optional[str]
+    entity_type: Optional[str] = None
     entity_text: str
-    score: Optional[float]
-    sentence_index: Optional[int]
-    start: Optional[int]
-    end: Optional[int]
+    score: Optional[float] = None
+    sentence_index: Optional[int] = None
+    start: Optional[int] = None
+    end: Optional[int] = None
 
 
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
