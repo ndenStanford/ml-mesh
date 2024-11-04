@@ -108,6 +108,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     ENTITY_RESPONSE_SCHEMA: Dict[str, str] = {
         "entity_list": "a string representing a list of detected entities"
     }
+    STRING_OUTPUT_PARSER: bool = True
 
 
 class ElasticsearchSettings(OnclusiveBaseSettings):
