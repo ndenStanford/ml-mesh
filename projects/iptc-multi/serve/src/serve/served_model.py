@@ -269,7 +269,7 @@ class ServedIPTCMultiModel(ServedModel):
                 prediction_response
             )
             filtered_prediction = self._filter_prediction(processed_prediction)
-            if next(iter(filtered_prediction), None) == "none":
+            if next(iter(filtered_prediction), "none") == "none":
                 logger.warning(
                     f"No output from sub-model {model_id}, skipping further predictions."
                 )
