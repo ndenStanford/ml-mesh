@@ -259,7 +259,7 @@ class ServedIPTCMultiModel(ServedModel):
 
         current_label = levels[current_index]
         model_id = self._get_model_id_from_label(current_label)
-        if model_id == "20000349" or model_id == "20000344":
+        if model_id in settings.skip_model_list:
             return combined_prediction
         client = self._create_client(model_id)
 

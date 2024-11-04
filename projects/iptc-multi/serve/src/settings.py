@@ -93,7 +93,7 @@ class ServerModelSettings(ServingParams):
     model_endpoint_template: str = "serve-iptc-{}:8000"
     model_endpoint_secure: bool = False
     model_endpoint_api_key: str = ""
-    test_model_sequence: List[str] = []
+    test_model_sequence: List[str] = ["20000344", "20000349"]
     sample_inference_content: str = "Test Content"
     historically_high_inferenced_models: Set[str] = {
         "00000000",
@@ -102,6 +102,7 @@ class ServerModelSettings(ServingParams):
         "10000000",
         "20000209",
     }
+    skip_model: List[str] = []
     supported_languages: List[LanguageIso] = IPTC_SUPPORTED_LANGUAGE
 
     model_config = SettingsConfigDict(env_prefix="server_model_settings_")
