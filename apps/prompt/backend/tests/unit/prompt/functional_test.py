@@ -99,7 +99,7 @@ def test_generate_from_prompt(
 
 
 @pytest.mark.parametrize(
-    "project, prompt_alias, template, text, model_alias,provider",
+    "project, prompt_alias, template, text, model_alias, provider",
     [
         (
             "new-project1",
@@ -115,7 +115,7 @@ def test_generate_from_prompt(
             "My favourite film is {text}",
             "Starship Troopers",
             "us.anthropic.claude-3-haiku-20240307-v1:0",
-            "openai",
+            "bedrock",
         ),
     ],
 )
