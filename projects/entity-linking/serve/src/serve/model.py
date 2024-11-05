@@ -144,7 +144,9 @@ class ServedBelaModel(ServedModel):
         mention_offsets = []
         mention_lengths = []
         for entity_text in unique_entity_text:
-            matched_entities = list(re.finditer(entity_text, text))
+            # Escape entity_text to prevent regex interpretation
+            escaped_entity_text = re.escape(entity_text)
+            matched_entities = list(re.finditer(escaped_entity_text, text))
             spans = [m.span() for m in matched_entities]
             for span in spans:
                 offset_start, offset_end = span
