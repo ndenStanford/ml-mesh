@@ -102,6 +102,7 @@ class ServerModelSettings(ServingParams):
         "10000000",
         "20000209",
     }
+    skip_model_list: List[str] = ["20000344", "20000349"]
     supported_languages: List[LanguageIso] = IPTC_SUPPORTED_LANGUAGE
 
     model_config = SettingsConfigDict(env_prefix="server_model_settings_")
