@@ -1240,7 +1240,7 @@ jobs       :
           # serve
           - name: serve
             download-model: false
-            integration: true
+            integration: false
             functional: false
             load: false
             upload-test-results: false
@@ -1623,7 +1623,7 @@ jobs       :
             functional: false
             push-image: ${{ github.event_name != 'pull_request' }}
 
-        use-cache: [false]
+        use-cache: [true]
 
     with:
       environment: prod
