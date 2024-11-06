@@ -337,6 +337,7 @@ jobs:
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             REDIS_CONNECTION_STRING="${{ secrets.REDIS_CONNECTION_STRING }}" \
             ENVIRONMENT="ci" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
@@ -408,7 +409,7 @@ jobs:
           aws-region: us-east-2
 
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2.3.6
+        uses: machulav/ec2-github-runner@v2.3.7
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

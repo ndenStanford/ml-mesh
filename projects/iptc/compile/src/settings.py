@@ -6,8 +6,6 @@ from functools import lru_cache
 from typing import Dict, List
 
 # 3rd party libraries
-from neptune.types.mode import Mode
-from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
@@ -25,7 +23,6 @@ class ModelTrackedSettings(TrackedModelSettings):
     """Models settings."""
 
     compiled_model: str
-    mode: str = Field(Mode.READ_ONLY)
 
 
 class IOSettings(TrackingSettings):

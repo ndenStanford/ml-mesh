@@ -106,6 +106,7 @@ class OnclusiveApiClient:
             "20000775",
             "20000799",
             "20000788",
+            "20000763",
         ]
         self.setup_iptc_bindings()
 

@@ -70,6 +70,11 @@ on  :
         default: true
         type: boolean
         description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
+      skip:
+        required: false
+        default: false
+        type: boolean
+        description: Indicates whether to skip the compiling for the model.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -163,7 +168,7 @@ jobs:
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 30
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && !inputs.skip}}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
@@ -189,7 +194,11 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
+            ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
+            ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
+            ONCLUSIVEML_NEPTUNE_COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Compile Model
@@ -201,7 +210,11 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
+            ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
+            ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
+            ONCLUSIVEML_NEPTUNE_COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Validate Compiled Model
@@ -214,7 +227,11 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
+            ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
+            ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
+            ONCLUSIVEML_NEPTUNE_COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
@@ -228,7 +245,11 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            ONCLUSIVEML_NEPTUNE_PROJECT="${{ inputs.uncompiled-project }}" \
+            ONCLUSIVEML_NEPTUNE_MODEL="${{ inputs.uncompiled-model }}" \
+            ONCLUSIVEML_NEPTUNE_WITH_ID="${{ inputs.uncompiled-with-id }}" \
+            ONCLUSIVEML_NEPTUNE_COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
   stop-customized-runner:
@@ -247,7 +268,7 @@ jobs:
           aws-region: us-east-2
 
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2.3.6
+        uses: machulav/ec2-github-runner@v2.3.7
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

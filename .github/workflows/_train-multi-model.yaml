@@ -59,6 +59,11 @@ on  :
         required: false
         type: string
         description: Parameters associated with the training.
+      skip:
+        required: false
+        default: false
+        type: boolean
+        description: Indicates whether to skip the training for the model.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -112,7 +117,7 @@ jobs:
     name: '(Train &) register model: ${{ inputs.project }}'
     needs: check-run-criteria
     runs-on: ubuntu-22.04
-    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' && !inputs.skip }}
     environment: ${{ inputs.environment }}
     env:
       ONCLUSIVEML_FEATURE_STORE_PROJECT: feature_store_dev
