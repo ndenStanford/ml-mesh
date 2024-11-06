@@ -249,7 +249,7 @@ def test_generate_exception(
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert (
             response.json()["detail"]
-            == "OutputParserException: Output parser exception"
+            == "OutputParserException: Output parser exception\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/OUTPUT_PARSING_FAILURE"
         )
     mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
 
