@@ -1623,7 +1623,7 @@ jobs       :
             functional: false
             push-image: ${{ github.event_name != 'pull_request' }}
 
-        use-cache: [true]
+        use-cache: [false]
 
     with:
       environment: prod

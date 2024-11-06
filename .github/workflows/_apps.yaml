@@ -254,7 +254,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
+        # if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -268,7 +268,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component functional tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
+        # if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
         run: |
           make apps.functional/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
