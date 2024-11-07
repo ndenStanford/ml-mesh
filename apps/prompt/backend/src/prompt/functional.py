@@ -15,6 +15,7 @@ from onclusiveml.llms.json_builder import build_json
 # Source
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
+from src.prompt.exceptions import StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
@@ -42,6 +43,9 @@ def generate_from_prompt_template(
     # Choose StrOutputParser if str_output_parser is True and prompt fields are defined
     # otherwise, use the default prompt output parser
     str_output_parser = kwargs.get("str_output_parser", False)
+    if not isinstance(str_output_parser, bool):
+        raise StrOutputParserTypeError
+
     output_parser = (
         StrOutputParser()
         if str_output_parser is True and prompt.fields
