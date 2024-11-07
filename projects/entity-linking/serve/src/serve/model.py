@@ -113,13 +113,6 @@ class ServedBelaModel(ServedModel):
             attributes={"entities": entities_with_links},
         )
 
-    def _sanitize_entity_text(self, entity_text: str) -> str:
-        """Remove unmatched parentheses from entity text for exact matching."""
-        # If there are unmatched parentheses, remove them
-        if entity_text.count("(") != entity_text.count(")"):
-            entity_text = entity_text.replace("(", "").replace(")", "")
-        return entity_text
-
     @filter_language(
         supported_languages=settings.supported_languages,
         raise_if_none=True,
@@ -151,10 +144,11 @@ class ServedBelaModel(ServedModel):
         mention_offsets = []
         mention_lengths = []
         for entity_text in unique_entity_text:
-            # Sanitize entity text by handling unmatched parentheses
-            sanitized_entity_text = self._sanitize_entity_text(entity_text)
+            # Escape the entity text to ensure all special characters are treated literally
+            escaped_entity_text = re.escape(entity_text)
 
-            matched_entities = list(re.finditer(sanitized_entity_text, text))
+            # Use re.finditer to locate exact matches of the escaped entity text
+            matched_entities = list(re.finditer(escaped_entity_text, text))
 
             spans = [m.span() for m in matched_entities]
             for span in spans:
