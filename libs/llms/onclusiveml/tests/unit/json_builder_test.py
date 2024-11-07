@@ -1,7 +1,7 @@
 """Test JSON builder."""
 
-# Source
-from src.prompt.json_builder import (
+# Internal libraries
+from onclusiveml.llms.json_builder import (
     build_json,
     clean_string,
     extract_json,

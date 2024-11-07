@@ -10,11 +10,11 @@ from langchain.schema.output_parser import StrOutputParser
 
 # Internal libraries
 from onclusiveml.core.retry import retry
+from onclusiveml.llms.json_builder import build_json
 
 # Source
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
-from src.prompt.json_builder import build_json
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
