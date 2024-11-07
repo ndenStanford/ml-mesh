@@ -56,10 +56,6 @@ def compile(settings: OnclusiveBaseSettings) -> None:
         task=base_model_card["ner_model_params_base"]["huggingface_pipeline_task"],
         model=os.path.join(source_model_directory, "base_ner"),
     )
-    ner_model_pipeline_korean_and_japanese = pipeline(
-        task=base_model_card["ner_model_params_kj"]["huggingface_pipeline_task_kj"],
-        model=os.path.join(source_model_directory, "korean_japanese_ner"),
-    )
 
     logger.debug(
         f"Using the following ner pipeline compilation settings: "
@@ -71,14 +67,9 @@ def compile(settings: OnclusiveBaseSettings) -> None:
         **ner_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
 
-    compiled_ner_pipeline_korean_and_japanese = CompiledPipeline.from_pipeline(
-        pipeline=ner_model_pipeline_korean_and_japanese,
-        **ner_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
-    )
-
     compiled_ner = CompiledNER(
         compiled_ner_pipeline_base=compiled_ner_pipeline_base,
-        compiled_ner_pipeline_korean_and_japanese=compiled_ner_pipeline_korean_and_japanese,
+        compiled_ner_pipeline_korean_and_japanese=None,
     )
     # export compiled ner model for next workflow component: test
     compiled_ner.save_pretrained(target_model_directory)
