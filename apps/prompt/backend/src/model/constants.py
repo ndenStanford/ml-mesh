@@ -29,7 +29,7 @@ class ChatModel(str, OnclusiveEnum):
     TITAN_G1 = "amazon.titan-text-lite-v1"
     CLAUDE_2 = "anthropic.claude-v2"
     CLAUDE_2_1 = "anthropic.claude-v2:1"
-    CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
+    CLAUDE_3_SONNET = "us.anthropic.claude-3-sonnet-20240229-v1:0"
     CLAUDE_3_5_SONNET = "us.anthropic.claude-3-5-sonnet-20240620-v1:0"
     CLAUDE_3_HAIKU = "us.anthropic.claude-3-haiku-20240307-v1:0"
     CLAUDE_3_INSTANT = "anthropic.claude-instant-v1"
