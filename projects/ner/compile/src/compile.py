@@ -67,10 +67,7 @@ def compile(settings: OnclusiveBaseSettings) -> None:
         **ner_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
 
-    compiled_ner = CompiledNER(
-        compiled_ner_pipeline_base=compiled_ner_pipeline_base,
-        compiled_ner_pipeline_korean_and_japanese=None,
-    )
+    compiled_ner = CompiledNER(compiled_ner_pipeline_base=compiled_ner_pipeline_base)
     # export compiled ner model for next workflow component: test
     compiled_ner.save_pretrained(target_model_directory)
 
