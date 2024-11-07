@@ -55,6 +55,7 @@ class ModelTracingSettings(TrackingSettings):
     dynamic_batch_size: bool
     strict: bool
     compiler_args: List[str] = ["--fast-math", "none"]
+    separate_weights: bool = True
     model_config = SettingsConfigDict(env_prefix="MODEL_TRACING_SETTINGS_")
 
 
