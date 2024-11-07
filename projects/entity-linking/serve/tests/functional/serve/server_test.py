@@ -687,6 +687,69 @@ def test_model_server_readiness(test_client):
                 },
             },
         ),
+        (
+            {
+                "data": {
+                    "identifier": "None",
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": (
+                            "How Dare You Point Fingers At Mahama After Putting Up Such Action- Okudzeto Ablakwa Fires NPP. "
+                            "Samuel Okudzeto Ablakwa, the Member of Parliament (MP) for North Tongu, has slammed members of the "
+                            "governing New Patriotic Party for attempting to tag John Dramani Mahama as arrogant. NPP communicators "
+                            "have descended on John Dramani Mahama for a seemingly harsh response he gave to Nana Akufo Addo for pressing "
+                            "on him to debate Bawumia. Speaking at a mini-rally in Prampram as part of his Greater Accra Region campaign "
+                            "Mahama said 'Nana Akufo-Addo was asking me why I'm refusing to debate Bawumia. You know, Bawumia doesn't deserve a debate. "
+                            "He is losing this election. I will not elevate him to my level and go and sit and debate him.' Their campaign is failing. "
+                            "They have no message and so, he wants to be elevated to my level. No. No. No. No. I know my level,' he said. "
+                            "This response did not sit well with many supporters of the ruling NPP who have tagged Mahama as being arrogant. "
+                            "But speaking on the Good Morning Ghana political show which airs on Metro TV, Samuel Okudzeto Ablakwa insisted that the "
+                            "flagbearer of the opposition NDC has been taken out of context. He explained that Mr Mahama did not personally attack "
+                            "Bawumia, stressing that the Former President only meant to say that the campaign activities of Dr Mahamudu Bawumia who "
+                            "happens to be the flagbearer of the ruling New Patriotic (Party) were sinking and he did not want to debate him to revive "
+                            "the declining campaign. In a video shared on Facebook by Metro TV, the outspoken NPP lawmaker further stressed that the "
+                            "NPP does not have the moral high ground to tag 'humble' John Dramani as arrogant given their 'disrespect' to chiefs in the country. "
+                            "Unlike John Dramani Mahama, Okudzeto Ablakwa said the leaders of the NPP have been captured on tape ordering chiefs to stand and "
+                            "greet them at public events. Watch the video below: https://www.facebook.com/share/v/1PL7qmUMwE/?mibextid=qi2Omg. "
+                            "Remember to like, comment, share, and follow for more updates."
+                        ),
+                        "entities": [
+                            {
+                                "entity_type": "Person",
+                                "entity_text": "Mahamudu Bawumia",
+                                "score": 0.9190899729728699,
+                                "sentence_index": [16],
+                            },
+                            {
+                                "entity_type": "Organization",
+                                "entity_text": "New Patriotic (rty",
+                                "score": 0.9935027807950974,
+                                "sentence_index": [16],
+                            },
+                        ],
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "Person",
+                                "entity_text": "Mahamudu Bawumia",
+                                "score": 0.9190899729728699,
+                                "sentence_index": [16],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q6733078",
+                            }
+                        ]
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
