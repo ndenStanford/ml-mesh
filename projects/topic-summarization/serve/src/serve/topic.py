@@ -57,6 +57,7 @@ class TopicHandler:
         Output:
             summary & impact(dict): dict[str,str]
         """
+        input_dict["str_output_parser"] = settings.STRING_OUTPUT_PARSER
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
@@ -129,6 +130,7 @@ class TopicHandler:
                     "articles": processed_article,
                 },
                 "output": settings.TOPIC_RESPONSE_SCHEMA,
+                "str_output_parser": settings.STRING_OUTPUT_PARSER,
             }
 
         output_content = None
