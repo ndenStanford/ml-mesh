@@ -450,7 +450,7 @@ services:
         PROJECT: ner
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.2.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
