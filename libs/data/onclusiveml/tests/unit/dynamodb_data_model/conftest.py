@@ -24,11 +24,6 @@ def TestDyntasticModel():
         __table_name__ = "test_dynamodb_table"
         __hash_key__ = "id"
         __table_region__ = "us-east-1"
-        # __indexes__ = {
-        #     "name-index": {
-        #         "hash_key": "name"
-        #     }
-        # }
         id: str = Field(default_factory=lambda: str(uuid.uuid4()))
         name: str
         age: Optional[int] = None

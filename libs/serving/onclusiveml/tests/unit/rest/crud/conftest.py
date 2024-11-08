@@ -42,7 +42,6 @@ def dynamo_db_model(TestDyntasticModel):
         index1 = Index("name", index_name="name-index")
 
         TestDyntasticModel.create_table(index1)
-        # TestDyntasticModel.create_table()
         # Return an instance of DynamoDBModel
         yield DynamoDBModel(model=TestDyntasticModel)
 

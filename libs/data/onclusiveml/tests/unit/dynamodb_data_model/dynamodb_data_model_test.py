@@ -1,5 +1,9 @@
 """Test DynamoDB Data Model."""
 
+# Standard Library
+import base64
+import pickle
+
 # 3rd party libraries
 import pytest
 from boto3.dynamodb.conditions import Key
@@ -186,12 +190,9 @@ def test_get_query(dynamo_db_model):
     ]
     for item_data in items_data:
         dynamo_db_model.create(item_data)
-    # db_query ={'FilterExpression':Attr("name").eq('Ivan')}
-    # db_query = {'index_name':"name-index",'name':'Ivan'}
-    # db_query = {'name':'Name1'}
-    # db_query = {A.name:'Name1',"index":"name-index"}
     key_condition = Key("name").eq("Name1")
-    db_query = {"hash_key": key_condition, "index": "name-index"}
+    search_query = {"hash_key": key_condition, "index": "name-index"}
+    serialized_query = base64.b64encode(pickle.dumps(search_query)).decode("utf-8")
 
-    query_item = dynamo_db_model.get_query(db_query)
+    query_item = dynamo_db_model.get_query(serialized_query)
     assert query_item[0]["age"] == 25

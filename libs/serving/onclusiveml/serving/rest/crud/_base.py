@@ -4,7 +4,6 @@
 from typing import Any, Callable, Generic, List, Optional, Type, TypeVar, Union
 
 # 3rd party libraries
-from boto3.dynamodb.conditions import Key
 from fastapi import APIRouter, HTTPException
 from fastapi.types import DecoratedCallable
 
@@ -238,20 +237,12 @@ class CRUDGenerator(Generic[T], APIRouter):
     def get_route_get_query(self) -> Callable[..., Any]:
         """Create the route_get_query function."""
 
-        def route_get_query(db_query: dict):
+        def route_get_query(input_query: dict):
             try:
-                attribute, value, operation = (
-                    db_query["hash_key"]["attribute"],
-                    db_query["hash_key"]["value"],
-                    db_query["hash_key"]["operation"],
-                )
-                target_index = db_query["index"]
-                if operation == "eq":
-                    key_condition = Key(attribute).eq(value)
-                input_query = {"hash_key": key_condition, "index": target_index}
-                return self.model.get_query(input_query)
+                serialized_query = input_query.get("serialized_query")
+                return self.model.get_query(serialized_query)
             except ValidationException:
-                raise HTTPException(404, f"Query {db_query} is not valid.")
+                raise HTTPException(404, f"Query {input_query} is not valid.")
 
         return route_get_query
 

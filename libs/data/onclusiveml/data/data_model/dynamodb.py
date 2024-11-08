@@ -1,6 +1,8 @@
 """DynamoDB Data Model."""
 
 # Standard Library
+import base64
+import pickle
 from typing import Any, Dict, List
 
 # 3rd party libraries
@@ -12,7 +14,6 @@ from onclusiveml.data.data_model.base import BaseDataModel
 from onclusiveml.data.data_model.exception import (
     DataModelException,
     ItemNotFoundException,
-    QueryNotFoundException,
     ValidationException,
 )
 
@@ -122,30 +123,26 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def get_query(self, db_query: dict) -> List:
+    def get_query(self, search_query: str) -> List[Dyntastic]:
         """Get result for a certain dynamodb search query.
 
         Args:
-            query_profile (str): query string.
+            search_query (str): serialized search query.
 
         Returns:
             T: The query related item, or None.
 
         Raises:
-            QueryNotFoundException: If the query does not exist.
             ValidationException: If the query is invalid.
         """
         try:
             # To do: add scan; then Determin use query or scan
-            # if "KeyConditionExpression" in db_query or "IndexName" in db_query:
-            #     response = self.model.query(**db_query)
-            # else:
-            #     response = self.model.scan(**db_query)
-            response = self.model.query(**db_query)
+            search_query_restored = pickle.loads(base64.b64decode(search_query))
+            response = self.model.query(**search_query_restored)
             query_items = [item.__dict__ for item in response]
             return query_items
-        except DoesNotExist:
-            raise QueryNotFoundException(db_query=db_query)
+        except ValueError as ve:
+            raise ValidationException(error=str(ve)) from ve
 
     def delete_one(self, id: str) -> Dyntastic:
         """Delete an item from the DynamoDB table by its ID.

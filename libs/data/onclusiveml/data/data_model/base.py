@@ -100,11 +100,11 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         """
 
     @abstractmethod
-    def get_query(self, db_query: dict) -> T:
+    def get_query(self, search_query: str) -> List[T]:
         """Get result for a certain query.
 
         Args:
-            db_query (dict): dynamodb search query.
+            search_query (str): serialized search query.
 
         Returns:
             T: The query related item, or None.
