@@ -256,7 +256,7 @@ def test_generate_exception(
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert (
             response.json()["detail"]
-            == "OutputParserException: Output parser exception"
+            == "OutputParserException: Output parser exception\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/OUTPUT_PARSING_FAILURE"
         )
     elif isinstance(exception, StrOutputParserTypeError):
         assert response.status_code == status.HTTP_400_BAD_REQUEST

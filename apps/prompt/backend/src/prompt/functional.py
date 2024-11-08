@@ -15,7 +15,7 @@ from onclusiveml.llms.json_builder import build_json
 # Source
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
-from src.prompt.exceptions import StrOutputParserTypeError
+from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
@@ -40,30 +40,37 @@ def generate_from_prompt_template(
     llm = LanguageModel.get(model_alias)
     # setting output parser
     prompt.fields = kwargs.get("output")
-    # Choose StrOutputParser if str_output_parser is True and prompt fields are defined
-    # otherwise, use the default prompt output parser
+
+    # Check if str_output_parser flag is correctly set and validate fields
     str_output_parser = kwargs.get("str_output_parser", False)
     if not isinstance(str_output_parser, bool):
         raise StrOutputParserTypeError
-
-    output_parser = (
-        StrOutputParser()
-        if str_output_parser is True and prompt.fields
-        else prompt.output_parser
-    )
+    # ensure prompt fields are populated in order to run json builder functions
+    if str_output_parser and prompt.fields is None:
+        raise PromptFieldsMissing
 
     chain = (
         prompt.as_langchain()
         | llm.as_langchain(model_parameters=model_parameters)
-        | output_parser
+        | prompt.output_parser
     )
-
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
-    result = chain.invoke(inputs)
-    # If str_output_parser is True and fields are defined, format the output as JSON
-    if str_output_parser is True and prompt.fields:
-        return build_json(result, prompt.fields.keys())
+    try:
+        result = chain.invoke(inputs)
+    except Exception as e:
+        if str_output_parser and prompt.fields:
+            chain = (
+                prompt.as_langchain()
+                | llm.as_langchain(model_parameters=model_parameters)
+                | StrOutputParser()
+            )
+            result = chain.invoke(inputs)
+            return build_json(result, prompt.fields.keys())
+        # else raise error
+        else:
+            raise e
+
     return result
 
 
