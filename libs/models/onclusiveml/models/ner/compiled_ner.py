@@ -11,9 +11,6 @@ from onclusiveml.nlp import preprocess
 from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 
-# DISTILBERT_SUPPORTED_LANGS = ["ko", "ja"]
-
-
 class InferenceOutput(NamedTuple):
     """Inference output data structure."""
 
