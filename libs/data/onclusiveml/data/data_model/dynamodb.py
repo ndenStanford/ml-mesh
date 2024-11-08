@@ -136,7 +136,6 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             ValidationException: If the query is invalid.
         """
         try:
-            # To do: add scan; then Determin use query or scan
             search_query_restored = pickle.loads(base64.b64decode(search_query))
             response = self.model.query(**search_query_restored)
             query_items = [item.__dict__ for item in response]
