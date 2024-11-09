@@ -12,6 +12,7 @@ from langchain_core.exceptions import OutputParserException
 
 # Source
 from src.project.tables import Project
+from src.prompt.exceptions import StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 
 
@@ -224,6 +225,12 @@ def test_generate(mock_generate, alias, model, values, test_client):
             {"text": ""},
             OutputParserException("Output parser exception"),
         ),
+        (
+            "prompt-3",
+            "model-3",
+            {"text": ""},
+            StrOutputParserTypeError(),
+        ),
     ],
 )
 @patch("src.prompt.functional.generate_from_prompt_template")
@@ -249,7 +256,13 @@ def test_generate_exception(
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert (
             response.json()["detail"]
-            == "OutputParserException: Output parser exception"
+            == "OutputParserException: Output parser exception\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/OUTPUT_PARSING_FAILURE"
+        )
+    elif isinstance(exception, StrOutputParserTypeError):
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert (
+            response.json()["detail"]
+            == "StrOutputParserTypeError: str_output_parser must be a boolean value"
         )
     mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
 

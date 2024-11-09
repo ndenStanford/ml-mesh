@@ -29,9 +29,10 @@ class ChatModel(str, OnclusiveEnum):
     TITAN_G1 = "amazon.titan-text-lite-v1"
     CLAUDE_2 = "anthropic.claude-v2"
     CLAUDE_2_1 = "anthropic.claude-v2:1"
-    CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
-    CLAUDE_3_5_SONNET = "anthropic.claude-3-5-sonnet-20240620-v1:0"
-    CLAUDE_3_HAIKU = "anthropic.claude-3-haiku-20240307-v1:0"
+    CLAUDE_3_SONNET = "us.anthropic.claude-3-sonnet-20240229-v1:0"
+    CLAUDE_3_5_SONNET = "us.anthropic.claude-3-5-sonnet-20240620-v1:0"
+    CLAUDE_3_HAIKU = "us.anthropic.claude-3-haiku-20240307-v1:0"
+    CLAUDE_3_5_HAIKU = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
     CLAUDE_3_INSTANT = "anthropic.claude-instant-v1"
     LLAMA_2_13B = "meta.llama2-13b-chat-v1"
     LLAMA_2_70B = "meta.llama2-70b-chat-v1"
@@ -134,6 +135,7 @@ MODELS_TO_PARAMETERS = {
     ChatModel.CLAUDE_3_5_SONNET: Claude3Parameters,
     ChatModel.CLAUDE_3_SONNET: Claude3Parameters,
     ChatModel.CLAUDE_3_HAIKU: Claude3Parameters,
+    ChatModel.CLAUDE_3_5_HAIKU: Claude3Parameters,
     ChatModel.CLAUDE_3_INSTANT: Claude3Parameters,
     ChatModel.LLAMA_2_13B: LlamaParameters,
     ChatModel.LLAMA_2_70B: LlamaParameters,
@@ -148,6 +150,7 @@ DEFAULT_MODELS = [
     {"alias": ChatModel.CLAUDE_3_SONNET, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_5_SONNET, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_HAIKU, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_3_5_HAIKU, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_INSTANT, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
