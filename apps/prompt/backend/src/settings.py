@@ -45,6 +45,7 @@ class Settings(OnclusiveBaseSettings):
     REDIS_CONNECTION_STRING: str = ""
     REDIS_TTL_SECONDS: int = 86400
 
+    DOCUMENTDB_HOST: str
     DYNAMODB_HOST: Optional[str] = None
     AWS_DEFAULT_REGION: str = "us-east-1"
     AWS_PROFILE: Optional[str] = None

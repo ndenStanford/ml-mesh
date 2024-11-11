@@ -11,6 +11,7 @@ from langchain.memory import ConversationBufferMemory
 from onclusiveml.core.retry import retry
 
 # Source
+from src.celery_app import celery_app
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
 from src.prompt.tables import PromptTemplate
@@ -20,6 +21,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
+@celery_app.task
 @retry(
     tries=settings.LLM_CALL_RETRY_COUNT,
     delay=settings.LLM_CALL_RETRY_DELAY,
@@ -50,6 +52,7 @@ def generate_from_prompt_template(
     return chain.invoke(inputs)
 
 
+@celery_app.task
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
@@ -61,6 +64,7 @@ def generate_from_prompt(
     return conversation.predict(input=prompt)
 
 
+@celery_app.task
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:

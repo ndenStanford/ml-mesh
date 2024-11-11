@@ -11,8 +11,10 @@ from fastapi import APIRouter, Header, HTTPException, status
 from langchain_core.exceptions import OutputParserException
 
 # Source
+from src.celery_app import celery_app
 from src.project.tables import Project
 from src.prompt import functional as F
+from src.prompt.constants import CeleryStatusTypes, V3ResponseKeys
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
@@ -143,9 +145,10 @@ def generate_text_from_prompt_template(
     try:
         if model_parameters is not None:
             model_parameters = json.loads(model_parameters)
-        return F.generate_from_prompt_template(
+        task = F.generate_from_prompt_template.delay(
             alias, model, **values, model_parameters=model_parameters
         )
+        return {V3ResponseKeys.TASK_ID: task.id}
     except (JSONDecodeError, OutputParserException) as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -161,4 +164,35 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    return F.generate_from_default_model(alias, **values)
+    task = F.generate_from_default_model.delay(alias, **values)
+    return {V3ResponseKeys.TASK_ID: task.id}
+
+
+@router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
+def get_task_status(task_id: str):
+    """Fetch the status or result of a Celery task."""
+    result = celery_app.AsyncResult(task_id)
+    if result.state == CeleryStatusTypes.PENDING:
+        return {
+            V3ResponseKeys.TASK_ID: task_id,
+            V3ResponseKeys.STATUS: CeleryStatusTypes.PENDING,
+        }
+    elif result.state == CeleryStatusTypes.STARTED:
+        return {
+            V3ResponseKeys.TASK_ID: task_id,
+            V3ResponseKeys.STATUS: CeleryStatusTypes.STARTED,
+        }
+    elif result.state == CeleryStatusTypes.SUCCESS:
+        return {
+            V3ResponseKeys.TASK_ID: task_id,
+            V3ResponseKeys.STATUS: CeleryStatusTypes.SUCCESS,
+            V3ResponseKeys.RESULT: result.result,
+        }
+    elif result.state == CeleryStatusTypes.FAILURE:
+        return {
+            V3ResponseKeys.TASK_ID: task_id,
+            V3ResponseKeys.STATUS: CeleryStatusTypes.FAILURE,
+            V3ResponseKeys.ERROR: str(result.result),
+        }
+    else:
+        return {V3ResponseKeys.TASK_ID: task_id, V3ResponseKeys.STATUS: result.state}

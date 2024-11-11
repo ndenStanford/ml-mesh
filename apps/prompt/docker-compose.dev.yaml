@@ -99,6 +99,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DOCUMENTDB_HOST: ${DOCUMENTDB_HOST:-mongodb://mongouser:mongopassword@mongodb:27017/celery}
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       VALIDATE_PROMPT_INJECTION: true
@@ -136,6 +137,8 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
@@ -174,6 +177,7 @@ services:
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
       REDIS_CONNECTION_STRING: redis://
+      DOCUMENTDB_HOST: mongodb://
       DYNAMODB_HOST: http://dynamodb:8000
       GITHUB_APP_ID: ${GITHUB_APP_ID:-}
       GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
@@ -212,6 +216,7 @@ services:
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
       DOCS_URL: /docs
       REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DOCUMENTDB_HOST: ${DOCUMENTDB_HOST:-mongodb://mongouser:mongopassword@mongodb:27017/celery}
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       VALIDATE_PROMPT_INJECTION: true
@@ -259,6 +264,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       DOCS_URL: /docs
       REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DOCUMENTDB_HOST: ${DOCUMENTDB_HOST:-mongodb://mongouser:mongopassword@mongodb:27017/celery}
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       VALIDATE_PROMPT_INJECTION: true
@@ -267,6 +273,74 @@ services:
         condition: service_healthy
       redisdb:
         condition: service_healthy
+    networks:
+      - onclusive-net
+
+  # =====================================================
+  # CELERY WORKER
+  # =====================================================
+  backend-celery-worker:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    command: ["celery", "-A", "src.celery_app.celery_app", "worker", "--loglevel=info"]
+    profiles: [backend, backend-celery-worker]
+    healthcheck:
+      test: [CMD-SHELL, sleep 120s || exit 1]
+      interval: 2m30s
+      retries: 4
+      start_period: 2m
+      timeout: 2m10s
+    volumes:
+      - type: bind
+        source: backend/src
+        target: /apps/prompt/backend/src
+      - type: bind
+        source: backend/tests
+        target: /apps/prompt/backend/tests
+    environment:
+      REDIS_CONNECTION_STRING: redis://redisdb:6379/0
+      DOCUMENTDB_HOST: ${DOCUMENTDB_HOST:-mongodb://mongouser:mongopassword@mongodb:27017/celery}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+    depends_on:
+      - mongodb
+      - redisdb
+    networks:
+      - onclusive-net
+
+  flower:
+    image: mher/flower:latest
+    command: ["celery", "--broker=redis://redisdb:6379/0", "flower", "--port=5555"]
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redisdb
+    networks:
+      - onclusive-net
+    profiles: [backend, backend-celery-worker]
+
+  mongodb:
+    image: mongo:8.0
+    restart: always
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopassword
+    profiles: [backend, backend-celery-worker]
     networks:
       - onclusive-net
 
@@ -297,7 +371,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [backend, functional, integration, debug]
+    profiles: [backend, functional, integration, debug, backend-celery-worker]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
