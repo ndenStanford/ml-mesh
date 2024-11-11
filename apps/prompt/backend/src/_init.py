@@ -56,7 +56,7 @@ def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
 def _syncronize_prompts():
     """Save prompts from registry in dynamoDB if non-exisant."""
     logger.info("Start prompt syncronization...")
-    files = github.ls()
+    files = github.ls("")
     for file in files:
         project_alias, *prompt_alias = file.split("/")
         project = Project.safe_get(project_alias)
