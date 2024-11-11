@@ -7,13 +7,25 @@ import pytest
 @pytest.fixture
 def url_model_namespace():
     """Create model namespace url."""
-    return "http://backend:4000/api/v2/models/gpt-4o/generate?prompt=tell%20me%20a%20joke!!!"
+    return "http://backend:4000/api/v3/models/gpt-4o/generate?prompt=tell%20me%20a%20joke!!!"
+
+
+@pytest.fixture
+def url_model_namespace_status():
+    """Create model status namespace url."""
+    return "http://backend:4000/api/v3/models/status"
 
 
 @pytest.fixture
 def url_prompt_namespace():
     """Create prompt namespace url."""
-    return "http://backend:4000/api/v2/prompts/english-summarization/generate/model/us.anthropic.claude-3-sonnet-20240229-v1:0"  # noqa: E501
+    return "http://backend:4000/api/v3/prompts/english-summarization/generate/model/us.anthropic.claude-3-sonnet-20240229-v1:0"  # noqa: E501
+
+
+@pytest.fixture
+def url_prompt_namespace_status():
+    """Create prompts status namespace url."""
+    return "http://backend:4000/api/v3/prompts/status"
 
 
 @pytest.fixture

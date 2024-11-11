@@ -39,7 +39,7 @@ def test_create_prompt(
     mock_project_get.return_value = Project(alias=project)
     # api call
     response = test_client.post(
-        "/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.model_dump()
+        "/api/v3/prompts", headers={"x-api-key": "1234"}, json=prompt.model_dump()
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
@@ -66,7 +66,7 @@ def test_update_prompt(
     mock_prompt_get.return_value = prompt
 
     response = test_client.put(
-        f"/api/v2/prompts/{alias}",
+        f"/api/v3/prompts/{alias}",
         headers={"x-api-key": "1234"},
         json={"template": new_template},
     )
@@ -98,7 +98,7 @@ def test_update_prompt_not_found(
     mock_prompt_get.side_effect = DoesNotExist
 
     response = test_client.put(
-        f"/api/v2/prompts/{alias}",
+        f"/api/v3/prompts/{alias}",
         headers={"x-api-key": "1234"},
         json={"template": new_template},
     )
@@ -128,7 +128,7 @@ def test_update_prompt_unprocessable_entity(
     mock_prompt_update.side_effect = Exception("Update failed")
 
     response = test_client.put(
-        f"/api/v2/prompts/{alias}",
+        f"/api/v3/prompts/{alias}",
         headers={"x-api-key": "1234"},
         json={"template": new_template},
     )
@@ -154,7 +154,7 @@ def test_delete_prompt(
     mock_prompt_get.return_value = prompt
     # api call
     response = test_client.delete(
-        f"/api/v2/prompts/{alias}",
+        f"/api/v3/prompts/{alias}",
         headers={"x-api-key": "1234"},
     )
     # asserts
@@ -175,7 +175,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
     mock_prompt_get.return_value = prompt
     # api call
     response = test_client.get(
-        f"/api/v2/prompts/{alias}",
+        f"/api/v3/prompts/{alias}",
         headers={"x-api-key": "1234"},
     )
     # asserts
@@ -188,7 +188,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
 def test_list_prompt(mock_prompt_scan, test_client):
     """Test list prompt."""
     # call
-    response = test_client.get("/api/v2/prompts", headers={"x-api-key": "1234"})
+    response = test_client.get("/api/v3/prompts", headers={"x-api-key": "1234"})
     # asserts
     assert response.status_code == status.HTTP_200_OK
     mock_prompt_scan.assert_called_once()
@@ -198,11 +198,11 @@ def test_list_prompt(mock_prompt_scan, test_client):
     "alias, model, values",
     [("prompt-1", "model-1", {"text": ""})],
 )
-@patch("src.prompt.functional.generate_from_prompt_template")
+@patch("src.prompt.functional.generate_from_prompt_template.delay")
 def test_generate(mock_generate, alias, model, values, test_client):
     """Test get generate from prompt template endpoint."""
     response = test_client.post(
-        f"/api/v2/prompts/{alias}/generate/model/{model}",
+        f"/api/v3/prompts/{alias}/generate/model/{model}",
         headers={"x-api-key": "1234"},
         json=values,
     )
@@ -233,7 +233,7 @@ def test_generate(mock_generate, alias, model, values, test_client):
         ),
     ],
 )
-@patch("src.prompt.functional.generate_from_prompt_template")
+@patch("src.prompt.functional.generate_from_prompt_template.delay")
 def test_generate_exception(
     mock_generate, alias, model, values, exception, test_client
 ):
@@ -241,7 +241,7 @@ def test_generate_exception(
     mock_generate.side_effect = [exception]
 
     response = test_client.post(
-        f"/api/v2/prompts/{alias}/generate/model/{model}",
+        f"/api/v3/prompts/{alias}/generate/model/{model}",
         headers={"x-api-key": "1234"},
         json=values,
     )
@@ -271,13 +271,20 @@ def test_generate_exception(
     "alias, values",
     [("prompt-1", {"text": ""}), ("prompt-2", {"text": ""})],
 )
-@patch("src.prompt.functional.generate_from_default_model")
+@patch("src.prompt.functional.generate_from_default_model.delay")
 def test_generate_from_default_model(mock_generate, alias, values, test_client):
     """Test get model endpoint."""
     response = test_client.post(
-        f"/api/v2/prompts/{alias}/generate",
+        f"/api/v3/prompts/{alias}/generate",
         headers={"x-api-key": "1234"},
         json=values,
     )
     mock_generate.assert_called_with(alias, **values)
     assert response.status_code == status.HTTP_200_OK
+
+
+@patch("src.celery_app.celery_app.AsyncResult")
+def test_get_task_status(mock_async_result, test_client):
+    """Test get task status."""
+    test_client.get("/api/v3/prompts/status/test_id", headers={"x-api-key": "1234"})
+    mock_async_result.assert_called_with("test_id")

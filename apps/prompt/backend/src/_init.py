@@ -56,17 +56,16 @@ def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
 def _syncronize_prompts():
     """Save prompts from registry in dynamoDB if non-exisant."""
     logger.info("Start prompt syncronization...")
-    files = github.ls("machine-learning")
+    files = github.ls()
     for file in files:
         project_alias, *prompt_alias = file.split("/")
-        if file == "machine-learning/english-summarization":
-            project = Project.safe_get(project_alias)
-            if project is None:
-                Project(alias=project_alias).sync()
-            if project_alias != ".github" and len(prompt_alias) > 0:
-                PromptTemplate(
-                    alias=prompt_alias[0],
-                    template=github.read(file),
-                    project=project_alias,
-                ).sync()
+        project = Project.safe_get(project_alias)
+        if project is None:
+            Project(alias=project_alias).sync()
+        if project_alias != ".github" and len(prompt_alias) > 0:
+            PromptTemplate(
+                alias=prompt_alias[0],
+                template=github.read(file),
+                project=project_alias,
+            ).sync()
     logger.info("Finish prompt syncronization")

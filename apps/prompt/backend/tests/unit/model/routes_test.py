@@ -19,7 +19,7 @@ settings = get_settings()
 def test_get_models(mock_model_get, test_client):
     """Test get models endpoint."""
     mock_model_get.return_value = []
-    response = test_client.get("/api/v2/models", headers={"x-api-key": "1234"})
+    response = test_client.get("/api/v3/models", headers={"x-api-key": "1234"})
     mock_model_get.assert_called_once()
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
@@ -37,7 +37,7 @@ def test_get_models(mock_model_get, test_client):
 def test_get_model(mock_model_get, alias, provider, test_client):
     """Test get model endpoint."""
     mock_model_get.return_value = LanguageModel(alias=alias, provider=provider)
-    response = test_client.get(f"/api/v2/models/{alias}", headers={"x-api-key": "1234"})
+    response = test_client.get(f"/api/v3/models/{alias}", headers={"x-api-key": "1234"})
     mock_model_get.assert_called_with(f"{alias}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
@@ -54,11 +54,11 @@ def test_get_model(mock_model_get, alias, provider, test_client):
         ("model-2", "bedrock", "hello"),
     ],
 )
-@patch("src.prompt.functional.generate_from_prompt")
+@patch("src.prompt.functional.generate_from_prompt.delay")
 def test_generate(mock_generate, alias, provider, prompt, test_client):
     """Test get model endpoint."""
     response = test_client.post(
-        f"/api/v2/models/{alias}/generate?prompt={prompt}",
+        f"/api/v3/models/{alias}/generate?prompt={prompt}",
         headers={"x-api-key": "1234"},
     )
     mock_generate.assert_called_with(prompt, alias, model_parameters=None)

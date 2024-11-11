@@ -16,7 +16,7 @@ from src.prompt.routes import get_task_status
 
 
 router = APIRouter(
-    prefix="/v2/models",
+    prefix="/v3/models",
 )
 
 
@@ -65,4 +65,7 @@ def generate(alias: str, prompt: str, model_parameters: str = Header(None)):
 @router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
 def get_task_status_model(task_id: str):
     """Fetch the status or result of a Celery task."""
-    return get_task_status(task_id)
+    response = get_task_status(task_id)
+    if V3ResponseKeys.RESULT in response:
+        response[V3ResponseKeys.RESULT] = {"generated": response[V3ResponseKeys.RESULT]}
+    return response

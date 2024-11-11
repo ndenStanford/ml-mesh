@@ -227,6 +227,10 @@ services:
         condition: service_healthy
       redisdb:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      backend-celery-worker:
+        condition: service_healthy
     networks:
       - onclusive-net
 
@@ -291,7 +295,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: ["celery", "-A", "src.celery_app.celery_app", "worker", "--loglevel=info"]
-    profiles: [backend, backend-celery-worker]
+    profiles: [backend, backend-celery-worker, functional]
     healthcheck:
       test: [CMD-SHELL, sleep 120s || exit 1]
       interval: 2m30s
@@ -340,7 +344,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongouser
       MONGO_INITDB_ROOT_PASSWORD: mongopassword
-    profiles: [backend, backend-celery-worker]
+    profiles: [backend, backend-celery-worker, functional]
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:27017 || exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - onclusive-net
 
