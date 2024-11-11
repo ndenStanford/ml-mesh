@@ -15,6 +15,7 @@ from src.celery_app import celery_app
 from src.project.tables import Project
 from src.prompt import functional as F
 from src.prompt.constants import CeleryStatusTypes, V3ResponseKeys
+from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
@@ -152,6 +153,11 @@ def generate_text_from_prompt_template(
     except (JSONDecodeError, OutputParserException) as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=e.__class__.__name__ + ": " + str(e),
+        )
+    except (StrOutputParserTypeError, PromptFieldsMissing) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=e.__class__.__name__ + ": " + str(e),
         )
 
