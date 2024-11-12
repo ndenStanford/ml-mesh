@@ -46,7 +46,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         """Return model as langchain chat model."""
         self.model_parameters = kwargs.get("model_parameters", None)
         model_parameters_class = MODELS_TO_PARAMETERS.get(
-            self.alias, MODELS_TO_PARAMETERS[ChatModel.CLAUDE_3_HAIKU]
+            self.alias, MODELS_TO_PARAMETERS[ChatModel.GPT4_O_MINI]
         )
         if self.provider == ChatModelProdiver.OPENAI:
             return self._handle_openai_provider(model_parameters_class)
