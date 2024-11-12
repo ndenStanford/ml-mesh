@@ -61,7 +61,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
     GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
     DEFAULT_MODEL: str = "gpt-4o-mini"
-    HAIKU_CLAUDE_MODEL: str = "anthropic.claude-3-haiku-20240307-v1:0"
+    HAIKU_CLAUDE_MODEL: str = "us.anthropic.claude-3-haiku-20240307-v1:0"
     GPT_MODEL: str = "gpt-4o"
 
     model_settings: ServerModelSettings = ServerModelSettings()
@@ -108,6 +108,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     ENTITY_RESPONSE_SCHEMA: Dict[str, str] = {
         "entity_list": "a string representing a list of detected entities"
     }
+    STRING_OUTPUT_PARSER: bool = True
 
 
 class ElasticsearchSettings(OnclusiveBaseSettings):
