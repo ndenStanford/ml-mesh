@@ -405,6 +405,30 @@ class BelaModel:
         mention_lengths = model_inputs.get("mention_lengths")
         sp_tokens_boundaries = model_inputs.get("sp_tokens_boundaries")
 
+        # Check if mention_offsets is empty to prevent IndexError
+        if (
+            mention_offsets is None
+            or len(mention_offsets) == 0
+            or len(mention_offsets[0]) == 0
+        ):
+            # Return early or set default values if mention_offsets is empty
+            return {
+                "input_ids": input_ids[:, :max_length],
+                "attention_mask": attention_mask[:, :max_length],
+                "tokens_mapping": (
+                    tokens_mapping[:, :max_length]
+                    if tokens_mapping is not None
+                    else None
+                ),
+                "mention_offsets": mention_offsets,  # or set to None/empty if desired
+                "mention_lengths": mention_lengths,
+                "sp_tokens_boundaries": (
+                    sp_tokens_boundaries[:, :max_length]
+                    if sp_tokens_boundaries is not None
+                    else None
+                ),
+            }
+
         mention_start = mention_offsets[0][0].item()
 
         # Calculate how much to shift the window to make the mention start at the center_position
