@@ -50,7 +50,7 @@ class Settings(OnclusiveBaseSettings):
     AWS_PROFILE: Optional[str] = None
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
-    DEFAULT_MODELS: dict = {"default": "us.anthropic.claude-3-haiku-20240307-v1:0"}
+    DEFAULT_MODELS: dict = {"default": "gpt-4o-mini"}
     CORS_ORIGIN: List[str] = ["*"]
     BEDROCK_READ_TIMEOUT: int = 300
 
