@@ -256,6 +256,13 @@ class SummarizationServedModel(ServedModel):
             payload.attributes.content, parameters
         )
 
+        if len(content) == 0:
+            return PredictResponseSchema.from_data(
+                version=int(settings.api_version[1:]),
+                namespace=settings.model_name,
+                attributes={"summary": "", "title": None},
+            )
+
         # detect content language
         detected_language = self._identify_language(str(content))
         logger.debug(f"Detected content language: {detected_language}")
