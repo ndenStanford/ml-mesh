@@ -40,6 +40,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         "advertisement_detect": "Answer 'yes' or 'no' to indicate if there is any advertisement in the paragraph",  # noqa: E501
         "advertisement_content": "The reason for why you think there is advertisement",
     }
+    STRING_OUTPUT_PARSER: bool = True
 
 
 class TranscriptSegmentationHandlerSettings(OnclusiveBaseSettings):
