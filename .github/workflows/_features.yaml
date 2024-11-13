@@ -33,6 +33,11 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+      should_apply:
+        required: false
+        default: false
+        type: boolean
+        description: If true, run apply when PR is merged (except merges to main)
     secrets:
       AWS_DEFAULT_REGION:
         required: true
@@ -132,5 +137,5 @@ jobs:
         run: make features.plan
 
       - name: Run apply
-        if: ${{ inputs.release}}
+        if: ${{ inputs.should_apply}}
         run: make features.apply
