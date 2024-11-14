@@ -9,9 +9,9 @@ entity = Entity(name="topic", join_keys=["iptc_id"], description="Topic Entity."
 
 source = OnclusiveRedshiftSource(
     name="topic",
-    query="SELECT * FROM features.pred_iptc_first_level",
+    query="SELECT * FROM features.pred_iptc__first_level",
     schema="features",
-    table="pred_iptc_first_level",
+    table="pred_iptc__first_level",
     timestamp_field="created_at",
 )
 
