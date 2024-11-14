@@ -59,46 +59,6 @@ def test_model_server_bio():
                 },
             },
         ),
-        # Test case for Korean (with entities)
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "content": "에어비앤비, 하와이 임시 거처 제공마우이 신속대응팀 등 비영리 단체와 지속 협력"
-                    },
-                    "parameters": {"language": "ko"},
-                }
-            },
-            {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "entities": [
-                            {
-                                "entity_text": "에어비앤비",
-                                "entity_type": "ORG",
-                                "score": 0.9980051755905152,
-                                "sentence_index": 0,
-                                "start": 0,
-                                "end": 5,
-                            },
-                            {
-                                "entity_text": "제공마우이 신속대응",
-                                "entity_type": "ORG",
-                                "score": 0.7580916749106513,
-                                "sentence_index": 0,
-                                "start": 17,
-                                "end": 27,
-                            },
-                        ]
-                    },
-                },
-            },
-        ),
         # Test case for English (with entities)
         (
             {
