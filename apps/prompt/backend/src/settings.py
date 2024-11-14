@@ -34,16 +34,13 @@ class Settings(OnclusiveBaseSettings):
 
     # OpenAI API key
     OPENAI_API_KEY: str
-    LLM_CALL_RETRY_COUNT: int = 2
-    LLM_CALL_RETRY_DELAY: float = 3.0
-    LLM_CALL_RETRY_BACKOFF: float = 2.0
-    LLM_CALL_RETRY_MAX_DELAY: float = 10.0
+    CELERY_MAX_RETRY_COUNTS: int = 3
+    CELERY_RETRY_DELAY: float = 30
 
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
 
     REDIS_CONNECTION_STRING: str = ""
-    REDIS_TTL_SECONDS: int = 86400
 
     DOCUMENTDB_HOST: str
     DYNAMODB_HOST: Optional[str] = None

@@ -13,7 +13,7 @@ from onclusiveml.core.retry import retry
 from onclusiveml.llms.json_builder import build_json
 
 # Source
-from src.celery_app import celery_app
+from src.worker import celery_app
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
@@ -24,13 +24,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-@celery_app.task
-@retry(
-    tries=settings.LLM_CALL_RETRY_COUNT,
-    delay=settings.LLM_CALL_RETRY_DELAY,
-    backoff=settings.LLM_CALL_RETRY_BACKOFF,
-    max_delay=settings.LLM_CALL_RETRY_MAX_DELAY,
-)
+@celery_app.task(default_retry_delay=settings.CELERY_RETRY_DELAY, max_retries=settings.CELERY_MAX_RETRY_COUNTS)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
     prompt_alias: str, model_alias: str, **kwargs
@@ -76,8 +70,7 @@ def generate_from_prompt_template(
     return result
 
 
-@celery_app.task
-@retry(tries=settings.LLM_CALL_RETRY_COUNT)
+@celery_app.task(default_retry_delay=settings.CELERY_RETRY_DELAY, max_retries=settings.CELERY_MAX_RETRY_COUNTS)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
     prompt: str, model_alias: str, model_parameters: Dict = None
@@ -88,8 +81,7 @@ def generate_from_prompt(
     return conversation.predict(input=prompt)
 
 
-@celery_app.task
-@retry(tries=settings.LLM_CALL_RETRY_COUNT)
+@celery_app.task(default_retry_delay=settings.CELERY_RETRY_DELAY, max_retries=settings.CELERY_MAX_RETRY_COUNTS)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""

@@ -11,7 +11,7 @@ from fastapi import APIRouter, Header, HTTPException, status
 from langchain_core.exceptions import OutputParserException
 
 # Source
-from src.celery_app import celery_app
+from src.worker import celery_app
 from src.project.tables import Project
 from src.prompt import functional as F
 from src.prompt.constants import CeleryStatusTypes, V3ResponseKeys
@@ -178,27 +178,12 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
 def get_task_status(task_id: str):
     """Fetch the status or result of a Celery task."""
     result = celery_app.AsyncResult(task_id)
-    if result.state == CeleryStatusTypes.PENDING:
-        return {
-            V3ResponseKeys.TASK_ID: task_id,
-            V3ResponseKeys.STATUS: CeleryStatusTypes.PENDING,
-        }
-    elif result.state == CeleryStatusTypes.STARTED:
-        return {
-            V3ResponseKeys.TASK_ID: task_id,
-            V3ResponseKeys.STATUS: CeleryStatusTypes.STARTED,
-        }
-    elif result.state == CeleryStatusTypes.SUCCESS:
-        return {
-            V3ResponseKeys.TASK_ID: task_id,
-            V3ResponseKeys.STATUS: CeleryStatusTypes.SUCCESS,
-            V3ResponseKeys.RESULT: result.result,
-        }
+    result = {
+	    V3ResponseKeys.TASK_ID: task_id,
+	    V3ResponseKeys.STATUS: result.state
+	}
+    if result.state == CeleryStatusTypes.SUCCESS:
+        result.update({V3ResponseKeys.RESULT: result.result})
     elif result.state == CeleryStatusTypes.FAILURE:
-        return {
-            V3ResponseKeys.TASK_ID: task_id,
-            V3ResponseKeys.STATUS: CeleryStatusTypes.FAILURE,
-            V3ResponseKeys.ERROR: str(result.result),
-        }
-    else:
-        return {V3ResponseKeys.TASK_ID: task_id, V3ResponseKeys.STATUS: result.state}
+        result.update({V3ResponseKeys.ERROR: str(result.result)})
+    return result
