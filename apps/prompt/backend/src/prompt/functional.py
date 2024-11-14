@@ -9,22 +9,24 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema.output_parser import StrOutputParser
 
 # Internal libraries
-from onclusiveml.core.retry import retry
 from onclusiveml.llms.json_builder import build_json
 
 # Source
-from src.worker import celery_app
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
+from src.worker import celery_app
 
 
 settings = get_settings()
 
 
-@celery_app.task(default_retry_delay=settings.CELERY_RETRY_DELAY, max_retries=settings.CELERY_MAX_RETRY_COUNTS)
+@celery_app.task(
+    default_retry_delay=settings.CELERY_RETRY_DELAY,
+    max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
     prompt_alias: str, model_alias: str, **kwargs
@@ -36,7 +38,6 @@ def generate_from_prompt_template(
     llm = LanguageModel.get(model_alias)
     # setting output parser
     prompt.fields = kwargs.get("output")
-
     # Check if str_output_parser flag is correctly set and validate fields
     str_output_parser = kwargs.get("str_output_parser", False)
     if not isinstance(str_output_parser, bool):
@@ -70,7 +71,10 @@ def generate_from_prompt_template(
     return result
 
 
-@celery_app.task(default_retry_delay=settings.CELERY_RETRY_DELAY, max_retries=settings.CELERY_MAX_RETRY_COUNTS)
+@celery_app.task(
+    default_retry_delay=settings.CELERY_RETRY_DELAY,
+    max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
     prompt: str, model_alias: str, model_parameters: Dict = None
@@ -81,7 +85,10 @@ def generate_from_prompt(
     return conversation.predict(input=prompt)
 
 
-@celery_app.task(default_retry_delay=settings.CELERY_RETRY_DELAY, max_retries=settings.CELERY_MAX_RETRY_COUNTS)
+@celery_app.task(
+    default_retry_delay=settings.CELERY_RETRY_DELAY,
+    max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""
