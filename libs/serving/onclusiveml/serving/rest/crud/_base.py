@@ -1,10 +1,11 @@
 """Base CRUD Generator."""
 
 # Standard Library
+import ast
 from typing import Any, Callable, Generic, List, Optional, Type, TypeVar, Union
 
 # 3rd party libraries
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.types import DecoratedCallable
 
 # Internal libraries
@@ -148,9 +149,9 @@ class CRUDGenerator(Generic[T], APIRouter):
 
         if get_query_route:
             self.add_api_route(
-                "/query",
+                "/{query}",
                 self.get_route_get_query(),
-                methods=["POST"],
+                methods=["GET"],
                 response_model=List[self.schema],
                 summary="Get query",
                 dependencies=(
@@ -237,12 +238,17 @@ class CRUDGenerator(Generic[T], APIRouter):
     def get_route_get_query(self) -> Callable[..., Any]:
         """Create the route_get_query function."""
 
-        def route_get_query(input_query: dict):
+        def route_get_query(serialized_query: str = Query(...)):
             try:
-                serialized_query = input_query.get("serialized_query")
-                return self.model.get_query(serialized_query)
+                json_query = ast.literal_eval(serialized_query)
+
+                search_query = {
+                    k: eval(v) if (v.startswith("Key(") or v.startswith("A(")) else v
+                    for k, v in json_query.items()
+                }
+                return self.model.get_query(search_query)
             except ValidationException:
-                raise HTTPException(404, f"Query {input_query} is not valid.")
+                raise HTTPException(404, f"Query {serialized_query} is not valid.")
 
         return route_get_query
 

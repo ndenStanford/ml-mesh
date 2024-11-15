@@ -1,8 +1,6 @@
 """DynamoDB Data Model."""
 
 # Standard Library
-import base64
-import pickle
 from typing import Any, Dict, List
 
 # 3rd party libraries
@@ -123,7 +121,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def get_query(self, search_query: str) -> List[Dyntastic]:
+    def get_query(self, search_query: dict) -> List[Dyntastic]:
         """Get result for a certain dynamodb search query.
 
         Args:
@@ -136,12 +134,11 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             ValidationException: If the query is invalid.
         """
         try:
-            search_query_restored = pickle.loads(base64.b64decode(search_query))
-            response = self.model.query(**search_query_restored)
+            response = self.model.query(**search_query)
             query_items = [item.__dict__ for item in response]
             return query_items
-        except ValueError as ve:
-            raise ValidationException(error=str(ve)) from ve
+        except ValidationException as e:
+            raise ValidationException("The search query format is invalid.") from e
 
     def delete_one(self, id: str) -> Dyntastic:
         """Delete an item from the DynamoDB table by its ID.

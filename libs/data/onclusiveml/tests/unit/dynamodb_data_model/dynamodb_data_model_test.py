@@ -1,12 +1,11 @@
 """Test DynamoDB Data Model."""
 
 # Standard Library
-import base64
-import pickle
 
 # 3rd party libraries
 import pytest
 from boto3.dynamodb.conditions import Key
+from dyntastic import A
 
 # Internal libraries
 from onclusiveml.data.data_model.exception import (
@@ -182,17 +181,26 @@ def test_get_dynamodb_table_name(dynamo_db_model):
     assert isinstance(table_name, str)
 
 
-def test_get_query(dynamo_db_model):
+def test_get_query(test_data):
     """Test get query from dynamodb table."""
-    items_data = [
-        {"name": "Name1", "age": 25},
-        {"name": "Name2", "age": 26},
-    ]
-    for item_data in items_data:
-        dynamo_db_model.create(item_data)
     key_condition = Key("name").eq("Name1")
     search_query = {"hash_key": key_condition, "index": "name-index"}
-    serialized_query = base64.b64encode(pickle.dumps(search_query)).decode("utf-8")
 
-    query_item = dynamo_db_model.get_query(serialized_query)
+    query_item = test_data.get_query(search_query)
     assert query_item[0]["age"] == 25
+
+
+def test_get_query_multi_condition(test_data):
+    """Test get query with multiple condition."""
+    name_condition = A("name").eq("Name2")  # Primary key condition
+    age_condition = A("age").eq(27)  # Filter condition for age
+    # Construct the search query to pass into get_query
+    search_query = {
+        "hash_key": name_condition,
+        "filter_condition": age_condition,
+        "index": "name-index",
+    }
+    query_item = test_data.get_query(search_query)
+    assert len(query_item) == 1
+    assert query_item[0]["name"] == "Name2"
+    assert query_item[0]["age"] == 27

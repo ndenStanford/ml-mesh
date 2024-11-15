@@ -36,8 +36,21 @@ def dynamo_db_model(TestDyntasticModel):
     """Fixture to provide a DynamoDBModel instance with a mocked DynamoDB table."""
     with mock_aws():
         # Create the DynamoDB table using the Dyntastic model
-        index1 = Index("name", index_name="name-index")
+        index = Index("name", index_name="name-index")
 
-        TestDyntasticModel.create_table(index1)
+        TestDyntasticModel.create_table(index)
         # Return an instance of DynamoDBModel
         yield DynamoDBModel(model=TestDyntasticModel)
+
+
+@pytest.fixture
+def test_data(dynamo_db_model):
+    """Sample data for testing."""
+    items_data = [
+        {"name": "Name1", "age": 25},
+        {"name": "Name2", "age": 26},
+        {"name": "Name2", "age": 27},
+    ]
+    for item_data in items_data:
+        dynamo_db_model.create(item_data)
+    return dynamo_db_model

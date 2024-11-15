@@ -1,9 +1,8 @@
 """Topic summarization report generator."""
 
 # Standard Library
-import base64
-import pickle
 from datetime import date, timedelta
+from typing import Optional
 
 # 3rd party libraries
 from boto3.dynamodb.conditions import Key
@@ -41,8 +40,7 @@ def get_topic_summarization_report_router() -> APIRouter:
     # Define the route for the report
     @router.get("/topic-summarization/report")
     async def get_filtered_report(
-        start_date: date,
-        end_date: date,
+        start_date: date, end_date: date, query_string: Optional[str] = None
     ):
         try:
             # Fetch all items from DynamoDB
@@ -52,10 +50,7 @@ def get_topic_summarization_report_router() -> APIRouter:
                 # Fetch results for the current date using get_query
                 key_condition = Key("timestamp_date").eq(current_date.isoformat())
                 db_query = {"hash_key": key_condition, "index": "timestamp_date-index"}
-                serialized_query = base64.b64encode(pickle.dumps(db_query)).decode(
-                    "utf-8"
-                )
-                query_results = response_model.get_query(search_query=serialized_query)
+                query_results = response_model.get_query(search_query=db_query)
                 all_items.extend(query_results)
 
                 while "LastEvaluatedKey" in query_results:
@@ -64,12 +59,24 @@ def get_topic_summarization_report_router() -> APIRouter:
                         "index": "timestamp_date-index",
                         "last_evaluated_key": query_results.get("LastEvaluatedKey"),
                     }
-                    query_results = response_model.get_query(db_query=db_query)
+                    query_results = response_model.get_query(search_query=db_query)
                     all_items.extend(query_results)
 
                 current_date += timedelta(days=1)
             # Apply filtering based on query_profile, topic_id, and time range
-            filtered_items = [item for item in all_items if item["trending"] is True]
+            if query_string:
+                filtered_items = [
+                    item
+                    for item in all_items
+                    if (
+                        (item["trending"] is True)
+                        and (item["query_string"] == query_string)
+                    )
+                ]
+            else:
+                filtered_items = [
+                    item for item in all_items if item["trending"] is True
+                ]
             report_list = [
                 {
                     "Query": item["query_string"],

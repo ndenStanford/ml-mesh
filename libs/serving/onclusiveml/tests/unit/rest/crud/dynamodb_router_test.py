@@ -1,12 +1,7 @@
 """Test DynamoDB router."""
 
 # Standard Library
-import base64
-import pickle
 from http import HTTPStatus
-
-# 3rd party libraries
-from boto3.dynamodb.conditions import Key
 
 
 def test_create_item(client):
@@ -233,11 +228,11 @@ def test_get_query(client):
     for item in items:
         client.post("/test-service/v1/test_table", json=item)
     # test search query
-    key_condition = Key("name").eq("Name1")
-    db_query = {"hash_key": key_condition, "index": "name-index"}
-    serialized_query = base64.b64encode(pickle.dumps(db_query)).decode("utf-8")
+    condition_str = 'Key("name").eq("Name1")'
+    db_query = {"hash_key": condition_str, "index": "name-index"}
 
-    response = client.post(
-        "/test-service/v1/test_table/query", json={"serialized_query": serialized_query}
+    response = client.get(
+        "/test-service/v1/test_table", params={"serialized_query": db_query}
     )
+
     assert response.status_code == HTTPStatus.OK

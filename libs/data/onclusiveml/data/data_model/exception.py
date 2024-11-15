@@ -16,12 +16,6 @@ class ItemNotFoundException(OnclusiveException):
     message_format = "Item with id {item_id} does not exist."
 
 
-class QueryNotFoundException(OnclusiveException):
-    """Exception raised when an query is not found."""
-
-    message_format = "Query {search_query}"
-
-
 class ValidationException(OnclusiveException):
     """Exception raised for validation errors."""
 

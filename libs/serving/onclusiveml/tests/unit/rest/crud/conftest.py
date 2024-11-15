@@ -39,9 +39,9 @@ def dynamo_db_model(TestDyntasticModel):
     """Fixture to provide a DynamoDBModel instance with a mocked DynamoDB table."""
     with mock_aws():
         # Create the DynamoDB table using the Dyntastic model
-        index1 = Index("name", index_name="name-index")
+        index = Index("name", index_name="name-index")
 
-        TestDyntasticModel.create_table(index1)
+        TestDyntasticModel.create_table(index)
         # Return an instance of DynamoDBModel
         yield DynamoDBModel(model=TestDyntasticModel)
 

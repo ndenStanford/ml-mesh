@@ -110,7 +110,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
             T: The query related item, or None.
 
         Raises:
-            QueryNotFoundException: If the query does not exist.
             ValidationException: If the query is invalid.
         """
 
