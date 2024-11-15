@@ -12,6 +12,29 @@ from src.extensions.github import github
 from src.prompt.tables import PromptTemplate
 
 
+@pytest.fixture(autouse=True)
+def cleanup_test_prompts():
+    """Fixture to clean up test prompts before and after tests."""
+    # Clean up before test
+    test_prompts = ["prompt-12", "prompt-13"]
+    for alias in test_prompts:
+        try:
+            prompt = PromptTemplate.get(alias)
+            prompt.delete()
+        except DoesNotExist:
+            pass
+
+    yield
+
+    # Clean up after test
+    for alias in test_prompts:
+        try:
+            prompt = PromptTemplate.get(alias)
+            prompt.delete()
+        except DoesNotExist:
+            pass
+
+
 @pytest.mark.parametrize(
     "alias, template, project",
     [
