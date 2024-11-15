@@ -4,7 +4,6 @@
 
 # 3rd party libraries
 import pytest
-from boto3.dynamodb.conditions import Key
 from dyntastic import A
 
 # Internal libraries
@@ -183,7 +182,7 @@ def test_get_dynamodb_table_name(dynamo_db_model):
 
 def test_get_query(test_data):
     """Test get query from dynamodb table."""
-    key_condition = Key("name").eq("Name1")
+    key_condition = A("name").eq("Name1")
     search_query = {"hash_key": key_condition, "index": "name-index"}
 
     query_item = test_data.get_query(search_query)
@@ -204,3 +203,17 @@ def test_get_query_multi_condition(test_data):
     assert len(query_item) == 1
     assert query_item[0]["name"] == "Name2"
     assert query_item[0]["age"] == 27
+
+
+def test_get_query_multiple_filter(test_data):
+    """Test get query with multiple filter condition."""
+    name_condition = A("name").eq("Name2")
+    age_condition_1 = A("age") < 30
+    age_condition_2 = A("age") > 25
+    search_query = {
+        "hash_key": name_condition,
+        "filter_condition": age_condition_1 & age_condition_2,
+        "index": "name-index",
+    }
+    query_item = test_data.get_query(search_query)
+    assert len(query_item) == 2

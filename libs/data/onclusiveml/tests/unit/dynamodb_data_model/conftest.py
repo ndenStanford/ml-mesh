@@ -48,8 +48,10 @@ def test_data(dynamo_db_model):
     """Sample data for testing."""
     items_data = [
         {"name": "Name1", "age": 25},
+        {"name": "Name2", "age": 20},
         {"name": "Name2", "age": 26},
         {"name": "Name2", "age": 27},
+        {"name": "Name2", "age": 35},
     ]
     for item_data in items_data:
         dynamo_db_model.create(item_data)

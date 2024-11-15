@@ -134,6 +134,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
             ValidationException: If the query is invalid.
         """
         try:
+            print("Search query :", search_query)
             response = self.model.query(**search_query)
             query_items = [item.__dict__ for item in response]
             return query_items
