@@ -12,7 +12,7 @@ settings = get_settings()
 celery_app = Celery(
     settings.API_NAME,
     broker=settings.REDIS_CONNECTION_STRING,
-    backend=settings.DOCUMENTDB_HOST,
+    backend=settings.REDIS_CONNECTION_STRING,
     include=["src.prompt.functional"],
 )
 # define task settings

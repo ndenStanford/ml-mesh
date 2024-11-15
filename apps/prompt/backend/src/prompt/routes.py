@@ -177,10 +177,10 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
 @router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
 def get_task_status(task_id: str):
     """Fetch the status or result of a Celery task."""
-    result = celery_app.AsyncResult(task_id)
-    result = {V3ResponseKeys.TASK_ID: task_id, V3ResponseKeys.STATUS: result.state}
-    if result.state == CeleryStatusTypes.SUCCESS:
-        result.update({V3ResponseKeys.RESULT: result.result})
-    elif result.state == CeleryStatusTypes.FAILURE:
-        result.update({V3ResponseKeys.ERROR: str(result.result)})
+    response = celery_app.AsyncResult(task_id)
+    result = {V3ResponseKeys.TASK_ID: task_id, V3ResponseKeys.STATUS: response.state}
+    if response.state == CeleryStatusTypes.SUCCESS:
+        result.update({V3ResponseKeys.RESULT: response.result})
+    elif response.state == CeleryStatusTypes.FAILURE:
+        result.update({V3ResponseKeys.ERROR: str(response.result)})
     return result
