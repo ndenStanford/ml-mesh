@@ -6,13 +6,16 @@ from typing import Dict
 # 3rd party libraries
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
+from langchain.schema.output_parser import StrOutputParser
 
 # Internal libraries
 from onclusiveml.core.retry import retry
+from onclusiveml.llms.json_builder import build_json
 
 # Source
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
+from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
@@ -38,16 +41,37 @@ def generate_from_prompt_template(
     # setting output parser
     prompt.fields = kwargs.get("output")
 
+    # Check if str_output_parser flag is correctly set and validate fields
+    str_output_parser = kwargs.get("str_output_parser", False)
+    if not isinstance(str_output_parser, bool):
+        raise StrOutputParserTypeError
+    # ensure prompt fields are populated in order to run json builder functions
+    if str_output_parser and prompt.fields is None:
+        raise PromptFieldsMissing
+
     chain = (
         prompt.as_langchain()
         | llm.as_langchain(model_parameters=model_parameters)
         | prompt.output_parser
     )
-
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
+    try:
+        result = chain.invoke(inputs)
+    except Exception as e:
+        if str_output_parser and prompt.fields:
+            chain = (
+                prompt.as_langchain()
+                | llm.as_langchain(model_parameters=model_parameters)
+                | StrOutputParser()
+            )
+            result = chain.invoke(inputs)
+            return build_json(result, prompt.fields.keys())
+        # else raise error
+        else:
+            raise e
 
-    return chain.invoke(inputs)
+    return result
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)

@@ -66,17 +66,6 @@ class NERModelParamsBase(NERModelParams):
     model_config = SettingsConfigDict(protected_namespaces=("settings_",))
 
 
-class NERModelParamsKJ(NERModelParams):
-    """Korean/Japanese NER model."""
-
-    huggingface_pipeline_task_kj: str = "token-classification"
-    huggingface_model_reference_kj: str = (
-        "Davlan/distilbert-base-multilingual-cased-ner-hrl"
-    )
-    model_class: str = "DistilBertForTokenClassification"
-    model_config = SettingsConfigDict(protected_namespaces=("settings_",))
-
-
 class TrackedNERBaseModelCard(TrackedModelCard):
     """The model card for the base model of the NER ML project."""
 
@@ -84,13 +73,11 @@ class TrackedNERBaseModelCard(TrackedModelCard):
     # --- custom fields
     # model params
     ner_model_params_base: NERModelParamsBase = NERModelParamsBase()
-    ner_model_params_kj: NERModelParamsKJ = NERModelParamsKJ()
     model_inputs: Inputs = Inputs()
     # admin
     local_output_dir: str = os.path.join(".", "ner_model_artifacts")
     logging_level: str = "INFO"
 
-    kj_model_subdirectory: str = "/korean_japanese_ner"
     base_model_subdirectory: str = "/base_ner"
 
     model_config = SettingsConfigDict(
