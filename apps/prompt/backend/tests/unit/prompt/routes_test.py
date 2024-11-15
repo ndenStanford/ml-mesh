@@ -283,7 +283,7 @@ def test_generate_from_default_model(mock_generate, alias, values, test_client):
     assert response.status_code == status.HTTP_200_OK
 
 
-@patch("src.celery_app.celery_app.AsyncResult")
+@patch("src.worker.celery_app.AsyncResult")
 def test_get_task_status(mock_async_result, test_client):
     """Test get task status."""
     test_client.get("/api/v3/prompts/status/test_id", headers={"x-api-key": "1234"})
