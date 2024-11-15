@@ -60,9 +60,10 @@ class NERModelParams(TrackingSettings):
 class NERModelParamsBase(NERModelParams):
     """Dslim NER model."""
 
-    huggingface_pipeline_task: str = "token-classification"
-    huggingface_model_reference: str = "dslim/bert-base-NER"
-    model_class: str = "BertForTokenClassification"
+    huggingface_pipeline_task: str
+    huggingface_model_reference: str
+    model_class: str
+    tokenizer_class: str
     model_config = SettingsConfigDict(protected_namespaces=("settings_",))
 
 
