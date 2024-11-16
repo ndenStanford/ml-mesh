@@ -4,6 +4,7 @@
 import random
 import re
 import time
+import traceback
 from typing import Any, Dict, List, Optional, Set, Type
 
 # Internal libraries
@@ -258,6 +259,8 @@ class ServedIPTCMultiModel(ServedModel):
 
         current_label = levels[current_index]
         model_id = self._get_model_id_from_label(current_label)
+        if model_id in settings.skip_model_list:
+            return combined_prediction
         client = self._create_client(model_id)
 
         try:
@@ -266,8 +269,9 @@ class ServedIPTCMultiModel(ServedModel):
                 prediction_response
             )
             filtered_prediction = self._filter_prediction(processed_prediction)
-
             for label, score in filtered_prediction.items():
+                if label == "none":
+                    continue
                 combined_label = " > ".join(
                     levels[1 : current_index + 1] + [label]  # noqa: E203
                 )
@@ -287,7 +291,10 @@ class ServedIPTCMultiModel(ServedModel):
                         )
 
         except Exception as e:
-            logger.error(f"Error with Topic API: {e}")
+            full_traceback = traceback.format_exc()
+            logger.error(
+                f"Error with Topic API: {e}\nFull traceback:\n{full_traceback}"
+            )
             raise
 
         return combined_prediction

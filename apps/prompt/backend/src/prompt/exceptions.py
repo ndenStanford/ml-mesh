@@ -52,3 +52,15 @@ class PromptModelUnsupported(BasePromptException):
     """Model is not supported."""
 
     message_format = "{model} is not supported"
+
+
+class StrOutputParserTypeError(BasePromptException):
+    """str_output_parser is not a boolean."""
+
+    message_format = "str_output_parser must be a boolean value"
+
+
+class PromptFieldsMissing(BasePromptException):
+    """Prompt fields missing."""
+
+    message_format = "Prompt fields must exist if str_output_parser is True."

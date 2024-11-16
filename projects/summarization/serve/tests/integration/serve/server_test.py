@@ -18,6 +18,8 @@ multi_article_content = [
     "In 2019, the DFG had a budget of €3.3 billion for research funding.",
 ]  # noqa: E501
 
+keywords = ["German", "funding"]
+
 unsupported_language_content = """
         Elon Musk was de tweede persoon ooit die een persoonlijk fortuin van meer dan 200 miljard dollar vergaarde en die drempel overschreed in januari 2021, maanden na Jeff Bezos.
         De CEO van Tesla Inc. heeft nu zijn eigen primeur bereikt: hij is de enige persoon in de geschiedenis die 200 miljard dollar van zijn nettovermogen heeft verloren.
@@ -61,6 +63,43 @@ def test_integration_summarization_model(test_client, payload):
     response = test_client.post("/summarization/v2/predict", json=payload)
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": ""},
+                "parameters": {
+                    "input_language": "en",
+                    "output_language": "en",
+                    "summary_type": "section",
+                    "desired_length": 50,
+                },
+            }
+        },
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": []},
+                "parameters": {
+                    "input_language": "en",
+                    "output_language": "fr",
+                    "summary_type": "section",
+                    "desired_length": 100,
+                },
+            }
+        },
+    ],
+)
+def test_summarization_model_empty_content(test_client, payload):
+    """Integration test for SummarizationServedModel."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) == 0
     assert response.json()["data"]["attributes"]["title"] is None
 
 
@@ -243,3 +282,107 @@ def test_no_input_language(test_client, payload):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "output_language": "es",
+                    "summary_type": "auto",
+                    "title": False,
+                },
+            }
+        },
+    ],
+)
+def test_single_article_auto_summary(test_client, payload):
+    """Test for multi-article summarization."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": multi_article_content},
+                "parameters": {
+                    "output_language": "es",
+                    "summary_type": "auto",
+                    "title": True,
+                },
+            }
+        },
+    ],
+)
+def test_multi_article_auto_summary(test_client, payload):
+    """Test for multi-article summarization."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is not None
+    assert len(response.json()["data"]["attributes"]["title"]) > 0
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "output_language": "es",
+                    "summary_type": "snippet",
+                    "keywords": keywords,
+                    "title": False,
+                },
+            }
+        },
+    ],
+)
+def test_single_article_snippet_summary(test_client, payload):
+    """Test for multi-article summarization."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": multi_article_content},
+                "parameters": {
+                    "output_language": "es",
+                    "summary_type": "snippet",
+                    "keywords": keywords,
+                    "title": True,
+                },
+            }
+        },
+    ],
+)
+def test_multi_article_snippet_summary(test_client, payload):
+    """Test for multi-article summarization."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is not None
+    assert len(response.json()["data"]["attributes"]["title"]) > 0

@@ -735,7 +735,7 @@ jobs       :
             self-hosted-runner-ami: ami-03e4816f04f417e5a
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: true
+            push-image: ${{ github.event_name != 'pull_request' }}
             base-image: gpu-base
 
           # compile
@@ -1093,19 +1093,6 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # register
-          - name: register
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
-
           # train
           - name: train
             download-model: false
@@ -1117,8 +1104,8 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: gpu-base
+            push-image: true
+            base-image: python-base
 
           # serve
           - name: serve
@@ -1323,6 +1310,20 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+
+          # serve
+          - name: serve
+            download-model: true
+            integration: false
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
+
           # train
           - name: train
             download-model: false
@@ -1331,6 +1332,8 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
+            self-hosted-runner-type: None
+            self-hosted-runner-neuron: false
             push-image: true
             base-image: python-base
 
@@ -1346,6 +1349,8 @@ jobs       :
       upload-test-results: ${{ matrix.components.upload-test-results }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
     secrets:
@@ -1377,11 +1382,20 @@ jobs       :
       max-parallel: 5
       matrix:
         models:
+
           - project: visitor-estimation
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/visitor-estimation
             trained-model: VE-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: topic
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/topic
+            trained-model: TOPIC-TRAINED
             parameters: "{}"
             wait: false
 
@@ -1517,6 +1531,7 @@ jobs       :
             compiled-project: onclusive/iptc-00000000
             compiled-model: IP00000000-COMPILED
             runner-kind: custom
+            skip: true
 
           - project: iptc
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1526,6 +1541,7 @@ jobs       :
             compiled-project: onclusive/iptc-04000000
             compiled-model: IP04000000-COMPILED
             runner-kind: custom
+            skip: true
 
           - project: iptc
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1535,6 +1551,7 @@ jobs       :
             compiled-project: onclusive/iptc-20000170
             compiled-model: IP20000170-COMPILED
             runner-kind: custom
+            skip: true
 
           - project: iptc
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1544,6 +1561,7 @@ jobs       :
             compiled-project: onclusive/iptc-20000763
             compiled-model: IP20000763-COMPILED
             runner-kind: custom
+            skip: true
 
 
     with:
@@ -1555,6 +1573,7 @@ jobs       :
       uncompiled-with-id: ${{ matrix.models.uncompiled-with-id}}
       compiled-project: ${{ matrix.models.compiled-project}}
       compiled-model: ${{ matrix.models.compiled-model}}
+      skip: ${{ matrix.models.skip }}
       runner-kind: ${{ matrix.models.runner-kind}}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       pull-request: ${{ github.event_name == 'pull_request' }}

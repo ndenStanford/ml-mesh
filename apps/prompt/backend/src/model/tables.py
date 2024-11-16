@@ -7,7 +7,8 @@ from typing import Any, Dict, Optional
 import boto3
 from botocore.config import Config
 from dyntastic import Dyntastic
-from langchain_community.chat_models import BedrockChat, ChatOpenAI
+from langchain_aws.chat_models import ChatBedrock
+from langchain_openai.chat_models import ChatOpenAI
 from pydantic import ValidationError
 
 # Internal libraries
@@ -45,7 +46,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         """Return model as langchain chat model."""
         self.model_parameters = kwargs.get("model_parameters", None)
         model_parameters_class = MODELS_TO_PARAMETERS.get(
-            self.alias, MODELS_TO_PARAMETERS[ChatModel.CLAUDE_3_HAIKU]
+            self.alias, MODELS_TO_PARAMETERS[ChatModel.GPT4_O_MINI]
         )
         if self.provider == ChatModelProdiver.OPENAI:
             return self._handle_openai_provider(model_parameters_class)
@@ -70,7 +71,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         """Handle the Bedrock provider specifics."""
         self._initialize_bedrock_model_parameters(model_parameters_class)
         bedrock = self.bedrock_client
-        return BedrockChat(
+        return ChatBedrock(
             client=bedrock,
             model_id=self.alias,
             model_kwargs=self.model_parameters,

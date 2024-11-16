@@ -11,18 +11,12 @@ tracking = {path = "../tracking"}
 feature_store = {path = "../../libs/feature_store"}
 core = {path = "../core"}
 sentence-transformers = "2.2.2"
-cuda-python = "11.8.2"
 bertopic = "0.15.0"
 torch = "1.12.1"
+huggingface-hub = "0.10.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
-
-
-[[tool.poetry.source]]
-name = "pypi-nvidia"
-url = "https://pypi.nvidia.com"
-priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]

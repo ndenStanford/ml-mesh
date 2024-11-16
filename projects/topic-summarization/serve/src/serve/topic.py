@@ -57,6 +57,7 @@ class TopicHandler:
         Output:
             summary & impact(dict): dict[str,str]
         """
+        input_dict["str_output_parser"] = settings.STRING_OUTPUT_PARSER
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
@@ -129,6 +130,7 @@ class TopicHandler:
                     "articles": processed_article,
                 },
                 "output": settings.TOPIC_RESPONSE_SCHEMA,
+                "str_output_parser": settings.STRING_OUTPUT_PARSER,
             }
 
         output_content = None
@@ -175,18 +177,18 @@ class TopicHandler:
         output_content = None
         try:
             q = self.call_api(
-                entity_query_alias_claude, settings.HAIKU_CLAUDE_MODEL, input_dict
+                entity_query_alias_claude, settings.DEFAULT_MODEL, input_dict
             )
             output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
-                raise ValueError("Claude topic response is not a valid string")
+                raise ValueError("LLM topic response is not a valid string")
         except (
             TopicSummarizationParsingException,
             TopicSummarizationJSONDecodeException,
         ) as e:
             raise e
         except Exception as e:
-            logging.error(f"Failed with Claude in Topic: {e}")
+            logging.error(f"Failed with LLM in Topic: {e}")
 
         if (not output_content) or not isinstance(output_content, dict):
             try:

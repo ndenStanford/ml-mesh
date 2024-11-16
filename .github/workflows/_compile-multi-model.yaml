@@ -70,6 +70,11 @@ on  :
         default: true
         type: boolean
         description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
+      skip:
+        required: false
+        default: false
+        type: boolean
+        description: Indicates whether to skip the compiling for the model.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -163,7 +168,7 @@ jobs:
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 30
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && !inputs.skip}}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
@@ -263,7 +268,7 @@ jobs:
           aws-region: us-east-2
 
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2.3.6
+        uses: machulav/ec2-github-runner@v2.3.7
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

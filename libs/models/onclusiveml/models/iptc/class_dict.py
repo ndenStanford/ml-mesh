@@ -132,7 +132,7 @@ CLASS_DICT_SECOND = {
 
 CLASS_DICT_THIRD = {
     # removed economy
-    "economic sector": {
+    "products and services": {
         0: "energy and resource",  # changed order
         1: "computing and information technology",
         2: "transport",
