@@ -4,7 +4,7 @@
 """Model server."""
 # Standard Library
 import json
-from datetime import date, timedelta
+from datetime import date
 from typing import Optional
 
 # 3rd party libraries
@@ -80,14 +80,38 @@ def get_topic_summarization_report_router() -> APIRouter:
         try:
             # Fetch all items from DynamoDB
             all_items = []
-            current_date = start_date
-            while current_date <= end_date:
-                # Fetch results for the current date using get_query
-                key_condition = 'Key("timestamp_date").eq(current_date.isoformat())'
-                db_query = {"hash_key": key_condition, "index": "timestamp_date-index"}
+            # current_date = start_date
+            # while current_date <= end_date:
+            # Fetch results for the current date using get_query
+            # key_condition = 'Key("timestamp_date").eq(current_date.isoformat())'
+            key_condition = 'Key("timestamp_date") < (end_date.isoformat()) & Key("timestamp_date") > (start_date.isoformat())'
+            trending_condition = 'A("trending").eq(True)'
+            db_query = {
+                "hash_key": key_condition,
+                "filter_condition": trending_condition,
+                "index": "timestamp_date-index",
+            }
 
+            serialized_query = json.dumps(db_query)
+            # Use the global `client` to make a GET request
+            response = client.get(
+                "/topic-summary-document/query",
+                params={"serialized_query": serialized_query},
+            )
+            query_results = response.json()
+            print("FIRST QUERY RESULT :", query_results)
+            # query_results = response_model.get_query(search_query=db_query)
+            all_items.extend(query_results)
+            print("AFTER FIRST RESPONSE")
+
+            while "LastEvaluatedKey" in query_results:
+                db_query = {
+                    "hash_key": key_condition,
+                    "filter_condition": trending_condition,
+                    "index": "timestamp_date-index",
+                    "last_evaluated_key": query_results.get("LastEvaluatedKey"),
+                }
                 serialized_query = json.dumps(db_query)
-                # Use the global `client` to make a GET request
                 response = client.get(
                     "/topic-summary-document/query",
                     params={"serialized_query": serialized_query},
@@ -96,22 +120,11 @@ def get_topic_summarization_report_router() -> APIRouter:
                 # query_results = response_model.get_query(search_query=db_query)
                 all_items.extend(query_results)
 
-                while "LastEvaluatedKey" in query_results:
-                    db_query = {
-                        "hash_key": key_condition,
-                        "index": "timestamp_date-index",
-                        "last_evaluated_key": query_results.get("LastEvaluatedKey"),
-                    }
-                    serialized_query = json.dumps(db_query)
-                    response = client.get(
-                        "/topic-summary-document/query",
-                        params={"serialized_query": serialized_query},
-                    )
-                    query_results = response.json()
-                    # query_results = response_model.get_query(search_query=db_query)
-                    all_items.extend(query_results)
+            print("AFTER SECOND RESPONSE")
 
-                current_date += timedelta(days=1)
+            # current_date += timedelta(days=1)
+
+            print("ALL ITEM :", all_items)
             # Apply filtering based on query_profile, topic_id, and time range
             if query_string:
                 filtered_items = [
@@ -126,6 +139,8 @@ def get_topic_summarization_report_router() -> APIRouter:
                 filtered_items = [
                     item for item in all_items if item["trending"] is True
                 ]
+
+            print("AFTER FILTER ITEM")
             report_list = [
                 {
                     "Query": item["query_string"],

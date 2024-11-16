@@ -258,7 +258,6 @@ class CRUDGenerator(Generic[T], APIRouter):
                 return eval(condition_str, {}, {"A": A, "Key": Key})
 
         def route_get_query(serialized_query: str = Query(...)):
-            print("Serialized Query (Raw):", serialized_query)
             try:
                 json_query = ast.literal_eval(serialized_query)
                 search_query = {
