@@ -149,7 +149,6 @@ def get_topic_summarization_report_router() -> APIRouter:
                     item for item in all_items if item["trending"] is True
                 ]
 
-            print("AFTER FILTER ITEM")
             report_list = [
                 {
                     "Query": item["query_string"],
@@ -191,22 +190,6 @@ def get_model_server() -> ModelServer:
         configuration=serving_params, model=topic_served_model, on_startup=[init]
     )
     Instrumentator.enable(model_server, app_name="topic-summarization")
-
-    # response_model = DynamoDBModel(model=TopicSummaryResponseDB)
-    # model_server.include_router(
-    #     CRUDGenerator(
-    #         schema=PredictResponseSchemaWID,
-    #         model=response_model,
-    #         create_schema=PredictResponseSchema,
-    #         update_schema=PredictResponseSchema,
-    #         api_settings=settings,
-    #         entity_name="topic-summary-document",
-    #         tags=["Items"],
-    #         delete_one_route=False,
-    #         delete_all_route=False,
-    #         get_query_route=True,
-    #     )
-    # )
 
     model_server.include_router(get_crud_router())
     model_server.include_router(get_topic_summarization_report_router())
