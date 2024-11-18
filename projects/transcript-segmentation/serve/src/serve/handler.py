@@ -216,10 +216,10 @@ class TranscriptSegmentationHandler:
             segment_title = response.get("segment_title")
             segment_summary = response.get("segment_summary")
 
-            if piece_before_accept == "Yes":
+            if piece_before_accept.lower() == "yes":
                 segment = f"{piece_before} {segment}"
 
-            if piece_after_accept == "Yes":
+            if piece_after_accept.lower() == "yes":
                 segment = f"{segment}{piece_after}"
 
             (
@@ -272,6 +272,7 @@ class TranscriptSegmentationHandler:
                 "keywords": keywords,
             },
             "output": settings.ad_detection_output_schema,
+            "str_output_parser": settings.STRING_OUTPUT_PARSER,
         }
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
@@ -331,6 +332,7 @@ class TranscriptSegmentationHandler:
         payload = {
             "input": {"paragraph": paragraph, "keywords": keywords},
             "output": settings.segmentation_output_schema,
+            "str_output_parser": settings.STRING_OUTPUT_PARSER,
         }
 
         q = requests.post(
