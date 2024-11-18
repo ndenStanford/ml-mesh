@@ -4,7 +4,7 @@
 """Model server."""
 # Standard Library
 import json
-from datetime import date
+from datetime import date, timedelta
 from typing import Optional
 
 # 3rd party libraries
@@ -23,7 +23,11 @@ from src.serve.model import ServedTopicModel
 
 # from src.serve.report_generator import get_topic_summarization_report_router
 from src.serve.schema import PredictResponseSchema
-from src.serve.tables import PredictResponseSchemaWID, TopicSummaryResponseDB
+from src.serve.tables import (
+    PredictResponseSchemaWID,
+    TopicSummaryResponseDB,
+    TopicSummaryDynamoDB,
+)
 from src.settings import get_settings
 
 
@@ -64,14 +68,24 @@ def get_topic_summarization_report_router() -> APIRouter:
     """Create a router for fetching filtered topic summarization reports."""
     # Initialize a FastAPI router
     router = APIRouter()
-    crud_router = get_crud_router()
+    # crud_router = get_crud_router()
+    crud_router = CRUDGenerator(
+        schema=PredictResponseSchemaWID,
+        model=DynamoDBModel(model=TopicSummaryDynamoDB),
+        create_schema=PredictResponseSchema,
+        update_schema=PredictResponseSchema,
+        api_settings=settings,
+        entity_name="topic-summary-document",
+        tags=["Items"],
+        delete_one_route=False,
+        delete_all_route=False,
+        get_query_route=True,
+    )
     app = FastAPI()
     app.include_router(crud_router)
 
     client = TestClient(app)
 
-    # Initialize the DynamoDB model
-    # response_model = DynamoDBModel(model=TopicSummaryDynamoDB)
     # Define the route for the report
     @router.get("/topic-summarization/report")
     async def get_filtered_report(
@@ -80,51 +94,46 @@ def get_topic_summarization_report_router() -> APIRouter:
         try:
             # Fetch all items from DynamoDB
             all_items = []
-            # current_date = start_date
-            # while current_date <= end_date:
-            # Fetch results for the current date using get_query
-            # key_condition = 'Key("timestamp_date").eq(current_date.isoformat())'
-            key_condition = 'Key("timestamp_date") < (end_date.isoformat()) & Key("timestamp_date") > (start_date.isoformat())'
-            trending_condition = 'A("trending").eq(True)'
-            db_query = {
-                "hash_key": key_condition,
-                "filter_condition": trending_condition,
-                "index": "timestamp_date-index",
-            }
-
-            serialized_query = json.dumps(db_query)
-            # Use the global `client` to make a GET request
-            response = client.get(
-                "/topic-summary-document/query",
-                params={"serialized_query": serialized_query},
-            )
-            query_results = response.json()
-            print("FIRST QUERY RESULT :", query_results)
-            # query_results = response_model.get_query(search_query=db_query)
-            all_items.extend(query_results)
-            print("AFTER FIRST RESPONSE")
-
-            while "LastEvaluatedKey" in query_results:
+            current_date = start_date
+            while current_date <= end_date:
+                # Fetch results for the current date using get_query
+                current_date_isoformat = current_date.isoformat()
+                key_condition = f'Key("timestamp_date").eq("{current_date_isoformat}")'
+                trending_condition = 'A("trending").eq(True)'
                 db_query = {
                     "hash_key": key_condition,
                     "filter_condition": trending_condition,
                     "index": "timestamp_date-index",
-                    "last_evaluated_key": query_results.get("LastEvaluatedKey"),
                 }
+
                 serialized_query = json.dumps(db_query)
+                # Use the global `client` to make a GET request
                 response = client.get(
-                    "/topic-summary-document/query",
+                    "/topic-summarization/v1/topic-summary-document/query",
                     params={"serialized_query": serialized_query},
                 )
                 query_results = response.json()
                 # query_results = response_model.get_query(search_query=db_query)
                 all_items.extend(query_results)
 
-            print("AFTER SECOND RESPONSE")
+                while "LastEvaluatedKey" in query_results:
+                    db_query = {
+                        "hash_key": key_condition,
+                        "filter_condition": trending_condition,
+                        "index": "timestamp_date-index",
+                        "last_evaluated_key": query_results.get("LastEvaluatedKey"),
+                    }
+                    serialized_query = json.dumps(db_query)
+                    response = client.get(
+                        "/topic-summarization/v1/topic-summary-document/query",
+                        params={"serialized_query": serialized_query},
+                    )
+                    query_results = response.json()
+                    # query_results = response_model.get_query(search_query=db_query)
+                    all_items.extend(query_results)
 
-            # current_date += timedelta(days=1)
+                current_date += timedelta(days=1)
 
-            print("ALL ITEM :", all_items)
             # Apply filtering based on query_profile, topic_id, and time range
             if query_string:
                 filtered_items = [
