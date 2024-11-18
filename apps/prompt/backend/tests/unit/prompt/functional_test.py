@@ -114,7 +114,7 @@ def test_generate_from_prompt(
             "prompt-b",
             "My favourite film is {text}",
             "Starship Troopers",
-            "us.anthropic.claude-3-haiku-20240307-v1:0",
+            "gpt-4o-mini",
             "bedrock",
         ),
     ],
