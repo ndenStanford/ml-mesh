@@ -186,13 +186,14 @@ def test_get_query(test_data):
     search_query = {"hash_key": key_condition, "index": "name-index"}
 
     query_item = test_data.get_query(search_query)
-    assert query_item[0]["age"] == 25
+    assert query_item[0].age == 25
 
 
 def test_get_query_multi_condition(test_data):
     """Test get query with multiple condition."""
     name_condition = A("name").eq("Name2")  # Primary key condition
     age_condition = A("age").eq(27)  # Filter condition for age
+    # age_condition = A("age").between(25,30)
     # Construct the search query to pass into get_query
     search_query = {
         "hash_key": name_condition,
@@ -201,8 +202,8 @@ def test_get_query_multi_condition(test_data):
     }
     query_item = test_data.get_query(search_query)
     assert len(query_item) == 1
-    assert query_item[0]["name"] == "Name2"
-    assert query_item[0]["age"] == 27
+    assert query_item[0].name == "Name2"
+    assert query_item[0].age == 27
 
 
 def test_get_query_multiple_filter(test_data):
