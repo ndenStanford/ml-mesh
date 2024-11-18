@@ -101,7 +101,6 @@ def get_topic_summarization_report_router() -> APIRouter:
                     params={"serialized_query": serialized_query},
                 )
                 query_results = response.json()
-                # query_results = response_model.get_query(search_query=db_query)
                 all_items.extend(query_results)
 
                 while "LastEvaluatedKey" in query_results:
