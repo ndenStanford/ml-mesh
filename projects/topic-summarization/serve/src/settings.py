@@ -61,7 +61,6 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
     GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
     DEFAULT_MODEL: str = "gpt-4o-mini"
-    HAIKU_CLAUDE_MODEL: str = "us.anthropic.claude-3-haiku-20240307-v1:0"
     GPT_MODEL: str = "gpt-4o"
 
     model_settings: ServerModelSettings = ServerModelSettings()
@@ -97,7 +96,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         "The overall sentiment focusing on given entity, based on all the input articles"
     )
     TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['entity-impact'] = (
-        "The overall impact focusing on given entity, based on all the input articles"
+        "The impact of entity on different aspects, up to 3 aspects. Make it into bullet points."
     )
     # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {

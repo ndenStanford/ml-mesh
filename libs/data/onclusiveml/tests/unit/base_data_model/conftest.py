@@ -61,6 +61,15 @@ class MockDataModel(BaseDataModel[Item]):
         self._store.clear()
         return items
 
+    def get_query(self, search_query: str):
+        """Search the items satisfying given condition."""
+        result = [
+            item
+            for item in self._store.values()
+            if item.id == search_query or item.name == search_query
+        ]
+        return result
+
 
 @pytest.fixture
 def data_model():

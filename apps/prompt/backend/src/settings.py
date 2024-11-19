@@ -47,6 +47,7 @@ class Settings(OnclusiveBaseSettings):
     AWS_PROFILE: Optional[str] = None
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    DEFAULT_MODELS: dict = {"default": "gpt-4o-mini"}
     DEFAULT_MODELS: dict = {"default": "us.anthropic.claude-3-haiku-20240307-v1:0"}
     PROMPTS_TO_SYNC: List[str] = ["machine-learning/english-summarization"]
     CORS_ORIGIN: List[str] = ["*"]
