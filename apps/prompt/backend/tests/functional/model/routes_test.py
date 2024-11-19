@@ -67,8 +67,8 @@ def test_server_response_content_with_celery(
         status_json = status_response.json()
 
         if status_json["status"] == "SUCCESS":
-            assert "generated" in status_json["result"]
-            assert isinstance(status_json["result"]["generated"], str)
+            assert "generated" in status_json["generated"]
+            assert isinstance(status_json["generated"]["generated"], str)
             break
 
         elif status_json["status"] == "FAILURE":

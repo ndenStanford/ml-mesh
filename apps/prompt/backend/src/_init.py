@@ -17,6 +17,7 @@ from src.model.constants import DEFAULT_MODELS
 from src.model.tables import LanguageModel
 from src.project.tables import Project
 from src.prompt.tables import PromptTemplate
+from src.generated.tables import Generated
 from src.settings import get_settings
 
 
@@ -29,7 +30,7 @@ logger = get_default_logger(__name__)
 def init() -> None:
     """App initialization."""
     logger.info("Creating tables...")
-    _create_tables([LanguageModel, PromptTemplate, Project])
+    _create_tables([LanguageModel, PromptTemplate, Project, Generated])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
     logger.info("Finish tables initialization")
     if SystemInfo.in_docker():
@@ -58,14 +59,15 @@ def _syncronize_prompts():
     logger.info("Start prompt syncronization...")
     files = github.ls("")
     for file in files:
-        project_alias, *prompt_alias = file.split("/")
-        project = Project.safe_get(project_alias)
-        if project is None:
-            Project(alias=project_alias).sync()
-        if project_alias != ".github" and len(prompt_alias) > 0:
-            PromptTemplate(
-                alias=prompt_alias[0],
-                template=github.read(file),
-                project=project_alias,
-            ).sync()
+        if file in settings.PROMPTS_TO_SYNC:
+            project_alias, *prompt_alias = file.split("/")
+            project = Project.safe_get(project_alias)
+            if project is None:
+                Project(alias=project_alias).sync()
+            if project_alias != ".github" and len(prompt_alias) > 0:
+                PromptTemplate(
+                    alias=prompt_alias[0],
+                    template=github.read(file),
+                    project=project_alias,
+                ).sync()
     logger.info("Finish prompt syncronization")

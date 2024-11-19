@@ -13,10 +13,4 @@ class CeleryStatusTypes(str, OnclusiveEnum):
     FAILURE: str = "FAILURE"
 
 
-class V3ResponseKeys(str, OnclusiveEnum):
-    """Enum values for celery status types."""
-
-    TASK_ID: str = "task_id"
-    STATUS: str = "status"
-    ERROR: str = "error"
-    RESULT: str = "result"
+GENERATED: str = "generated"

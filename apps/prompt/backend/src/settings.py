@@ -2,14 +2,15 @@
 
 # Standard Library
 from functools import lru_cache
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 # 3rd party libraries
 from pydantic import SecretStr
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-
+from onclusiveml.core.serialization import JsonApiSchema
+	
 
 class Settings(OnclusiveBaseSettings):
     """API configuration."""
@@ -49,6 +50,7 @@ class Settings(OnclusiveBaseSettings):
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     DEFAULT_MODELS: dict = {"default": "us.anthropic.claude-3-haiku-20240307-v1:0"}
+    PROMPTS_TO_SYNC: List[str] = ['machine-learning/english-summarization']
     CORS_ORIGIN: List[str] = ["*"]
     BEDROCK_READ_TIMEOUT: int = 300
 
@@ -57,6 +59,11 @@ class Settings(OnclusiveBaseSettings):
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
 
+class Prediction(JsonApiSchema):
+    task_id: str
+    error: Optional[str]
+    status: str
+    generated: Optional[Dict[str, str]]
 
 @lru_cache
 def get_settings() -> Settings:

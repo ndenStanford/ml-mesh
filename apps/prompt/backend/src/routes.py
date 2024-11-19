@@ -10,6 +10,7 @@ from fastapi import APIRouter, status
 from src.model.routes import router as model_router
 from src.project.routes import router as project_router
 from src.prompt.routes import router as prompt_router
+from src.generated.routes import router as generated_router
 from src.settings import get_settings
 
 
@@ -35,3 +36,4 @@ async def health() -> str:
 api_router.include_router(model_router)
 api_router.include_router(prompt_router)
 api_router.include_router(project_router)
+api_router.include_router(generated_router)

@@ -9,6 +9,11 @@ def url_model_namespace():
     """Create model namespace url."""
     return "http://backend:4000/api/v3/models/gpt-4o/generate?prompt=tell%20me%20a%20joke!!!"
 
+@pytest.fixture
+def url_generated_namespace():
+    """Create generated namespace url."""
+    return "http://backend:4000/api/v3/generated/"
+
 
 @pytest.fixture
 def url_model_namespace_status():
