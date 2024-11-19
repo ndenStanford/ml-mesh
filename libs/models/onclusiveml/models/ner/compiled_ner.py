@@ -64,7 +64,6 @@ class CompiledNER:
         print("LOAD PRETRAINED")
         compiled_ner_pipeline_base = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_ner_pipeline_base"),
-            **{"aggregation_strategy": "simple"}
         )
 
         return cls(compiled_ner_pipeline_base=compiled_ner_pipeline_base)

@@ -47,15 +47,6 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
     return df_sorted
 
 
-def test_compiled_model_regression_1():
-    """Regression testing for compiled ner model."""
-    compiled_predictions = compiled_ner(
-        ["Check out Loggerhead Marinelife Center for a close look at sea turtles."],
-        language="en",
-    )
-    assert compiled_predictions == 1
-
-
 @pytest.mark.parametrize("test_sample_index, language, lang_index", parametrize_values)
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
