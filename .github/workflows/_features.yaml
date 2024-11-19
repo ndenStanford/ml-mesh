@@ -33,6 +33,11 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+      pull-request:
+        required: true
+        default: true
+        type: boolean
+        description: Indicates whether this workflow is running for a Pull Request.
     secrets:
       AWS_DEFAULT_REGION:
         required: true
@@ -132,5 +137,5 @@ jobs:
         run: make features.plan
 
       - name: Run apply
-        if: ${{ inputs.release}}
+        if: ${{ inputs.release && !inputs.pull-request}}
         run: make features.apply
