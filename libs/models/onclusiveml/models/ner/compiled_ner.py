@@ -58,8 +58,13 @@ class CompiledNER:
         Returns:
             CompiledNER: The loaded pre-trained CompiledNER object
         """
+        print("LOAD PRETRAINED")
+        print("LOAD PRETRAINED")
+        print("LOAD PRETRAINED")
+        print("LOAD PRETRAINED")
         compiled_ner_pipeline_base = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline_base")
+            os.path.join(directory, "compiled_ner_pipeline_base"),
+            **{"aggregation_strategy": "simple"}
         )
 
         return cls(compiled_ner_pipeline_base=compiled_ner_pipeline_base)
@@ -116,6 +121,11 @@ class CompiledNER:
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
+        print("sent_tokenized_documents")
+        print("sent_tokenized_documents")
+        print(sent_tokenized_documents)
+        print("sent_tokenized_documents")
+        print("sent_tokenized_documents")
         res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
         # results are in nested list of entities where each sublist represents a doc
         for doc in res:
@@ -124,7 +134,9 @@ class CompiledNER:
                     dictionary.pop("index", None)
                     dictionary["entity_type"] = dictionary.pop("entity")
                     dictionary["entity_text"] = dictionary.pop("word")
-
+        print("ENTITES LIST")
+        print(entities_list)
+        print("ENTITES LIST")
         return [
             [InferenceOutput(**dictionary) for dictionary in entities_list]
             for docs in res
@@ -264,6 +276,11 @@ class CompiledNER:
             List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
         """
+        print("documents")
+        print("documents")
+        print(documents)
+        print("documents")
+        print("documents")
         sent_tokenized_documents = self.preprocess(documents, language)
         ner_labels = self.inference(sent_tokenized_documents, language)
         entities = self.postprocess(ner_labels)

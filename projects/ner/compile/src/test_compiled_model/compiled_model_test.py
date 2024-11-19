@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+import os
 from typing import List
 
 # 3rd party libraries
@@ -11,6 +12,12 @@ from conftest import parametrize_values
 
 # Internal libraries
 from onclusiveml.compile.constants import CompileWorkflowTasks
+from onclusiveml.models.ner import CompiledNER
+
+
+target_model_directory: str = os.path.join("./outputs", "compile", "model_artifacts")
+
+compiled_ner = CompiledNER.from_pretrained(target_model_directory)
 
 
 def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
@@ -40,11 +47,19 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
     return df_sorted
 
 
+def test_compiled_model_regression_1():
+    """Regression testing for compiled ner model."""
+    compiled_predictions = compiled_ner(
+        ["Check out Loggerhead Marinelife Center for a close look at sea turtles."],
+        language="en",
+    )
+    assert compiled_predictions == 1
+
+
 @pytest.mark.parametrize("test_sample_index, language, lang_index", parametrize_values)
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
     settings,
-    compiled_ner,
     test_files,
     test_files_predictions,
     test_sample_index,
@@ -66,7 +81,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compilation_test_settings: Compilation settings
     """
     compiled_predictions = compiled_ner(
-        test_files["inputs"][lang_index][test_sample_index], language=language
+        [test_files["inputs"][lang_index][test_sample_index]], language=language
     )
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler

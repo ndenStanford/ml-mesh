@@ -2,7 +2,6 @@
 
 # Standard Library
 import json
-import os
 from typing import Any, Dict, List, Union
 
 # 3rd party libraries
@@ -13,7 +12,6 @@ from onclusiveml.compile.constants import CompileWorkflowTasks
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.pydantic import cast
 from onclusiveml.core.logging import OnclusiveLogSettings, get_default_logger
-from onclusiveml.models.ner import CompiledNER
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
@@ -67,25 +65,6 @@ def logger(settings: OnclusiveBaseSettings) -> Any:
         name=__name__,
         fmt_level=logging_settings.fmt_level,
     )
-
-
-@pytest.fixture
-def compiled_ner(settings: OnclusiveBaseSettings) -> CompiledNER:
-    """Fixture to provide a compiled NER model instance.
-
-    Args:
-        io_settings (IOSettings): IOSettings instance
-
-    Returns:
-        CompiledNER: Compiled NER model instance
-    """
-    target_model_directory: str = os.path.join(
-        "./outputs", "compile", "model_artifacts"
-    )
-
-    compiled_ner = CompiledNER.from_pretrained(target_model_directory)
-
-    return compiled_ner
 
 
 @pytest.fixture

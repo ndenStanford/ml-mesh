@@ -130,7 +130,9 @@ class CompiledPipeline(object):
         )
 
     @classmethod
-    def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledPipeline":
+    def from_pretrained(
+        cls, directory: Union[Path, str], **kwargs
+    ) -> "CompiledPipeline":
         """Canonic huggingface transformers import method.
 
         Note:
@@ -138,6 +140,7 @@ class CompiledPipeline(object):
 
         Args:
             directory (Path,str): Directory on local file system to import model artifact from.
+            **kwargs: Additional keyword arguments to pass to the pipeline function.
         """
         # import pipeline task
         with open(
@@ -146,7 +149,7 @@ class CompiledPipeline(object):
             pipeline_task = json.load(pipeline_task_file)["task"]
         # use imported pipeline task to import original uncompiled pipeline
         original_pipeline = pipeline(
-            task=pipeline_task, model=os.path.join(directory, "pipeline")
+            task=pipeline_task, model=os.path.join(directory, "pipeline"), **kwargs
         )
         compiled_pipeline = deepcopy(original_pipeline)
         # import and insert compiled tokenizer into designated attribute
