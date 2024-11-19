@@ -86,7 +86,7 @@ def get_topic_summarization_report_router() -> APIRouter:
             while current_date <= end_date:
                 # Fetch results for the current date using get_query
                 current_date_isoformat = current_date.isoformat()
-                key_condition = f'Key("timestamp_date").eq("{current_date_isoformat}")'
+                key_condition = f'A("timestamp_date").eq("{current_date_isoformat}")'
                 trending_condition = 'A("trending").eq(True)'
                 db_query = {
                     "hash_key": key_condition,
