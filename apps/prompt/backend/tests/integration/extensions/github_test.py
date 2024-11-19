@@ -11,8 +11,10 @@ from src.extensions.github import github
 @pytest.mark.order(0)
 def test_github_write():
     """Github write method."""
-    with pytest.raises(GithubException):
-        github.read("integration-tests/file")
+    # ensure the file doesn't exist before attempting to write
+    if github.exists("integration-tests/file"):
+        github.rm("integration-tests/file", "Deleting existing test file")
+    # perform the write operation
     github.write("integration-tests/file", "integration tests", "")
     assert github.read("integration-tests/file") == ""
 
