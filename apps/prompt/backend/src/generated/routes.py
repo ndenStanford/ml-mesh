@@ -19,7 +19,7 @@ def create_generated(generated: Generated):
     """Creates generated object.
 
     Args:
-        id (str): id for generated object.
+        generated (Generated): generated object to be saved.
     """
     _generated = Generated.safe_get(generated.id)
     # if generated does exist, create it

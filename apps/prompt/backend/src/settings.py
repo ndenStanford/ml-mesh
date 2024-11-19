@@ -14,6 +14,7 @@ from onclusiveml.core.serialization import JsonApiSchema
 
 class Settings(OnclusiveBaseSettings):
     """API configuration."""
+
     # Generic settings
     # api name
     API_NAME: str = "Prompt Manager"
@@ -57,6 +58,8 @@ class Settings(OnclusiveBaseSettings):
 
 
 class Prediction(JsonApiSchema):
+    """Prediction Class."""
+
     task_id: str
     error: Optional[str]
     status: str

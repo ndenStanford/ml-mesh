@@ -1,7 +1,6 @@
 """Table tests."""
 
 # Standard Library
-import os
 from unittest.mock import patch
 
 # 3rd party libraries

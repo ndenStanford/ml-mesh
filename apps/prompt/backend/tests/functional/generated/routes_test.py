@@ -1,8 +1,5 @@
 """Model namespace tests."""
 
-# Standard Library
-import time
-
 # 3rd party libraries
 import pytest
 import requests
@@ -43,8 +40,5 @@ def test_server_response_status_code(url_generated_namespace, headers, data):
 )
 def test_response_header_content_type(url_generated_namespace, headers, data):
     """Test response header content type."""
-
     response = requests.post(url_generated_namespace, headers=headers, json=data)
-
-    print(response.text)
     assert response.headers["Content-Type"] == "application/json"
