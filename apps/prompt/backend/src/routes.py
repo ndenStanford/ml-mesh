@@ -7,10 +7,10 @@ import requests
 from fastapi import APIRouter, status
 
 # Source
+from src.generated.routes import router as generated_router
 from src.model.routes import router as model_router
 from src.project.routes import router as project_router
 from src.prompt.routes import router as prompt_router
-from src.generated.routes import router as generated_router
 from src.settings import get_settings
 
 

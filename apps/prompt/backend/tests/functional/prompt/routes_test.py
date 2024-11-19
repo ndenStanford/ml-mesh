@@ -74,7 +74,6 @@ def test_server_response_content_with_celery(
         status_response = requests.get(status_url, headers=headers)
         status_json = status_response.json()
 
-
         if status_json["status"] == "SUCCESS":
             assert "generated" in status_json["generated"]
             assert isinstance(status_json["generated"]["generated"], str)

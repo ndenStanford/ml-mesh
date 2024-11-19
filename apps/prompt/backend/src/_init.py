@@ -13,11 +13,11 @@ from onclusiveml.core.system import SystemInfo
 
 # Source
 from src.extensions.github import github
+from src.generated.tables import Generated
 from src.model.constants import DEFAULT_MODELS
 from src.model.tables import LanguageModel
 from src.project.tables import Project
 from src.prompt.tables import PromptTemplate
-from src.generated.tables import Generated
 from src.settings import get_settings
 
 

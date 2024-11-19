@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, status
 from src.generated.exceptions import GeneratedExisting
 from src.generated.tables import Generated
 
+
 router = APIRouter(
     prefix="/v3/generated",
 )

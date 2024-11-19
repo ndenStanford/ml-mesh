@@ -25,11 +25,12 @@ class GeneratedInvalidId(BasePromptException):
 class GeneratedCreationImpossible(BasePromptException):
     """Generated not created (if generated_creation function did not return 200)."""
 
-    message_format = "Generated with id '{generated_id}' cannot be created at the moment."
+    message_format = (
+        "Generated with id '{generated_id}' cannot be created at the moment."
+    )
 
 
 class DeletionProtectedGenerated(BasePromptException):
     """Generated Deletion impossible (if generated_deletion function did not return 200)."""
 
     message_format = "Generated with id '{generated_id}' cannot be deleted."
-

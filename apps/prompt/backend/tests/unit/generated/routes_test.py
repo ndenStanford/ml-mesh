@@ -10,6 +10,7 @@ from fastapi import status
 # Source
 from src.generated.tables import Generated
 
+
 @pytest.mark.parametrize(
     "id",
     [
@@ -71,9 +72,7 @@ def test_get_project(mock_generated_get, id, test_client):
     # setup
     mock_generated_get.return_value = Generated(id=id)
     # call
-    response = test_client.get(
-        f"/api/v3/generated/{id}", headers={"x-api-key": "1234"}
-    )
+    response = test_client.get(f"/api/v3/generated/{id}", headers={"x-api-key": "1234"})
     # asserts
     assert response.status_code == status.HTTP_200_OK
     response.json() == {"id": id}

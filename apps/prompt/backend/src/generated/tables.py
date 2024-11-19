@@ -1,13 +1,12 @@
 """Project dynamoDB tables."""
 
 # Standard Library
-from typing import Type, Dict, Any, List, Union
+import datetime
+from typing import Any, Dict, List, Type, Union
 
 # 3rd party libraries
 from dyntastic import Dyntastic
 from pydantic import field_validator
-import datetime
-
 
 # Source
 from src.generated.constants import GENERATED_ID_FORBIDDEN_CHARACTERS
@@ -63,7 +62,7 @@ class Generated(Dyntastic):
     def delete(self) -> None:
         """Delete generated from database."""
         return super(Generated, self).delete()
-    
+
     @classmethod
     def get(
         cls: Type["Generated"],

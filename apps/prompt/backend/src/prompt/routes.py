@@ -9,24 +9,29 @@ from typing import Any, Dict
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, Header, HTTPException, status
 from langchain_core.exceptions import OutputParserException
+
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
 # Source
+from src.generated.exceptions import GeneratedCreationImpossible
+from src.generated.tables import Generated
 from src.project.tables import Project
 from src.prompt import functional as F
-from src.prompt.constants import CeleryStatusTypes, GENERATED
+from src.prompt.constants import GENERATED, CeleryStatusTypes
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
-from src.settings import get_settings, Prediction
+from src.settings import Prediction, get_settings
 from src.worker import celery_app
-from src.generated.tables import Generated
-from src.generated.exceptions import GeneratedCreationImpossible
 
-from onclusiveml.core.logging import get_default_logger
+
 settings = get_settings()
 
 router = APIRouter(
     prefix="/v3/prompts",
 )
 logger = get_default_logger(__name__)
+
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 def create_prompt(prompt: PromptTemplate):
@@ -150,7 +155,12 @@ def generate_text_from_prompt_template(
         task = F.generate_from_prompt_template.delay(
             alias, model, **values, model_parameters=model_parameters
         )
-        return Prediction(task_id=task.id, status=CeleryStatusTypes.PENDING, generated=None, error=None)
+        return Prediction(
+            task_id=task.id,
+            status=CeleryStatusTypes.PENDING,
+            generated=None,
+            error=None,
+        )
     except (JSONDecodeError, OutputParserException) as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -172,7 +182,9 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     task = F.generate_from_default_model.delay(alias, **values)
-    return Prediction(task_id=task.id, status=CeleryStatusTypes.PENDING, generated=None, error=None)
+    return Prediction(
+        task_id=task.id, status=CeleryStatusTypes.PENDING, generated=None, error=None
+    )
 
 
 @router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
@@ -183,7 +195,7 @@ def get_task_status(task_id: str) -> Prediction:
         "task_id": task_id,
         "status": response.state,
         "generated": None,
-        "error": None
+        "error": None,
     }
 
     if response_data["status"] == CeleryStatusTypes.SUCCESS:
@@ -191,7 +203,7 @@ def get_task_status(task_id: str) -> Prediction:
             response_data["generated"] = {GENERATED: response.result}
         else:
             response_data["generated"] = response.result
-        
+
         try:
             task_metadata = response.backend.get_task_meta(task_id)
             generated = Generated(
@@ -200,12 +212,12 @@ def get_task_status(task_id: str) -> Prediction:
                 args=task_metadata["args"],
                 kwargs={k: str(v) for k, v in task_metadata["kwargs"].items()},
                 timestamp=task_metadata["date_done"],
-                generation=response_data["generated"]
+                generation=response_data["generated"],
             ).save()
         except GeneratedCreationImpossible:
             logger.error(f"Unable to save Generated: {str(generated)}")
     elif response_data["status"] == CeleryStatusTypes.FAILURE:
         response_data["error"] = str(response.result)
-    
+
     prediction = Prediction(**response_data)
     return prediction
