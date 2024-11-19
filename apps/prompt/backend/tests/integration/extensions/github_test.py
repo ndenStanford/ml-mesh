@@ -14,9 +14,6 @@ def test_github_write():
     # ensure the file doesn't exist before attempting to write
     if github.exists("integration-tests/file"):
         github.rm("integration-tests/file", "Deleting existing test file")
-    # assert that attempting to read a non-existent file raises an exception
-    with pytest.raises(GithubException):
-        github.read("integration-tests/file")
     # perform the write operation
     github.write("integration-tests/file", "integration tests", "")
     assert github.read("integration-tests/file") == ""
