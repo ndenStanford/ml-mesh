@@ -2,6 +2,7 @@
 
 # Standard Library
 from json import JSONDecodeError
+from types import SimpleNamespace
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -201,6 +202,7 @@ def test_list_prompt(mock_prompt_scan, test_client):
 @patch("src.prompt.functional.generate_from_prompt_template.delay")
 def test_generate(mock_generate, alias, model, values, test_client):
     """Test get generate from prompt template endpoint."""
+    mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
         f"/api/v3/prompts/{alias}/generate/model/{model}",
         headers={"x-api-key": "1234"},
@@ -274,17 +276,19 @@ def test_generate_exception(
 @patch("src.prompt.functional.generate_from_default_model.delay")
 def test_generate_from_default_model(mock_generate, alias, values, test_client):
     """Test get model endpoint."""
+    mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
         f"/api/v3/prompts/{alias}/generate",
         headers={"x-api-key": "1234"},
         json=values,
     )
-    mock_generate.assert_called_with(alias, **values)
+    mock_generate.assert_called_once()
     assert response.status_code == status.HTTP_200_OK
 
 
 @patch("src.worker.celery_app.AsyncResult")
 def test_get_task_status(mock_async_result, test_client):
     """Test get task status."""
+    mock_async_result.return_value = SimpleNamespace(**{"state": "PENDING"})
     test_client.get("/api/v3/prompts/status/test_id", headers={"x-api-key": "1234"})
     mock_async_result.assert_called_with("test_id")

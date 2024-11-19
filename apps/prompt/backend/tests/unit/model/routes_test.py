@@ -1,6 +1,7 @@
 """Test routes."""
 
 # Standard Library
+from types import SimpleNamespace
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -57,6 +58,7 @@ def test_get_model(mock_model_get, alias, provider, test_client):
 @patch("src.prompt.functional.generate_from_prompt.delay")
 def test_generate(mock_generate, alias, provider, prompt, test_client):
     """Test get model endpoint."""
+    mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
         f"/api/v3/models/{alias}/generate?prompt={prompt}",
         headers={"x-api-key": "1234"},
