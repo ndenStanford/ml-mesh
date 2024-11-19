@@ -9,12 +9,12 @@ from fastapi import status
 
 # Source
 from src.generated.tables import Generated
-from datetime import datetime
+
 
 @pytest.mark.parametrize(
     "data",
     [
-       {
+        {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
             "generation": "test1",
             "method": "src.prompt.functional.generate_from_prompt_template",
@@ -26,13 +26,15 @@ from datetime import datetime
 )
 @patch.object(Generated, "save")
 @patch.object(Generated, "safe_get")
-def test_create_generated(mock_generated_safe_get, mock_generated_save, data, test_client):
+def test_create_generated(
+    mock_generated_safe_get, mock_generated_save, data, test_client
+):
     """Test save generated endpoint."""
     # setup
     mock_generated_safe_get.return_value = None
     # mock call
     response = test_client.post(
-        f"/api/v3/generated", headers={"x-api-key": "1234"}, json=data
+        "/api/v3/generated", headers={"x-api-key": "1234"}, json=data
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
@@ -42,13 +44,13 @@ def test_create_generated(mock_generated_safe_get, mock_generated_save, data, te
 @pytest.mark.parametrize(
     "data",
     [
-       {
+        {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
             "generation": "test1",
             "method": "src.prompt.functional.generate_from_prompt_template",
             "args": ["english-summarization", "gpt-4o"],
             "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
-            "timestamp":  "2024-11-19T12:00:00",
+            "timestamp": "2024-11-19T12:00:00",
         }
     ],
 )
@@ -56,30 +58,27 @@ def test_create_generated(mock_generated_safe_get, mock_generated_save, data, te
 @patch.object(Generated, "get")
 def test_delete_generated(mock_generated_get, mock_generated_delete, data, test_client):
     """Test generated delete endpoint."""
-
     mock_generated_get.return_value = Generated(**data)
-
 
     response = test_client.delete(
         f"/api/v3/generated/{data['id']}", headers={"x-api-key": "1234"}
     )
-    
 
     assert response.status_code == status.HTTP_200_OK
     mock_generated_delete.assert_called_once()
-    mock_generated_get.assert_called_with(data['id'])
+    mock_generated_get.assert_called_with(data["id"])
 
 
 @pytest.mark.parametrize(
     "data",
     [
-       {
+        {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
             "generation": "test1",
             "method": "src.prompt.functional.generate_from_prompt_template",
             "args": ["english-summarization", "gpt-4o"],
             "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
-            "timestamp":  "2024-11-19T12:00:00",
+            "timestamp": "2024-11-19T12:00:00",
         }
     ],
 )
