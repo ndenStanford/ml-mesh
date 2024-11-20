@@ -4,6 +4,8 @@ ARG BASE_IMAGE_TAG
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/python-base:${BASE_IMAGE_TAG} as builder
 
 ARG IMAGE_NAME
+ARG NEURON_DRIVER_VERSION
+ARG NEURON_TOOLS_VERSION
 
 ENV USER=onclusiveml
 ENV HOME="/docker/${IMAGE_NAME}"
@@ -18,15 +20,17 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Configure Linux for Neuron repository updates
-RUN echo 'deb https://apt.repos.neuron.amazonaws.com bionic main' >> /etc/apt/sources.list.d/neuron.list
+RUN echo "deb https://apt.repos.neuron.amazonaws.com bionic main" > /etc/apt/sources.list.d/neuron.list
 # hadolint ignore=DL4006
 RUN wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB | apt-key add -
 
 # Install Neuron Driver
-# hadolint ignore=DL3008
+# hadolint ignore=DL3008,SC2086
 RUN apt-get update && \
-    apt-get -yq install --no-install-recommends aws-neuronx-tools && \
-    apt-get clean && \
+    apt-get -yq install --no-install-recommends \
+    aws-neuronx-dkms=${NEURON_DRIVER_VERSION} \
+    aws-neuronx-tools=${NEURON_TOOLS_VERSION} \
+    && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # switch user
