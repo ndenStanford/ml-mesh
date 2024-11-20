@@ -155,7 +155,6 @@ class CompiledNER:
             List[List[InferenceOutput]]: Post processed NER predictions
         """
         flattened_entities = []
-
         # Flatten the predictions and add sentence index
         for sentence_idx, sentence_entities in enumerate(ner_predictions):
             for entity in sentence_entities:
@@ -164,22 +163,33 @@ class CompiledNER:
                 entity_dict["sentence_index"] = sentence_idx
                 flattened_entities.append(entity_dict)
 
-        # Merge overlapping or consecutive entities
+        # Merge entities based on B- and I- prefix
         merged_entities = []
-        for current_entity in flattened_entities:
-            if (
-                not merged_entities
-                or current_entity["start"] != merged_entities[-1]["end"]
-                or current_entity["sentence_index"]
-                != merged_entities[-1]["sentence_index"]
-            ):
-                merged_entities.append(current_entity.copy())
+        current_entity = None
+
+        for entity in flattened_entities:
+            # Check if it's a beginning of a new entity (B- prefix) or there is no current entity
+            if entity["entity_type"].startswith("B-") or current_entity is None:
+                if current_entity:  # If there's an ongoing entity, finalize it
+                    merged_entities.append(current_entity)
+                # Start a new entity
+                current_entity = entity.copy()
+            elif entity["entity_type"].startswith("I-") and current_entity:
+                # Merge with the current entity
+                current_entity["entity_text"] += entity["entity_text"]
+                current_entity["end"] = entity["end"]
+                current_entity["score"] = (
+                    current_entity["score"] + entity["score"]
+                ) / 2  # Average the scores
             else:
-                merged_entities[-1]["entity_text"] += current_entity["entity_text"]
-                merged_entities[-1]["end"] = current_entity["end"]
-                merged_entities[-1]["score"] = (
-                    merged_entities[-1]["score"] + current_entity["score"]
-                ) / 2
+                # If the entity type is neither B- nor I-, consider it as a new entity
+                if current_entity:
+                    merged_entities.append(current_entity)
+                current_entity = entity.copy()
+
+        # Append the last entity if any
+        if current_entity:
+            merged_entities.append(current_entity)
 
         # Post-process merged entities
         converted_entities = []
@@ -188,11 +198,15 @@ class CompiledNER:
                 2:
             ]  # Remove prefix (e.g., "B-", "I-")
             if entity["entity_text"][0] == "▁":
-                entity["entity_text"] = (
-                    entity["entity_text"].strip("▁").replace("▁", " ")
-                )
-                entity["start"] += 1  # Adjust start position (account for _ offset)
-            if not entity["start"] == entity["end"]:
+                entity["start"] += (
+                    1 if entity["start"] != 0 else 0
+                )  # Adjust start position (account for _ offset) if mid-sentence
+            entity["entity_text"] = entity["entity_text"].strip("▁").replace("▁", " ")
+            if (
+                entity["start"] != entity["end"]
+                and len(entity["entity_text"]) > 0
+                and entity["entity_text"] not in ["'", "-", "_", "▁"]
+            ):
                 converted_entities.append(InferenceOutput(**entity))
 
         return converted_entities
