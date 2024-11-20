@@ -121,6 +121,25 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
+    def get_query(self, search_query: dict) -> List[Dyntastic]:
+        """Get result for a certain dynamodb search query.
+
+        Args:
+            search_query (str): serialized search query.
+
+        Returns:
+            T: The query related item, or None.
+
+        Raises:
+            ValidationException: If the query is invalid.
+        """
+        try:
+            response = self.model.query(**search_query)
+            query_items = [item for item in response]
+            return query_items
+        except ValidationException as e:
+            raise ValidationException("The search query format is invalid.") from e
+
     def delete_one(self, id: str) -> Dyntastic:
         """Delete an item from the DynamoDB table by its ID.
 
