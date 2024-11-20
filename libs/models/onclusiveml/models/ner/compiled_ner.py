@@ -132,14 +132,14 @@ class CompiledNER:
             for docs in res
         ]
 
-    def compute_moving_average(self, scores: List[float]) -> float:
-        """Compute the moving average of a list of scores.
+    def compute_average(self, scores: List[float]) -> float:
+        """Compute the average of a list of scores.
 
         Args:
-            scores (List[float]): List of scores for which to compute the moving average
+            scores (List[float]): List of scores for
 
         Returns:
-            float: The computed moving average
+            float: The computed average
         """
         return sum(scores) / len(scores)
 
@@ -166,29 +166,35 @@ class CompiledNER:
         # Merge entities based on B- and I- prefix
         merged_entities = []
         current_entity = None
+        current_scores = []  # Track scores for true average calculation
 
         for entity in flattened_entities:
             # Check if it's a beginning of a new entity (B- prefix) or there is no current entity
             if entity["entity_type"].startswith("B-") or current_entity is None:
                 if current_entity:  # If there's an ongoing entity, finalize it
+                    current_entity["score"] = self.compute_average(
+                        current_scores
+                    )  # Use true average
                     merged_entities.append(current_entity)
                 # Start a new entity
                 current_entity = entity.copy()
+                current_scores = [entity["score"]]
             elif entity["entity_type"].startswith("I-") and current_entity:
                 # Merge with the current entity
                 current_entity["entity_text"] += entity["entity_text"]
                 current_entity["end"] = entity["end"]
-                current_entity["score"] = (
-                    current_entity["score"] + entity["score"]
-                ) / 2  # Average the scores
+                current_scores.append(entity["score"])  # Add the new score to the list
             else:
                 # If the entity type is neither B- nor I-, consider it as a new entity
                 if current_entity:
+                    current_entity["score"] = self.compute_average(current_scores)
                     merged_entities.append(current_entity)
                 current_entity = entity.copy()
+                current_scores = [entity["score"]]
 
         # Append the last entity if any
         if current_entity:
+            current_entity["score"] = self.compute_average(current_scores)
             merged_entities.append(current_entity)
 
         # Post-process merged entities

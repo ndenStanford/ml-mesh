@@ -123,9 +123,9 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "ORG",
-                    "score": 0.9884515106678009,
+                    "score": 0.9916256070137024,
                     "entity_text": "Google HQ",
-                    "start": 1,
+                    "start": 0,
                     "end": 9,
                     "sentence_index": 0,
                 },
@@ -139,7 +139,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.99962103,
+                    "score": 0.9996210336685181,
                     "entity_text": "CA",
                     "start": 31,
                     "end": 33,
@@ -149,7 +149,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9994913041591644,
+                    "score": 0.9992565661668777,
                     "entity_text": "Gulf Stream",
                     "start": 21,
                     "end": 32,
@@ -157,7 +157,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9996318817138672,
+                    "score": 0.9996319115161896,
                     "entity_text": "Cape Cod",
                     "start": 81,
                     "end": 89,
@@ -167,7 +167,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.999744,
+                    "score": 0.9997443556785583,
                     "entity_text": "Jupiter",
                     "start": 105,
                     "end": 112,
@@ -177,29 +177,45 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9863357841968536,
-                    "entity_text": "Loggerhead Marinelife Center",
+                    "score": 0.9641428589820862,
+                    "entity_text": "Logg",
                     "start": 10,
+                    "end": 14,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9843780994415283,
+                    "entity_text": "erhead Marinelife Center",
+                    "start": 14,
                     "end": 38,
                     "sentence_index": 0,
-                }
+                },
             ],
         ],
         [
             [
                 {
                     "entity_type": "ORG",
-                    "score": 0.9996896,
+                    "score": 0.9996895790100098,
                     "entity_text": "Google",
-                    "start": 1,
+                    "start": 0,
                     "end": 6,
                     "sentence_index": 0,
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9911074568517506,
-                    "entity_text": "カリフォルニア州マウンテンビュー",
+                    "score": 0.9972768723964691,
+                    "entity_text": "カリフォルニア州",
                     "start": 10,
+                    "end": 18,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9834852814674377,
+                    "entity_text": "マウンテンビュー",
+                    "start": 18,
                     "end": 26,
                     "sentence_index": 0,
                 },
@@ -207,7 +223,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9990486204624176,
+                    "score": 0.9991763383150101,
                     "entity_text": "メキシコ",
                     "start": 0,
                     "end": 4,
@@ -215,7 +231,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9898289889097214,
+                    "score": 0.9930540770292282,
                     "entity_text": "ケープコッド",
                     "start": 35,
                     "end": 41,
@@ -225,7 +241,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9969054460525513,
+                    "score": 0.9969054758548737,
                     "entity_text": "런던",
                     "start": 0,
                     "end": 2,
@@ -233,7 +249,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9988879524171352,
+                    "score": 0.9979509472846985,
                     "entity_text": "샌프란시스코",
                     "start": 4,
                     "end": 10,
@@ -243,7 +259,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9987816251814365,
+                    "score": 0.997836838165919,
                     "entity_text": "Loggerhead Marinelife Center",
                     "start": 17,
                     "end": 45,
