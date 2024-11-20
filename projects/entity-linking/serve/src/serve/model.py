@@ -224,7 +224,8 @@ class ServedBelaModel(ServedModel):
                 mention_lengths=batch_mention_lengths,
                 entities=batch_entities_offsets,
             )
-
+            if output is None:
+                continue
             entities_with_links.extend(
                 self._generate_entities_with_links(
                     batch_entities, batch_unique_entities_list, output
