@@ -117,13 +117,6 @@ class CompiledNER:
                 - end (int): ending position of word
         """
         res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
-        print("res res res")
-        print("res res res")
-        print("res res res")
-        print(res)
-        print("res res res")
-        print("res res res")
-        print("res res res")
         # results are in nested list of entities where each sublist represents a doc
         for doc in res:
             for entities_list in doc:
@@ -194,9 +187,13 @@ class CompiledNER:
             entity["entity_type"] = entity["entity_type"][
                 2:
             ]  # Remove prefix (e.g., "B-", "I-")
-            entity["entity_text"] = entity["entity_text"].strip("▁").replace("▁", " ")
-            entity["start"] += 1  # Adjust start position (account for _ offset)
-            converted_entities.append(InferenceOutput(**entity))
+            if entity["entity_text"][0] == "▁":
+                entity["entity_text"] = (
+                    entity["entity_text"].strip("▁").replace("▁", " ")
+                )
+                entity["start"] += 1  # Adjust start position (account for _ offset)
+            if not entity["start"] == entity["end"]:
+                converted_entities.append(InferenceOutput(**entity))
 
         return converted_entities
 
