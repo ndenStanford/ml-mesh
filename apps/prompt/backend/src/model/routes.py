@@ -56,6 +56,18 @@ def generate(alias: str, prompt: str, model_parameters: str = Header(None)):
     """Generates text using a prompt template."""
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
+    return {
+        "generated": F.generate_from_prompt(
+            prompt, alias, model_parameters=model_parameters
+        )
+    }
+
+
+@router.post("/{alias}/generate_async", status_code=status.HTTP_200_OK)
+def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)):
+    """Generates text using a prompt template."""
+    if model_parameters is not None:
+        model_parameters = json.loads(model_parameters)
 
     task = F.generate_from_prompt.delay(
         prompt, alias, model_parameters=model_parameters

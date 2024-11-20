@@ -152,14 +152,8 @@ def generate_text_from_prompt_template(
     try:
         if model_parameters is not None:
             model_parameters = json.loads(model_parameters)
-        task = F.generate_from_prompt_template.delay(
+        return F.generate_from_prompt_template(
             alias, model, **values, model_parameters=model_parameters
-        )
-        return Prediction(
-            task_id=task.id,
-            status=CeleryStatusTypes.PENDING,
-            generated=None,
-            error=None,
         )
     except (JSONDecodeError, OutputParserException) as e:
         raise HTTPException(
@@ -173,8 +167,44 @@ def generate_text_from_prompt_template(
         )
 
 
+@router.post("/{alias}/generate_async/model/{model}", status_code=status.HTTP_200_OK)
+def generate_text_from_prompt_template_async(
+    alias: str, model: str, values: Dict[str, Any], model_parameters: str = Header(None)
+):
+    """Generates text using a prompt template with specific model.
+
+    Args:
+        alias (str): prompt alias
+        model (str): model name
+        values (Dict[str, Any]): values to fill in template.
+        model_parameters (Dict[str, Any]): Model parameters to override default values.
+    """
+    if model_parameters is not None:
+        model_parameters = json.loads(model_parameters)
+    task = F.generate_from_prompt_template.delay(
+        alias, model, **values, model_parameters=model_parameters
+    )
+    return Prediction(
+        task_id=task.id,
+        status=CeleryStatusTypes.PENDING,
+        generated=None,
+        error=None,
+    )
+
+
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
+    """Generates text using a prompt template with default model.
+
+    Args:
+        alias (str): prompt alias
+        values (Dict[str, Any]): values to fill in template.
+    """
+    return F.generate_from_default_model(alias, **values)
+
+
+@router.post("/{alias}/generate_async", status_code=status.HTTP_200_OK)
+def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template with default model.
 
     Args:

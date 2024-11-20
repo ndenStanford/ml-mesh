@@ -9,6 +9,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema.output_parser import StrOutputParser
 
 # Internal libraries
+from onclusiveml.core.retry import retry
 from onclusiveml.llms.json_builder import build_json
 
 # Source
@@ -26,6 +27,12 @@ settings = get_settings()
 @celery_app.task(
     default_retry_delay=settings.CELERY_RETRY_DELAY,
     max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
+@retry(
+    tries=settings.LLM_CALL_RETRY_COUNT,
+    delay=settings.LLM_CALL_RETRY_DELAY,
+    backoff=settings.LLM_CALL_RETRY_BACKOFF,
+    max_delay=settings.LLM_CALL_RETRY_MAX_DELAY,
 )
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
@@ -75,6 +82,7 @@ def generate_from_prompt_template(
     default_retry_delay=settings.CELERY_RETRY_DELAY,
     max_retries=settings.CELERY_MAX_RETRY_COUNTS,
 )
+@retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
     prompt: str, model_alias: str, model_parameters: Dict = None
@@ -89,6 +97,7 @@ def generate_from_prompt(
     default_retry_delay=settings.CELERY_RETRY_DELAY,
     max_retries=settings.CELERY_MAX_RETRY_COUNTS,
 )
+@retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""

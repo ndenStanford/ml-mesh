@@ -46,13 +46,30 @@ def test_response_header_content_type(url_model_namespace, headers, model_parame
         '{"temperature": 1.0, "maxTokens": 1000}',
     ],
 )
-def test_server_response_content_with_celery(
-    url_model_namespace_status, url_model_namespace, headers, model_parameters
+def test_server_response_content(url_model_namespace, headers, model_parameters):
+    """Test server response content."""
+    headers["model-parameters"] = model_parameters
+    response = requests.post(url_model_namespace, headers=headers)
+    json_response = response.json()
+    assert "generated" in json_response
+    assert isinstance(json_response["generated"], str)
+
+
+@pytest.mark.parametrize(
+    "model_parameters",
+    [
+        '{"temperature": 0.9, "maxTokens": 3000}',
+        '{"temperature": 0.7, "maxTokens": 1500}',
+        '{"temperature": 1.0, "maxTokens": 1000}',
+    ],
+)
+def test_server_response_content_async(
+    url_model_namespace_status, url_model_namespace_async, headers, model_parameters
 ):
     """Test server response content with Celery integration."""
     headers["model-parameters"] = model_parameters
 
-    response = requests.post(url_model_namespace, headers=headers)
+    response = requests.post(url_model_namespace_async, headers=headers)
     json_response = response.json()
 
     assert "task_id" in json_response

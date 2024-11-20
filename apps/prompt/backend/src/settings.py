@@ -36,6 +36,10 @@ class Settings(OnclusiveBaseSettings):
     OPENAI_API_KEY: str
     CELERY_MAX_RETRY_COUNTS: int = 3
     CELERY_RETRY_DELAY: float = 30
+    LLM_CALL_RETRY_COUNT: int = 2
+    LLM_CALL_RETRY_DELAY: float = 3.0
+    LLM_CALL_RETRY_BACKOFF: float = 2.0
+    LLM_CALL_RETRY_MAX_DELAY: float = 10.0
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
 
