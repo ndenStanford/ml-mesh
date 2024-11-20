@@ -96,3 +96,12 @@ def test_get_table_name(data_model):
     """Test that get table name."""
     table_name = data_model.table_name
     assert isinstance(table_name, str)
+
+
+def test_get_query(data_model, item, item2):
+    """Test search query can  work."""
+    data_model.create(item)
+    data_model.create(item2)
+    search_result = data_model.get_query("Item1")
+    assert item in search_result
+    assert item2 not in search_result

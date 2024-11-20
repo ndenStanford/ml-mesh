@@ -100,6 +100,20 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
         """
 
     @abstractmethod
+    def get_query(self, search_query: str) -> List[T]:
+        """Get result for a certain query.
+
+        Args:
+            search_query (str): serialized search query.
+
+        Returns:
+            T: The query related item, or None.
+
+        Raises:
+            ValidationException: If the query is invalid.
+        """
+
+    @abstractmethod
     def delete_one(self, id: str) -> T:
         """Delete a single item from the data store by its ID.
 
