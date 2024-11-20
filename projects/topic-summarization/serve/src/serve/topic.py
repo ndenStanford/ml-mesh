@@ -60,7 +60,7 @@ class TopicHandler:
         input_dict["str_output_parser"] = settings.STRING_OUTPUT_PARSER
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
         q = requests.post(
-            "{}/api/v3/prompts/{}/generate/model/{}".format(
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.PROMPT_API, prompt_alias, model_name
             ),
             headers=headers,

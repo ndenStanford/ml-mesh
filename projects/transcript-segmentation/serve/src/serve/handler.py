@@ -275,7 +275,7 @@ class TranscriptSegmentationHandler:
             "str_output_parser": settings.STRING_OUTPUT_PARSER,
         }
         q = requests.post(
-            "{}/api/v3/prompts/{}/generate/model/{}".format(
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_ad_alias,
                 settings.default_model_ad,
@@ -336,7 +336,7 @@ class TranscriptSegmentationHandler:
         }
 
         q = requests.post(
-            "{}/api/v3/prompts/{}/generate/model/{}".format(
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_alias,
                 settings.default_model_segmentation,
