@@ -2,7 +2,6 @@
 
 # Standard Library
 import json
-import os
 from typing import List
 
 # 3rd party libraries
@@ -13,12 +12,6 @@ from conftest import parametrize_values
 
 # Internal libraries
 from onclusiveml.compile.constants import CompileWorkflowTasks
-from onclusiveml.models.ner import CompiledNER
-
-
-target_model_directory: str = os.path.join("./outputs", "compile", "model_artifacts")
-
-compiled_ner = CompiledNER.from_pretrained(target_model_directory)
 
 
 def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
@@ -52,6 +45,7 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
     settings,
+    compiled_ner,
     test_files,
     test_files_predictions,
     test_sample_index,

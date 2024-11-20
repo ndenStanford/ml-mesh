@@ -12,7 +12,7 @@ jieba = "^0.42.1"
 langdetect = "1.0.8"
 beautifulsoup4 = "^4.12.2"
 core = {path = "../core"}
-spacy = "3.7.4"
+spacy = "3.7.5"
 konoha = {version = "^5.0.0", extras = ["all"]}
 
 [tool.poetry.dev-dependencies]
