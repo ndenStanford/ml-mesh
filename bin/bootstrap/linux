@@ -127,8 +127,8 @@ EOF
         sudo rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB
         sudo yum update -y
         sudo yum install kernel-devel-"$(uname -r)" kernel-headers-"$(uname -r)" -y
-        sudo yum install aws-neuronx-dkms-2.9.4.0 -y
-        sudo yum install aws-neuronx-tools-2.10.1.0 -y
+        sudo yum install aws-neuronx-dkms-2.14.5.0 -y
+        sudo yum install aws-neuronx-tools-2.15.4.0 -y
         export PATH=/opt/aws/neuron/bin:$PATH
         echo "Neuron OS dependency installation complete."
         echo "Available neuron device(s):"
