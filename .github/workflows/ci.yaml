@@ -1101,7 +1101,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: None
+            self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: true
@@ -1374,6 +1374,7 @@ jobs       :
       - get-environment
       - run-repository-state
       - run-visitor-estimation-project
+      - run-topic-project:
       - get-target-branch-name
       - run-get-core-dependencies-versions
 
