@@ -91,7 +91,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.data_fetch_params = data_fetch_params
         data_fetch_configurations = {
             1: {
-                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """,
+                "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc__first_level" """,
                 "features": [
                     "iptc_first_level:topic_1",
                     "iptc_first_level:content",
@@ -101,7 +101,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             },
             2: {
                 "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
-                                FROM "features"."pred_iptc_second_level"
+                                FROM "features"."pred_iptc__second_level"
                                 WHERE topic_1 = '{filtered_value}' """,
                 "features": [
                     "iptc_second_level:topic_1",
@@ -113,7 +113,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             },
             3: {
                 "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
-                                FROM "features"."pred_iptc_third_level"
+                                FROM "features"."pred_iptc__third_level"
                                 WHERE topic_2 = '{filtered_value}' """,
                 "features": [
                     "iptc_third_level:topic_1",
@@ -126,7 +126,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             },
             4: {
                 "entity_df": f"""SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp
-                                FROM "features"."pred_iptc_third_level"
+                                FROM "features"."pred_iptc__third_level"
                                 WHERE topic_3 = '{filtered_value}' """,
                 "features": [
                     "iptc_third_level:topic_1",
