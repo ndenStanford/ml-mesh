@@ -431,7 +431,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-0c8faa5a41f5bb913
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
 
@@ -662,7 +662,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-0c8faa5a41f5bb913
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
 
@@ -761,7 +761,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-0c8faa5a41f5bb913
             self-hosted-runner-neuron: true
             use-cache: true
             push-image: true
@@ -822,7 +822,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-neuron: true
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-0c8faa5a41f5bb913
             self-hosted-runner-type: inf1.6xlarge
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -907,7 +907,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-0c8faa5a41f5bb913
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
@@ -921,7 +921,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-0c8faa5a41f5bb913
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference

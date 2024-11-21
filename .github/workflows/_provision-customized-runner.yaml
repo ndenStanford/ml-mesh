@@ -16,7 +16,7 @@ on  :
         required: false
         default: ami-046f0b2604eaac9c4
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-00ca6f88d3e1669fb for inferentia, ami-046f0b2604eaac9c4 for cpu, or ami-03e4816f04f417e5a
+        description: The EC2 AMI of the self hosted runner. Choose ami-0c8faa5a41f5bb913 for inferentia, ami-046f0b2604eaac9c4 for cpu, or ami-03e4816f04f417e5a
           for gpu.
     secrets:
       AWS_DEFAULT_REGION:
@@ -131,7 +131,7 @@ jobs:
           nvidia-smi
 
       - name: Check neuron
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-00ca6f88d3e1669fb' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0c8faa5a41f5bb913' }}
         run: |
           export PATH="/opt/aws/neuron/bin:$PATH"
           neuron-ls
