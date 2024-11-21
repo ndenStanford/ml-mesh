@@ -161,6 +161,8 @@ services:
         target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     env_file: serve/config/dev.env
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -183,6 +185,8 @@ services:
     command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     env_file: serve/config/dev.env
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -211,6 +215,8 @@ services:
               count: 1
               capabilities: [gpu]
     env_file: serve/config/dev.env
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     profiles: [functional]
     hostname: onclusiveml
     networks:

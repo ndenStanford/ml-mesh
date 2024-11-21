@@ -1,7 +1,7 @@
 ARG CUDA_VERSION
 ARG UBUNTU_VERSION
 
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as builder
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn9-runtime-ubuntu${UBUNTU_VERSION} as builder
 
 ARG IMAGE_NAME
 ARG PYTHON_VERSION
@@ -77,7 +77,7 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as production
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn9-runtime-ubuntu${UBUNTU_VERSION} as production
 
 ARG IMAGE_NAME
 
