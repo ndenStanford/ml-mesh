@@ -1375,6 +1375,7 @@ jobs       :
       - get-environment
       - run-repository-state
       - run-visitor-estimation-project
+      - run-ner-project
       - get-target-branch-name
       - run-get-core-dependencies-versions
 
@@ -1389,6 +1390,14 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/visitor-estimation
             trained-model: VE-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: ner
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/ner
+            trained-model: NER-TRAINED
             parameters: "{}"
             wait: false
 
