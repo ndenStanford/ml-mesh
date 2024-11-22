@@ -564,7 +564,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-03e4816f04f417e5a
+            self-hosted-runner-ami: ami-06d943373895aad64
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -733,7 +733,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-03e4816f04f417e5a
+            self-hosted-runner-ami: ami-06d943373895aad64
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
