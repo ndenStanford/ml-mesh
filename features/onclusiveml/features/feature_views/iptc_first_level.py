@@ -11,9 +11,9 @@ entity = Entity(name="iptc_first_level", join_keys=["iptc_id"], description="Ipt
 
 source = OnclusiveRedshiftSource(
     name="iptc_first_level",
-    query="SELECT * FROM features.pred_iptc_first_level",
+    query="SELECT * FROM features.pred_iptc__first_level",
     schema="features",
-    table="pred_iptc_first_level",
+    table="pred_iptc__first_level",
     timestamp_field="created_at",
 )
 
