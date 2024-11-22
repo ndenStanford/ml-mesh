@@ -198,7 +198,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
-        if: ${{ inputs.upload-compiled-model && !inputs.pull-request }}
+        if: ${{ inputs.upload-compiled-model }}
         run: |
           echo 'Uploading Compiled Model'
           make projects.run/${{ inputs.project }} \

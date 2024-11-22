@@ -1546,7 +1546,7 @@ jobs       :
       runner-kind: ${{ matrix.models.runner-kind }}
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      pull-request: true
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
