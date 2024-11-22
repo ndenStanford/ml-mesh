@@ -16,7 +16,7 @@ on  :
         required: false
         default: ami-046f0b2604eaac9c4
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-0c8faa5a41f5bb913 for inferentia, ami-046f0b2604eaac9c4 for cpu, or ami-06d943373895aad64
+        description: The EC2 AMI of the self hosted runner. Choose ami-0c8faa5a41f5bb913 for inferentia, ami-046f0b2604eaac9c4 for cpu, or ami-0e2bf48fceb54e70e
           for gpu.
     secrets:
       AWS_DEFAULT_REGION:
@@ -126,7 +126,7 @@ jobs:
           docker compose version
 
       - name: Check CUDA
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-06d943373895aad64' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0e2bf48fceb54e70e' }}
         run: |
           nvidia-smi
 
