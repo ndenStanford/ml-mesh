@@ -15,7 +15,7 @@ def test_hf_pipeline():
     """Huggingface pipeline."""
     return pipeline(
         task="sentiment-analysis",
-        model="yangheng/deberta-v3-base-absa-v1.1",
+        model="cardiffnlp/twitter-xlm-roberta-base-sentiment",
     )
 
 

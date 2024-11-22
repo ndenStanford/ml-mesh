@@ -15,7 +15,7 @@ def test_hf_pipeline():
     """HF pipeline fixture."""
     return pipeline(
         task="sentiment-analysis",
-        model="yangheng/deberta-v3-base-absa-v1.1",
+        model="cardiffnlp/twitter-xlm-roberta-base-sentiment",
     )
 
 

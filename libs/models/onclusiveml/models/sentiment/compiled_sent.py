@@ -18,8 +18,6 @@ from onclusiveml.nlp import preprocess
 from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 
-# from nptyping import NDArray
-
 logger = get_default_logger(__name__, level=20)
 
 
@@ -83,9 +81,9 @@ class CompiledSentiment:
 
         Args:
             sentences (str): Input sentences
-            language (List[str]): Language of input sentences
+            language (str): Language of input sentences
         Return:
-            str: Tokenized sentences
+            List[str]: Tokenized sentences
         """
         sentences = preprocess.remove_html(sentences)
         sentences = preprocess.remove_whitespace(sentences)
@@ -103,6 +101,7 @@ class CompiledSentiment:
             sentence.translate(str.maketrans("", "", string.punctuation))
             for sentence in list_sentences
         ]
+
         return list_sentences
 
     def inference(self, list_sentences: NDArray) -> NDArray:
@@ -117,6 +116,7 @@ class CompiledSentiment:
             list_sentences,
             return_tensors="pt",
         )
+
         res = self.compiled_sent_pipeline.model(**self.inputs)
         sentiment_probs_arr: NDArray = (
             res["logits"].clone().detach().numpy().astype(float)
@@ -142,8 +142,11 @@ class CompiledSentiment:
             sentiment_result (Dict[str, Union[float, str, List]]): List of sentiment probability
         """
         logits = np.exp(sentiment_probs.reshape(-1, self.NUM_LABELS))
+
         sentiment_probs = np.around(logits / np.sum(logits, axis=1).reshape(-1, 1), 4)
+
         agg_sentiment_probs = np.around(np.mean(sentiment_probs, axis=0), 4)
+
         sentiment_result: Dict[str, Union[float, str, List[Any]]] = {}
         sentiment_result["label"] = self._decide_label(
             agg_sentiment_probs[2], agg_sentiment_probs[1], agg_sentiment_probs[0]
@@ -152,18 +155,19 @@ class CompiledSentiment:
         sentiment_result["sentence_neg_probs"] = sentiment_probs[:, 0].tolist()
         sentiment_result["negative_prob"] = agg_sentiment_probs[0]
         sentiment_result["positive_prob"] = agg_sentiment_probs[2]
+
         if entities is not None:
             entity_sentiment: List[Dict[str, Union[str, List[Any]]]] = (
                 self._add_entity_sentiment(list_sentences, sentiment_result, entities)
             )
             sentiment_result["entities"] = entity_sentiment
+
         return sentiment_result
 
     def _decide_label(self, pos: float, neu: float, neg: float) -> str:
         """Helper function to decide final sentiment.
 
-        The threshold has been calibrated to align with the customer expectation.
-
+        The threshold has been calibrated to align with the customer expectation
         Args:
             pos (float): Probability of positive sentiment
             neu (float): Probability of neutral sentiment
@@ -210,6 +214,7 @@ class CompiledSentiment:
         sentence_neu_probs = [
             1 - pos - neg for pos, neg in zip(sentence_pos_probs, sentence_neg_probs)
         ]
+
         entity_sentiment = []
         for entity in entities:
             try:
@@ -221,6 +226,7 @@ class CompiledSentiment:
                         for i, sentence in enumerate(sentences)
                         if (sentence.find(entity_text) != -1)
                     ]
+
                 i = 0
                 pos: float = 0
                 neg: float = 0
@@ -230,6 +236,7 @@ class CompiledSentiment:
                     neg += sentence_neg_probs[index]
                     neu += sentence_neu_probs[index]  # type: ignore
                     i += 1
+
                 if i == 0:
                     entity["sentiment"] = "neutral"
                 else:
@@ -242,6 +249,7 @@ class CompiledSentiment:
                 logger.error(e)
                 entity["sentiment"] = "neutral"
                 entity_sentiment.append(entity)
+
         return entity_sentiment
 
     def __call__(
@@ -261,8 +269,9 @@ class CompiledSentiment:
             sentiment_output (Dict[str, Union[float, str, List]]):
                 Extracted named entities in dictionary format
         """
-        preprocessed_sentences = self.preprocess(sentences, language)
-        sentiment_output = self.chunk_tag_predict(
-            self, preprocessed_sentences, entities, window_length=500
+        list_sentences = self.preprocess(sentences, language)
+        sentiment_prob_list = self.inference(list_sentences)
+        sentiment_output = self.postprocess(
+            sentiment_prob_list, list_sentences, entities
         )
         return sentiment_output
