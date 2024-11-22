@@ -26,7 +26,7 @@ def main() -> None:
     data_fetch_params = DataFetchParams()
 
     data_fetch_configurations = {
-        "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc_first_level" """,
+        "entity_df": """ SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "features"."pred_iptc__first_level" """,
         "features": [
             "topic_feature_view:topic_1",
             "topic_feature_view:content",
