@@ -139,7 +139,7 @@ def get_topic_summarization_report_router() -> APIRouter:
                     "Entity Impact": item["analysis"]["entity_impact"],
                     "Leading Journalist": item["analysis"]["lead_journalists"],
                     "Topic": {
-                        key: {
+                        IMPACT_CATEGORIES[key]: {
                             "Summary": item["analysis"][key]["summary"],
                             "Theme": item["analysis"][key]["theme"],
                             "Impact": item["analysis"][key]["impact"],
