@@ -1377,6 +1377,7 @@ jobs       :
       - run-visitor-estimation-project
       - run-ner-project
       - run-topic-project
+      - run-sentiment-project
       - get-target-branch-name
       - run-get-core-dependencies-versions
 
@@ -1407,6 +1408,14 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/topic
             trained-model: TOPIC-TRAINED
+            parameters: "{}"
+            wait: false
+
+          - project: sentiment
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/topic
+            trained-model: SEN-TRAINED
             parameters: "{}"
             wait: false
 
