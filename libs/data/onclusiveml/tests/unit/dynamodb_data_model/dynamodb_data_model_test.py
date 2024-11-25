@@ -1,7 +1,10 @@
 """Test DynamoDB Data Model."""
 
+# Standard Library
+
 # 3rd party libraries
 import pytest
+from dyntastic import A
 
 # Internal libraries
 from onclusiveml.data.data_model.exception import (
@@ -175,3 +178,43 @@ def test_get_dynamodb_table_name(dynamo_db_model):
     """Test get dynamodb table name."""
     table_name = dynamo_db_model.table_name
     assert isinstance(table_name, str)
+
+
+def test_get_query(test_data):
+    """Test get query from dynamodb table."""
+    key_condition = A("name").eq("Name1")
+    search_query = {"hash_key": key_condition, "index": "name-index"}
+
+    query_item = test_data.get_query(search_query)
+    assert query_item[0].age == 25
+
+
+def test_get_query_multi_condition(test_data):
+    """Test get query with multiple condition."""
+    name_condition = A("name").eq("Name2")  # Primary key condition
+    age_condition = A("age").eq(27)  # Filter condition for age
+    # age_condition = A("age").between(25,30)
+    # Construct the search query to pass into get_query
+    search_query = {
+        "hash_key": name_condition,
+        "filter_condition": age_condition,
+        "index": "name-index",
+    }
+    query_item = test_data.get_query(search_query)
+    assert len(query_item) == 1
+    assert query_item[0].name == "Name2"
+    assert query_item[0].age == 27
+
+
+def test_get_query_multiple_filter(test_data):
+    """Test get query with multiple filter condition."""
+    name_condition = A("name").eq("Name2")
+    age_condition_1 = A("age") < 30
+    age_condition_2 = A("age") > 25
+    search_query = {
+        "hash_key": name_condition,
+        "filter_condition": age_condition_1 & age_condition_2,
+        "index": "name-index",
+    }
+    query_item = test_data.get_query(search_query)
+    assert len(query_item) == 2

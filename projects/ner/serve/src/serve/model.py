@@ -1,7 +1,7 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Type, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
@@ -75,7 +75,7 @@ class ServedNERModel(ServedModel):
     )
     def _predict(
         self,
-        content: str,
+        content: Union[List[str], str],
         language: str,
         additional_params: dict,
     ) -> List[List[Dict[str, Any]]]:
@@ -89,7 +89,11 @@ class ServedNERModel(ServedModel):
         Returns:
             List[List[Dict[str, Any]]]: List of extracted named entities in dictionary format.
         """
-        return self.model(documents=content, **additional_params)
+        if isinstance(content, list):
+            res = self.model(documents=content, **additional_params)
+        else:
+            res = self.model(documents=[content], **additional_params)
+        return res
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded NER model.
@@ -110,7 +114,7 @@ class ServedNERModel(ServedModel):
             try:
                 # score the model
                 entities_list = self._predict(
-                    content=[attributes.content],
+                    content=attributes.content,
                     language=parameters.language,
                     additional_params=parameters.model_dump(),
                 )
@@ -121,15 +125,16 @@ class ServedNERModel(ServedModel):
                 raise OnclusiveHTTPException(
                     status_code=204, detail=language_exception.message
                 )
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={
-                "entities": [
-                    entity._asdict()
-                    for entities in entities_list
-                    for entity in entities
-                ]
+                "entities": (
+                    [[i._asdict() for i in entities] for entities in entities_list]
+                    if len(entities_list) > 1
+                    else [i._asdict() for i in entities_list[0]]
+                )
             },
         )
 
