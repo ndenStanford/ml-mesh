@@ -1414,7 +1414,7 @@ jobs       :
           - project: sentiment
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/topic
+            trained-project: onclusive/sentiment
             trained-model: SEN-TRAINED
             parameters: "{}"
             wait: false
