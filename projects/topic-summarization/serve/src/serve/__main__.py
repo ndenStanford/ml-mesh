@@ -121,9 +121,10 @@ def get_topic_summarization_report_router() -> APIRouter:
                 current_date += timedelta(days=1)
 
             # Apply filtering based on query_profile, topic_id, and time range
+
             if query_string:
                 filtered_items = [
-                    item for item in all_items if (item.query_string == query_string)
+                    item for item in all_items if (item["query_string"] == query_string)
                 ]
             else:
                 filtered_items = [item for item in all_items]
