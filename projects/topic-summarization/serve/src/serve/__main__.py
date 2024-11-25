@@ -30,7 +30,6 @@ from src.serve.tables import (
 )
 from src.settings import get_settings
 
-
 settings = get_settings()
 IMPACT_CATEGORIES = settings.IMPACT_CATEGORIES
 
@@ -58,10 +57,10 @@ def get_topic_summarization_report_router() -> APIRouter:
     router = APIRouter()
     # crud_router = get_crud_router()
     crud_router = CRUDGenerator(
-        schema=PredictResponseSchemaWID,
+        schema=TopicSummaryDynamoDB,
         model=DynamoDBModel(model=TopicSummaryDynamoDB),
-        create_schema=PredictResponseSchema,
-        update_schema=PredictResponseSchema,
+        create_schema=TopicSummaryDynamoDB,
+        update_schema=TopicSummaryDynamoDB,
         api_settings=settings,
         entity_name="topic-summary-document",
         tags=["Items"],
@@ -100,6 +99,7 @@ def get_topic_summarization_report_router() -> APIRouter:
                     "/topic-summarization/v1/topic-summary-document/query",
                     params={"serialized_query": serialized_query},
                 )
+
                 query_results = response.json()
                 all_items.extend(query_results)
 
@@ -116,7 +116,6 @@ def get_topic_summarization_report_router() -> APIRouter:
                         params={"serialized_query": serialized_query},
                     )
                     query_results = response.json()
-                    # query_results = response_model.get_query(search_query=db_query)
                     all_items.extend(query_results)
 
                 current_date += timedelta(days=1)
@@ -131,26 +130,27 @@ def get_topic_summarization_report_router() -> APIRouter:
 
             report_list = [
                 {
-                    "Query": item.query_string,
-                    "Topic Id": item.topic_id,
-                    "Run Date": item.timestamp_date,
-                    "Theme": item.analysis.theme,
-                    "Summary": item.analysis.summary,
-                    "Sentiment": item.analysis.sentiment,
-                    "Entity Impact": item.analysis.entity_impact,
-                    "Leading Journalist": item.analysis.lead_journalists,
+                    "Query": item["query_string"],
+                    "Topic Id": item["topic_id"],
+                    "Run Date": item["timestamp_date"],
+                    "Theme": item["analysis"]["theme"],
+                    "Summary": item["analysis"]["summary"],
+                    "Sentiment": item["analysis"]["sentiment"],
+                    "Entity Impact": item["analysis"]["entity_impact"],
+                    "Leading Journalist": item["analysis"]["lead_journalists"],
                     "Topic": {
-                        IMPACT_CATEGORIES[key]: {
-                            "Summary": item.analysis.key.summary,
-                            "Theme": item.analysis.key.theme,
-                            "Impact": item.analysis.key.impact,
+                        key: {
+                            "Summary": item["analysis"][key]["summary"],
+                            "Theme": item["analysis"][key]["theme"],
+                            "Impact": item["analysis"][key]["impact"],
                         }
                         for key in IMPACT_CATEGORIES.keys()
                     },
                 }
                 for item in filtered_items
             ]
-            # Return the filtered items as a JSON response
+            # # Return the filtered items as a JSON response
+            report_list = all_items
             return report_list
 
         except Exception as e:
