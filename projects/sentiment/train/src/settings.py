@@ -34,7 +34,7 @@ class SentModelParams(TrackingSettings):
     """Sentiment Model parameters."""
 
     huggingface_pipeline_task: str = "sentiment-analysis"
-    huggingface_model_reference: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
+    huggingface_model_reference: str = "yangheng/deberta-v3-base-absa-v1.1"
 
     sent_settings: SentSettings = SentSettings()
 
