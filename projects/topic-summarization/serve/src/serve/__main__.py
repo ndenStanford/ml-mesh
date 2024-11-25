@@ -149,8 +149,7 @@ def get_topic_summarization_report_router() -> APIRouter:
                 }
                 for item in filtered_items
             ]
-            # # Return the filtered items as a JSON response
-            report_list = all_items
+            # Return the filtered items as a JSON response
             return report_list
 
         except Exception as e:
