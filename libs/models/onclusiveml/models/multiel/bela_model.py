@@ -481,6 +481,13 @@ class BelaModel:
         )
 
         model_input = self.transform(transformed_batch)
+        mention_offsets_input = model_input["mention_offsets"]
+        if (
+            mention_offsets_input is None
+            or len(mention_offsets_input) == 0
+            or len(mention_offsets_input[0]) == 0
+        ):
+            return None
 
         model_inputs = self.adjust_model_inputs(model_input)
 

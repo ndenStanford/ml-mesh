@@ -15,7 +15,9 @@ docker.build/%: docker.set ## Build app
 			--build-arg KUBECTL_VERSION=$(KUBECTL_VERSION) \
 			--build-arg JAVA_VERSION=$(JAVA_VERSION) \
 			--build-arg NODE_VERSION=$(NODE_VERSION) \
-			--build-arg UBUNTU_VERSION=$(UBUNTU_VERSION)
+			--build-arg UBUNTU_VERSION=$(UBUNTU_VERSION) \
+			--build-arg NEURON_DRIVER_VERSION=$(NEURON_DRIVER_VERSION) \
+			--build-arg NEURON_TOOLS_VERSION=$(NEURON_TOOLS_VERSION)
 
 	@echo "::endgroup::"
 

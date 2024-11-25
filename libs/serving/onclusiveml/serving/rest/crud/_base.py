@@ -1,10 +1,13 @@
 """Base CRUD Generator."""
 
 # Standard Library
+import ast
 from typing import Any, Callable, Generic, List, Optional, Type, TypeVar, Union
 
 # 3rd party libraries
-from fastapi import APIRouter, HTTPException
+from boto3.dynamodb.conditions import Key
+from dyntastic import A
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.types import DecoratedCallable
 
 # Internal libraries
@@ -49,6 +52,7 @@ class CRUDGenerator(Generic[T], APIRouter):
         update_route: Union[bool, depends] = True,
         delete_one_route: Union[bool, depends] = True,
         delete_all_route: Union[bool, depends] = True,
+        get_query_route: Union[bool, depends] = True,
         **kwargs: Any,
     ) -> None:
         """Initialize the CRUDGenerator.
@@ -67,6 +71,7 @@ class CRUDGenerator(Generic[T], APIRouter):
             update_route (Union[bool, depends], optional): Whether to include the update route
             delete_one_route (Union[bool, depends], optional): Whether to include the delete_one
             delete_all_route (Union[bool, depends], optional): Whether to include the delete_all
+            get_query_route (Union[bool, depends], optional): Whether to include the get_query route
             **kwargs: Additional keyword arguments passed to the APIRouter.
         """
         self.schema = schema
@@ -79,6 +84,18 @@ class CRUDGenerator(Generic[T], APIRouter):
         tags = tags or [prefix.strip("/").capitalize()]
 
         super().__init__(prefix=prefix, tags=tags, **kwargs)
+
+        if get_query_route:
+            self.add_api_route(
+                "/query",
+                self.get_route_get_query(),
+                methods=["GET"],
+                response_model=List[self.schema],
+                summary="Get query",
+                dependencies=(
+                    get_query_route if isinstance(get_query_route, list) else []
+                ),
+            )
 
         if get_all_route:
             self.add_api_route(
@@ -220,6 +237,43 @@ class CRUDGenerator(Generic[T], APIRouter):
 
         return route_delete_one
 
+    def get_route_get_query(self) -> Callable[..., Any]:
+        """Create the route_get_query function."""
+
+        def parse_condition(condition_str: str):
+            """Parses a condition string and combines conditions with logical AND (&)."""
+            if " & " in condition_str:
+                # Split by the & operator and evaluate each part
+                parts = condition_str.split(" & ")
+                parsed_conditions = [
+                    eval(part, {}, {"A": A, "Key": Key}) for part in parts
+                ]
+                # Combine all parts with &
+                combined_condition = parsed_conditions[0]
+                for condition in parsed_conditions[1:]:
+                    combined_condition &= condition
+                return combined_condition
+            else:
+                # Single condition
+                return eval(condition_str, {}, {"A": A, "Key": Key})
+
+        def route_get_query(serialized_query: str = Query(...)):
+            try:
+                json_query = ast.literal_eval(serialized_query)
+                search_query = {
+                    k: (
+                        parse_condition(v)
+                        if (v.startswith("Key(") or v.startswith("A("))
+                        else v
+                    )
+                    for k, v in json_query.items()
+                }
+                return self.model.get_query(search_query)
+            except ValidationException:
+                raise HTTPException(404, f"Query {serialized_query} is not valid.")
+
+        return route_get_query
+
     def _add_api_route(
         self,
         path: str,
@@ -290,4 +344,12 @@ class CRUDGenerator(Generic[T], APIRouter):
         Returns:
             List[str]: A list of route names.
         """
-        return ["get_all", "create", "delete_all", "get_one", "update", "delete_one"]
+        return [
+            "get_all",
+            "create",
+            "delete_all",
+            "get_one",
+            "update",
+            "delete_one",
+            "get_query",
+        ]

@@ -96,7 +96,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         "The overall sentiment focusing on given entity, based on all the input articles"
     )
     TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['entity-impact'] = (
-        "The overall impact focusing on given entity, based on all the input articles"
+        "The impact of entity on different aspects, up to 3 aspects. Make it into bullet points."
     )
     # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {

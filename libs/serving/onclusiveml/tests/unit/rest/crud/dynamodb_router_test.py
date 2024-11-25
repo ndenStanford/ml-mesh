@@ -1,6 +1,7 @@
 """Test DynamoDB router."""
 
 # Standard Library
+import json
 from http import HTTPStatus
 
 
@@ -216,3 +217,36 @@ def test_extra_fields_in_update(client):
         f"/test-service/v1/test_table/{item_id}", json={"extra": "field"}
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_get_query(client):
+    """Test get item via search query."""
+    # Create multiple items
+    items = [
+        {"name": "Name1", "age": 25},
+        {"name": "Name2", "age": 20},
+        {"name": "Name2", "age": 26},
+        {"name": "Name2", "age": 27},
+        {"name": "Name2", "age": 35},
+    ]
+    for item in items:
+        client.post("/test-service/v1/test_table", json=item)
+    # test search query
+    condition_str = 'A("name").eq("Name2")'
+    age_condition_1 = 'A("age")<30'
+    age_condition_2 = 'A("age")>25'
+    age_condition = age_condition_1 + " & " + age_condition_2
+    db_query = {
+        "hash_key": condition_str,
+        "filter_condition": age_condition,
+        "index": "name-index",
+    }
+    serialized_query = json.dumps(db_query)
+
+    response = client.get(
+        "/test-service/v1/test_table/query",
+        params={"serialized_query": serialized_query},
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert len(response.json()) == 2
