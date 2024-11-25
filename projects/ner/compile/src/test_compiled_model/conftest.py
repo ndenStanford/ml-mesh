@@ -32,7 +32,7 @@ parametrize_values = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def settings() -> OnclusiveBaseSettings:
     """Fixture to provide IOSettings instance.
 
@@ -40,6 +40,24 @@ def settings() -> OnclusiveBaseSettings:
         IOSettings: Instance of IOSettings
     """
     return get_settings()
+
+
+@pytest.fixture(scope="session")
+def compiled_ner(settings: OnclusiveBaseSettings) -> CompiledNER:
+    """Fixture to provide a compiled NER model instance.
+
+    Args:
+        settings (IOSettings): IOSettings instance
+    Returns:
+        CompiledNER: Compiled NER model instance
+    """
+    target_model_directory: str = os.path.join(
+        "./outputs", "compile", "model_artifacts"
+    )
+
+    compiled_ner = CompiledNER.from_pretrained(target_model_directory)
+
+    return compiled_ner
 
 
 @pytest.fixture
@@ -67,25 +85,6 @@ def logger(settings: OnclusiveBaseSettings) -> Any:
         name=__name__,
         fmt_level=logging_settings.fmt_level,
     )
-
-
-@pytest.fixture
-def compiled_ner(settings: OnclusiveBaseSettings) -> CompiledNER:
-    """Fixture to provide a compiled NER model instance.
-
-    Args:
-        io_settings (IOSettings): IOSettings instance
-
-    Returns:
-        CompiledNER: Compiled NER model instance
-    """
-    target_model_directory: str = os.path.join(
-        "./outputs", "compile", "model_artifacts"
-    )
-
-    compiled_ner = CompiledNER.from_pretrained(target_model_directory)
-
-    return compiled_ner
 
 
 @pytest.fixture
@@ -124,73 +123,81 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "ORG",
-                    "score": 0.9981784820556641,
-                    "sentence_index": 0,
-                    "entity_text": "Google",
+                    "score": 0.9916256070137024,
+                    "entity_text": "Google HQ",
                     "start": 0,
-                    "end": 6,
+                    "end": 9,
+                    "sentence_index": 0,
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9985500276088715,
-                    "sentence_index": 0,
+                    "score": 0.9991127848625183,
                     "entity_text": "Mountain View",
                     "start": 16,
                     "end": 29,
+                    "sentence_index": 0,
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9993670582771301,
-                    "sentence_index": 0,
+                    "score": 0.9996210336685181,
                     "entity_text": "CA",
                     "start": 31,
                     "end": 33,
+                    "sentence_index": 0,
                 },
             ],
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.991286963224411,
-                    "sentence_index": 0,
+                    "score": 0.9992565661668777,
                     "entity_text": "Gulf Stream",
                     "start": 21,
                     "end": 32,
+                    "sentence_index": 0,
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9935731490453085,
-                    "sentence_index": 0,
+                    "score": 0.9996319115161896,
                     "entity_text": "Cape Cod",
                     "start": 81,
                     "end": 89,
+                    "sentence_index": 0,
                 },
             ],
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9925467371940613,
-                    "sentence_index": 0,
+                    "score": 0.9997443556785583,
                     "entity_text": "Jupiter",
                     "start": 105,
                     "end": 112,
+                    "sentence_index": 0,
                 }
             ],
             [
                 {
-                    "entity_type": "ORG",
-                    "score": 0.7017723023891449,
-                    "sentence_index": 0,
-                    "entity_text": "Loggerhead Marinelife Center",
+                    "entity_type": "LOC",
+                    "score": 0.9641428589820862,
+                    "entity_text": "Logg",
                     "start": 10,
+                    "end": 14,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9843780994415283,
+                    "entity_text": "erhead Marinelife Center",
+                    "start": 14,
                     "end": 38,
-                }
+                    "sentence_index": 0,
+                },
             ],
         ],
         [
             [
                 {
                     "entity_type": "ORG",
-                    "score": 0.9998427629470825,
+                    "score": 0.9996895790100098,
                     "entity_text": "Google",
                     "start": 0,
                     "end": 6,
@@ -198,9 +205,17 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.9976749370495478,
-                    "entity_text": "カリフォルニアウンテンビュー",
+                    "score": 0.9972768723964691,
+                    "entity_text": "カリフォルニア州",
                     "start": 10,
+                    "end": 18,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9834852814674377,
+                    "entity_text": "マウンテンビュー",
+                    "start": 18,
                     "end": 26,
                     "sentence_index": 0,
                 },
@@ -208,25 +223,25 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.998959994316101,
+                    "score": 0.9991763383150101,
                     "entity_text": "メキシコ",
                     "start": 0,
-                    "end": 5,
+                    "end": 4,
                     "sentence_index": 0,
                 },
                 {
-                    "entity_type": "PER",
-                    "score": 0.9701058566570282,
-                    "entity_text": "ウミガメ",
-                    "start": 19,
-                    "end": 23,
+                    "entity_type": "LOC",
+                    "score": 0.9930540770292282,
+                    "entity_text": "ケープコッド",
+                    "start": 35,
+                    "end": 41,
                     "sentence_index": 0,
                 },
             ],
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.998335987329483,
+                    "score": 0.9969054758548737,
                     "entity_text": "런던",
                     "start": 0,
                     "end": 2,
@@ -234,7 +249,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.999501903851827,
+                    "score": 0.9979509472846985,
                     "entity_text": "샌프란시스코",
                     "start": 4,
                     "end": 10,
@@ -243,8 +258,8 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             ],
             [
                 {
-                    "entity_type": "ORG",
-                    "score": 0.9580032527446747,
+                    "entity_type": "LOC",
+                    "score": 0.997836838165919,
                     "entity_text": "Loggerhead Marinelife Center",
                     "start": 17,
                     "end": 45,
