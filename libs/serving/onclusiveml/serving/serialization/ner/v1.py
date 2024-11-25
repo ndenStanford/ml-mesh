@@ -1,7 +1,7 @@
 """Ner v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -10,7 +10,7 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    content: str = ""
+    content: Union[str, List[str]] = ""
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
@@ -33,7 +33,7 @@ class PredictResponseEntity(JsonApiSchema):
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    entities: List[PredictResponseEntity] = []
+    entities: Union[List[PredictResponseEntity], List[List[PredictResponseEntity]]] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
