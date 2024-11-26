@@ -77,7 +77,7 @@ def test_generate_async(mock_generate, alias, provider, prompt, test_client):
     """Test get model endpoint."""
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
-        f"/api/v3/models/{alias}/generate_async?prompt={prompt}",
+        f"/api/v3/models/{alias}/generate/async?prompt={prompt}",
         headers={"x-api-key": "1234"},
     )
     mock_generate.assert_called_with(prompt, alias, model_parameters=None)

@@ -220,7 +220,7 @@ def test_generate_async(mock_generate, alias, model, values, test_client):
     """Test get generate from prompt template endpoint."""
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
-        f"/api/v3/prompts/{alias}/generate_async/model/{model}",
+        f"/api/v3/prompts/{alias}/generate/async/model/{model}",
         headers={"x-api-key": "1234"},
         json=values,
     )
@@ -309,7 +309,7 @@ def test_generate_from_default_model_async(mock_generate, alias, values, test_cl
     """Test get model endpoint."""
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
-        f"/api/v3/prompts/{alias}/generate_async",
+        f"/api/v3/prompts/{alias}/generate/async",
         headers={"x-api-key": "1234"},
         json=values,
     )

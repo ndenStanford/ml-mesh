@@ -17,7 +17,6 @@ from src.generated.tables import Generated
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "generation": "test1",
             "method": "src.prompt.functional.generate_from_prompt_template",
             "args": ["english-summarization", "gpt-4o"],
             "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},

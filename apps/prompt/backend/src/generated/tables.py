@@ -2,15 +2,16 @@
 
 # Standard Library
 import datetime
-from typing import Any, Dict, List, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 # 3rd party libraries
 from dyntastic import Dyntastic
+from dyntastic.exceptions import DoesNotExist
 from pydantic import field_validator
 
 # Source
 from src.generated.constants import GENERATED_ID_FORBIDDEN_CHARACTERS
-from src.generated.exceptions import GeneratedInvalidId
+from src.generated.exceptions import GeneratedInvalidId, GeneratedNotFound
 from src.settings import get_settings
 
 
@@ -26,11 +27,13 @@ class Generated(Dyntastic):
     __table_host__ = settings.DYNAMODB_HOST
 
     id: str
-    method: str
-    generation: Union[str, Dict]
+    status: str
+    generation: Optional[Dict[str, str]] = None
+    error: Optional[str] = None
     timestamp: datetime.datetime
-    args: List[Any]
-    kwargs: Dict[str, Any]
+    model: str
+    prompt: str
+    model_parameters: Dict[str, str] = None
 
     @field_validator("id")
     def validate_id(cls, value) -> str:
@@ -72,8 +75,10 @@ class Generated(Dyntastic):
         consistent_read: bool = False,
     ) -> "Generated":
         """Subclass the get method to retrieve generated."""
-        result = super(Generated, cls).get(
-            hash_key, range_key, consistent_read=consistent_read
-        )
-
+        try:
+            result = super(Generated, cls).get(
+                hash_key, range_key, consistent_read=consistent_read
+            )
+        except DoesNotExist:
+            raise GeneratedNotFound
         return result

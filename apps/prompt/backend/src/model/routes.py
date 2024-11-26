@@ -9,16 +9,19 @@ from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, Header, HTTPException, status
 
 # Source
+from src.generated.tables import Generated
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
 from src.prompt.constants import CeleryStatusTypes
 from src.prompt.routes import get_task_status
-from src.settings import Prediction
 
 
 router = APIRouter(
     prefix="/v3/models",
 )
+
+# Standard Library
+from datetime import datetime
 
 
 @router.get(
@@ -63,7 +66,7 @@ def generate(alias: str, prompt: str, model_parameters: str = Header(None)):
     }
 
 
-@router.post("/{alias}/generate_async", status_code=status.HTTP_200_OK)
+@router.post("/{alias}/generate/async", status_code=status.HTTP_200_OK)
 def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)):
     """Generates text using a prompt template."""
     if model_parameters is not None:
@@ -72,9 +75,20 @@ def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)
     task = F.generate_from_prompt.delay(
         prompt, alias, model_parameters=model_parameters
     )
-    return Prediction(
-        task_id=task.id, status=CeleryStatusTypes.PENDING, generated=None, error=None
+    model_parameters = {k: str(v) for k, v in model_parameters.items()}
+    generated = Generated(
+        id=task.id,
+        status=CeleryStatusTypes.PENDING,
+        generation=None,
+        error=None,
+        timestamp=datetime.now(),
+        model=alias,
+        prompt=prompt,
+        model_parameters=model_parameters,
     )
+    print(generated.save())
+
+    return generated
 
 
 @router.get("/status/{task_id}", status_code=status.HTTP_200_OK)

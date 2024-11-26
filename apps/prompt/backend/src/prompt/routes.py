@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+from datetime import datetime
 from json import JSONDecodeError
 from typing import Any, Dict
 
@@ -14,8 +15,12 @@ from langchain_core.exceptions import OutputParserException
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.generated.exceptions import GeneratedCreationImpossible
+from src.generated.exceptions import (
+    GeneratedCreationImpossible,
+    GeneratedNotFound,
+)
 from src.generated.tables import Generated
+from src.model.constants import MODELS_TO_PARAMETERS, ChatModel
 from src.project.tables import Project
 from src.prompt import functional as F
 from src.prompt.constants import GENERATED, CeleryStatusTypes
@@ -167,7 +172,7 @@ def generate_text_from_prompt_template(
         )
 
 
-@router.post("/{alias}/generate_async/model/{model}", status_code=status.HTTP_200_OK)
+@router.post("/{alias}/generate/async/model/{model}", status_code=status.HTTP_200_OK)
 def generate_text_from_prompt_template_async(
     alias: str, model: str, values: Dict[str, Any], model_parameters: str = Header(None)
 ):
@@ -184,12 +189,21 @@ def generate_text_from_prompt_template_async(
     task = F.generate_from_prompt_template.delay(
         alias, model, **values, model_parameters=model_parameters
     )
-    return Prediction(
-        task_id=task.id,
+    model_parameters = {k: str(v) for k, v in model_parameters.items()}
+    generated = Generated(
+        id=task.id,
         status=CeleryStatusTypes.PENDING,
-        generated=None,
+        generation=None,
         error=None,
+        timestamp=datetime.now(),
+        model=model,
+        prompt=alias,
+        model_parameters=model_parameters,
     )
+
+    print(generated.save())
+
+    return generated
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
@@ -203,7 +217,7 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
     return F.generate_from_default_model(alias, **values)
 
 
-@router.post("/{alias}/generate_async", status_code=status.HTTP_200_OK)
+@router.post("/{alias}/generate/async", status_code=status.HTTP_200_OK)
 def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template with default model.
 
@@ -212,42 +226,51 @@ def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     task = F.generate_from_default_model.delay(alias, **values)
-    return Prediction(
-        task_id=task.id, status=CeleryStatusTypes.PENDING, generated=None, error=None
+
+    model = settings.DEFAULT_MODELS.get(alias, settings.DEFAULT_MODELS["default"])
+    model_parameters = MODELS_TO_PARAMETERS.get(
+        model, MODELS_TO_PARAMETERS[ChatModel.GPT4_O_MINI]
+    )().model_dump()
+    model_parameters = {k: str(v) for k, v in model_parameters.items()}
+
+    generated = Generated(
+        id=task.id,
+        status=CeleryStatusTypes.PENDING,
+        generation=None,
+        error=None,
+        timestamp=datetime.now(),
+        model=model,
+        prompt=alias,
+        model_parameters=model_parameters,
     )
+
+    print(generated.save())
+
+    return generated
 
 
 @router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
-def get_task_status(task_id: str) -> Prediction:
+def get_task_status(task_id: str) -> Generated:
     """Fetch the status or result of a Celery task."""
     response = celery_app.AsyncResult(task_id)
-    response_data = {
-        "task_id": task_id,
-        "status": response.state,
-        "generated": None,
-        "error": None,
-    }
 
-    if response_data["status"] == CeleryStatusTypes.SUCCESS:
-        if isinstance(response.result, str):
-            response_data["generated"] = {GENERATED: response.result}
-        else:
-            response_data["generated"] = response.result
+    try:
+        generated = Generated.get(task_id)
+    except GeneratedNotFound:
+        raise GeneratedNotFound
 
-        try:
-            task_metadata = response.backend.get_task_meta(task_id)
-            generated = Generated(
-                id=task_id,
-                method=task_metadata["name"],
-                args=task_metadata["args"],
-                kwargs={k: str(v) for k, v in task_metadata["kwargs"].items()},
-                timestamp=task_metadata["date_done"],
-                generation=response_data["generated"],
-            ).save()
-        except GeneratedCreationImpossible:
-            logger.error(f"Unable to save Generated: {str(generated)}")
-    elif response_data["status"] == CeleryStatusTypes.FAILURE:
-        response_data["error"] = str(response.result)
+    generated.status = response.state
 
-    prediction = Prediction(**response_data)
-    return prediction
+    if response.state == CeleryStatusTypes.SUCCESS:
+        generated.generation = (
+            {GENERATED: response.result}
+            if isinstance(response.result, str)
+            else response.result
+        )
+        print(generated.save())
+
+    elif response.state == CeleryStatusTypes.FAILURE:
+        generated.error = str(response.error)
+        print(generated.save())
+
+    return generated

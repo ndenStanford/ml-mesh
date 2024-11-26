@@ -4,6 +4,7 @@
 from celery.app import Celery
 
 # Source
+import src.signals
 from src.settings import get_settings
 
 
