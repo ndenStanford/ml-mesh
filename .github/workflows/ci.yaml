@@ -652,7 +652,6 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-03e4816f04f417e5a
-            self-hosted-runner-neuron: false
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
 
@@ -683,7 +682,6 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
