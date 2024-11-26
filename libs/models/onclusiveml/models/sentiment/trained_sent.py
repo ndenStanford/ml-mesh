@@ -18,8 +18,6 @@ from onclusiveml.nlp import preprocess
 from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 
-# from nptyping import NDArray
-
 logger = get_default_logger(__name__, level=20)
 
 
