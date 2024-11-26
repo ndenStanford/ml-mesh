@@ -125,7 +125,8 @@ class TrainedSentiment:
         start = 0
         loop = True
 
-        cls_id, sep_id = [1], [2]
+        cls_id = [self.trained_sent_pipeline.tokenizer.cls_token_id]
+        sep_id = [self.trained_sent_pipeline.tokenizer.sep_token_id]
 
         while loop:
             end = min(start + chunk_size, total_len)
