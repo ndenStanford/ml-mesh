@@ -653,7 +653,7 @@ jobs       :
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-03e4816f04f417e5a
             push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
+            base-image: gpu-base
 
           # backfill
           - name: backfill
