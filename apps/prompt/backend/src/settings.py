@@ -2,14 +2,13 @@
 
 # Standard Library
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 # 3rd party libraries
 from pydantic import SecretStr
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.core.serialization import JsonApiSchema
 
 
 class Settings(OnclusiveBaseSettings):
@@ -59,15 +58,6 @@ class Settings(OnclusiveBaseSettings):
     PROMPT_REGISTRY_APP_ID: str
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
-
-
-class Prediction(JsonApiSchema):
-    """Prediction Class."""
-
-    task_id: str
-    error: Optional[str]
-    status: str
-    generated: Optional[Dict[str, str]]
 
 
 @lru_cache

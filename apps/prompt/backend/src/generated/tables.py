@@ -2,7 +2,7 @@
 
 # Standard Library
 import datetime
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Dict, Optional, Type
 
 # 3rd party libraries
 from dyntastic import Dyntastic

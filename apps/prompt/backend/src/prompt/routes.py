@@ -15,10 +15,7 @@ from langchain_core.exceptions import OutputParserException
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.generated.exceptions import (
-    GeneratedCreationImpossible,
-    GeneratedNotFound,
-)
+from src.generated.exceptions import GeneratedNotFound
 from src.generated.tables import Generated
 from src.model.constants import MODELS_TO_PARAMETERS, ChatModel
 from src.project.tables import Project
@@ -26,7 +23,7 @@ from src.prompt import functional as F
 from src.prompt.constants import GENERATED, CeleryStatusTypes
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
-from src.settings import Prediction, get_settings
+from src.settings import get_settings
 from src.worker import celery_app
 
 
