@@ -265,7 +265,7 @@ class TrainedSentiment:
         sentiment_result["neutral_prob"] = round(global_prob[1].item(), 4)
         sentiment_result["positive_prob"] = round(global_prob[2].item(), 4)
         # entity sentiment
-        if entities is not None:
+        if entities is not None and len(entities) > 0:
             entity_sentiment = []
             for entity in entities:
                 try:
