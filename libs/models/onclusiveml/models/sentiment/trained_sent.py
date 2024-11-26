@@ -206,7 +206,7 @@ class TrainedSentiment:
             # Stack the list of tensors into a single tensor
             stacks = torch.stack(proba_list)
             # Compute the mean along the zeroth dimension (i.e., the chunk dimension)
-            mean = stacks.mean(dim=0)
+            mean = stacks.mean(dim=0)[0]
             # get number tag
             num_tag = torch.argmax(mean).item()
             if num_tag == 2:
@@ -215,7 +215,7 @@ class TrainedSentiment:
                 tag = "neutral"
             else:
                 tag = "negative"
-            return tag, mean[0]
+            return tag, mean
 
     # inference chunk function
     def inference(
