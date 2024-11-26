@@ -1,4 +1,4 @@
-"""Compiled sentiment."""
+"""Trained sentiment."""
 
 # Standard Library
 import string
@@ -99,16 +99,22 @@ class TrainedSentiment:
         window_length: int,
         device: str,
     ) -> List:
-        """Splits input text into chunks then applies model to each chunk and computes probabilities.
+        """Splits input into chunks, combines with aspect tokens, and predicts sentiment probabilities for each chunk.
 
         Args:
-            input_ids (List[int]): List of token ids representing the input text.
-            attention_mask (List[int]): List of attention masks corresponding to input_ids.
-            total_len (int): Total length of the input_ids.
-            model_type (str): is a bert/distilbert/roberta model? different input_ids for cls and sep
+            input_ids (List[int]): Token IDs representing the input text.
+            attention_mask (List[int]): Attention mask corresponding to the input text tokens.
+            aspect_input_ids (List[int]): Token IDs representing the aspect (e.g., entity or global context).
+            aspect_attention_mask (List[int]): Attention mask corresponding to the aspect tokens.
+            total_len (int): Total length of the input token IDs.
+            global_sentiment_tag (bool):
+                Whether the sentiment analysis is for global sentiment (True) or entity-specific sentiment (False).
+            window_length (int): The maximum length of each chunk for processing.
+            device (str): The device to perform inference on (e.g., "cpu" or "cuda").
 
         Returns:
-            proba_list (List[torch.Tensor]): List of probability tensors for each chunk.
+            List[torch.Tensor]: A list of probability tensors, one for each chunk,
+                where each tensor contains sentiment probabilities for negative, neutral, and positive classes.
         """
         # Ensure the model is on the correct device and in evaluation mode
         self.trained_sent_pipeline.model = self.trained_sent_pipeline.model.to(device)
