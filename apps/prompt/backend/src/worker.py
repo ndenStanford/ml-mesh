@@ -4,7 +4,7 @@
 from celery.app import Celery
 
 # Source
-import src.signals  # noqa: F401
+# import src.signals  # noqa: F401
 from src.settings import get_settings
 
 

@@ -14,7 +14,9 @@ from onclusiveml.llms.json_builder import build_json
 
 # Source
 from src.extensions.redis import redis
+from src.generated.tables import Generated
 from src.model.tables import LanguageModel
+from src.prompt.constants import GENERATED, CeleryStatusTypes
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
@@ -41,6 +43,11 @@ def generate_from_prompt_template(
     """Generates chat message from input prompt and model."""
     # get langchain objects
     model_parameters = kwargs.get("model_parameters", None)
+    generated_id = kwargs.get("generated_id", None)
+
+    if generated_id is not None:
+        Generated.get(generated_id).update_status(CeleryStatusTypes.STARTED)
+
     prompt = PromptTemplate.get(prompt_alias)
     llm = LanguageModel.get(model_alias)
     # setting output parser
@@ -60,19 +67,35 @@ def generate_from_prompt_template(
     )
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
+
     try:
         result = chain.invoke(inputs)
-    except Exception as e:
-        if str_output_parser and prompt.fields:
-            chain = (
-                prompt.as_langchain()
-                | llm.as_langchain(model_parameters=model_parameters)
-                | StrOutputParser()
+        if generated_id is not None:
+            generation = {GENERATED: result} if isinstance(result, str) else result
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.SUCCESS, generation
             )
-            result = chain.invoke(inputs)
-            return build_json(result, prompt.fields.keys())
-        # else raise error
-        else:
+    except Exception as e:
+        try:
+            if str_output_parser and prompt.fields:
+                chain = (
+                    prompt.as_langchain()
+                    | llm.as_langchain(model_parameters=model_parameters)
+                    | StrOutputParser()
+                )
+                result = build_json(chain.invoke(inputs), prompt.fields.keys())
+            elif generated_id is not None:
+                Generated.get(generated_id).update_status(
+                    CeleryStatusTypes.FAILURE, None, str(e)
+                )
+                raise e
+            else:
+                raise e
+        except Exception as e:
+            if generated_id is not None:
+                Generated.get(generated_id).update_status(
+                    CeleryStatusTypes.FAILURE, None, str(e)
+                )
             raise e
 
     return result
@@ -85,12 +108,29 @@ def generate_from_prompt_template(
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
-    prompt: str, model_alias: str, model_parameters: Dict = None
+    prompt: str, model_alias: str, model_parameters: Dict = None, generated_id=None
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
+    if generated_id is not None:
+        Generated.get(generated_id).update_status(CeleryStatusTypes.STARTED)
+
     llm = LanguageModel.get(model_alias).as_langchain(model_parameters=model_parameters)
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
-    return conversation.predict(input=prompt)
+
+    if generated_id is not None:
+        try:
+            result = conversation.predict(input=prompt)
+            generation = {GENERATED: result} if isinstance(result, str) else result
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.SUCCESS, generation
+            )
+        except Exception as e:
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.FAILURE, None, str(e)
+            )
+            raise e
+    else:
+        return conversation.predict(input=prompt)
 
 
 @celery_app.task(
@@ -102,6 +142,11 @@ def generate_from_prompt(
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""
     # get langchain objects
+    generated_id = kwargs.get("generated_id", None)
+
+    if generated_id is not None:
+        Generated.get(generated_id).update_status(CeleryStatusTypes.STARTED)
+
     prompt = PromptTemplate.get(prompt_alias)
 
     model_alias = settings.DEFAULT_MODELS.get(
@@ -117,4 +162,17 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
 
-    return chain.invoke(inputs)
+    if generated_id is not None:
+        try:
+            result = chain.invoke(inputs)
+            generation = {GENERATED: result} if isinstance(result, str) else result
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.SUCCESS, generation
+            )
+        except Exception as e:
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.FAILURE, None, str(e)
+            )
+            raise e
+    else:
+        return chain.invoke(inputs)

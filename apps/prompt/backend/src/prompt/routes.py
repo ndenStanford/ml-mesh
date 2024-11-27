@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+import uuid
 from datetime import datetime
 from json import JSONDecodeError
 from typing import Any, Dict
@@ -15,16 +16,14 @@ from langchain_core.exceptions import OutputParserException
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.generated.exceptions import GeneratedNotFound
 from src.generated.tables import Generated
 from src.model.constants import MODELS_TO_PARAMETERS, ChatModel
 from src.project.tables import Project
 from src.prompt import functional as F
-from src.prompt.constants import GENERATED, CeleryStatusTypes
+from src.prompt.constants import CeleryStatusTypes
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
-from src.worker import celery_app
 
 
 settings = get_settings()
@@ -183,12 +182,12 @@ def generate_text_from_prompt_template_async(
     """
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
-    task = F.generate_from_prompt_template.delay(
-        alias, model, **values, model_parameters=model_parameters
-    )
+
+    custom_task_id = f"{uuid.uuid4().hex}"
+
     model_parameters = {k: str(v) for k, v in model_parameters.items()}
     generated = Generated(
-        id=task.id,
+        id=custom_task_id,
         status=CeleryStatusTypes.PENDING,
         generation=None,
         error=None,
@@ -198,7 +197,17 @@ def generate_text_from_prompt_template_async(
         model_parameters=model_parameters,
     )
 
-    print(generated.save())
+    generated.save()
+
+    F.generate_from_prompt_template.apply_async(
+        args=[alias, model],
+        kwargs={
+            "model_parameters": model_parameters,
+            "generated_id": custom_task_id,
+            **values,
+        },
+        task_id=custom_task_id,
+    )
 
     return generated
 
@@ -222,7 +231,7 @@ def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    task = F.generate_from_default_model.delay(alias, **values)
+    custom_task_id = f"{uuid.uuid4().hex}"
 
     model = settings.DEFAULT_MODELS.get(alias, settings.DEFAULT_MODELS["default"])
     model_parameters = MODELS_TO_PARAMETERS.get(
@@ -231,7 +240,7 @@ def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
     model_parameters = {k: str(v) for k, v in model_parameters.items()}
 
     generated = Generated(
-        id=task.id,
+        id=custom_task_id,
         status=CeleryStatusTypes.PENDING,
         generation=None,
         error=None,
@@ -241,33 +250,16 @@ def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
         model_parameters=model_parameters,
     )
 
-    print(generated.save())
+    generated.save()
 
-    return generated
-
-
-@router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
-def get_task_status(task_id: str) -> Generated:
-    """Fetch the status or result of a Celery task."""
-    response = celery_app.AsyncResult(task_id)
-
-    try:
-        generated = Generated.get(task_id)
-    except GeneratedNotFound:
-        raise GeneratedNotFound
-
-    generated.status = response.state
-
-    if response.state == CeleryStatusTypes.SUCCESS:
-        generated.generation = (
-            {GENERATED: response.result}
-            if isinstance(response.result, str)
-            else response.result
-        )
-        print(generated.save())
-
-    elif response.state == CeleryStatusTypes.FAILURE:
-        generated.error = str(response.error)
-        print(generated.save())
+    F.generate_from_default_model.apply_async(
+        args=[alias],
+        kwargs={
+            "model_parameters": model_parameters,
+            "generated_id": custom_task_id,
+            **values,
+        },
+        task_id=custom_task_id,
+    )
 
     return generated

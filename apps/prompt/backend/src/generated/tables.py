@@ -62,6 +62,13 @@ class Generated(Dyntastic):
         """Custom save function."""
         return super(Generated, self).save()
 
+    def update_status(self, status, result=None, error=None):
+        """Update status."""
+        self.status = status
+        self.generation = result
+        self.error = error
+        self.save()
+
     def delete(self) -> None:
         """Delete generated from database."""
         return super(Generated, self).delete()

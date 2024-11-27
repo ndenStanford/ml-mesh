@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+import uuid
 from typing import List
 
 # 3rd party libraries
@@ -13,7 +14,6 @@ from src.generated.tables import Generated
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
 from src.prompt.constants import CeleryStatusTypes
-from src.prompt.routes import get_task_status
 
 
 router = APIRouter(
@@ -72,12 +72,12 @@ def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
 
-    task = F.generate_from_prompt.delay(
-        prompt, alias, model_parameters=model_parameters
-    )
+    custom_task_id = f"{uuid.uuid4().hex}"
+    # Convert model parameters to strings for storage
     model_parameters = {k: str(v) for k, v in model_parameters.items()}
+
     generated = Generated(
-        id=task.id,
+        id=custom_task_id,
         status=CeleryStatusTypes.PENDING,
         generation=None,
         error=None,
@@ -86,12 +86,12 @@ def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)
         prompt=prompt,
         model_parameters=model_parameters,
     )
-    print(generated.save())
 
+    generated.save()
+    # Submit the task with the custom ID
+    F.generate_from_prompt.apply_async(
+        args=[prompt, alias],
+        kwargs={"model_parameters": model_parameters, "generated_id": custom_task_id},
+        task_id=custom_task_id,
+    )
     return generated
-
-
-@router.get("/status/{task_id}", status_code=status.HTTP_200_OK)
-def get_task_status_model(task_id: str):
-    """Fetch the status or result of a Celery task."""
-    return get_task_status(task_id)
