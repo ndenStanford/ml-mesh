@@ -16,10 +16,14 @@ from src.generated.tables import Generated
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "generation": "test1",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],
@@ -46,10 +50,14 @@ def test_create_generated(
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "generation": "test1",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],
@@ -74,10 +82,14 @@ def test_delete_generated(mock_generated_get, mock_generated_delete, data, test_
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "generation": "test1",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],

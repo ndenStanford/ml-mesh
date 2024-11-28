@@ -17,9 +17,14 @@ from src.generated.tables import Generated
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],
@@ -33,11 +38,15 @@ def test_valid_id(data):
     "data",
     [
         {
-            "id": "e2944cc2-08ec-42bc-928a-c9e59c3fa&*",
-            "generation": "test1",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe&*",
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],
@@ -53,10 +62,14 @@ def test_invalid_id(data):
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "generation": "test1",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],
@@ -76,10 +89,14 @@ def test_save(mock_dyntastic_save, data):
     [
         {
             "id": "e2977cc2-08ec-42bc-928a-c9e59c3fafe",
-            "generation": "test1",
-            "method": "src.prompt.functional.generate_from_prompt_template",
-            "args": ["english-summarization", "gpt-4o"],
-            "kwargs": {"input": {"number": 5, "text": "What is the capital of US?"}},
+            "generation": {"generated": "generation-1"},
+            "status": "PENDING",
+            "model": "gpt-4o",
+            "prompt": "english-summarization",
+            "error": None,
+            "model_parameters": {
+                "temperature": "0.6",
+            },
             "timestamp": "2024-11-19T12:00:00",
         }
     ],

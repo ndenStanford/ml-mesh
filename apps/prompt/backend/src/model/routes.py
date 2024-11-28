@@ -71,6 +71,8 @@ def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)
     """Generates text using a prompt template."""
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
+    else:
+        model_parameters = {}
 
     custom_task_id = f"{uuid.uuid4().hex}"
     # Convert model parameters to strings for storage

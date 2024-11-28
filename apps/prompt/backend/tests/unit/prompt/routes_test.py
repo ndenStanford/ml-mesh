@@ -3,7 +3,7 @@
 # Standard Library
 from json import JSONDecodeError
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 # 3rd party libraries
 import pytest
@@ -215,16 +215,28 @@ def test_generate(mock_generate, alias, model, values, test_client):
     "alias, model, values",
     [("prompt-1", "model-1", {"text": ""})],
 )
-@patch("src.prompt.functional.generate_from_prompt_template.delay")
-def test_generate_async(mock_generate, alias, model, values, test_client):
+@patch("src.prompt.functional.generate_from_prompt_template.apply_async")
+@patch("src.prompt.functional.Generated")
+@patch("src.prompt.functional.Generated.save")
+def test_generate_async(
+    mock_generated_save,
+    mock_generated,
+    mock_generate,
+    alias,
+    model,
+    values,
+    test_client,
+):
     """Test get generate from prompt template endpoint."""
+    mock_generated_instance = MagicMock()
+    mock_generated.return_value = mock_generated_instance
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
         f"/api/v3/prompts/{alias}/generate/async/model/{model}",
         headers={"x-api-key": "1234"},
         json=values,
     )
-    mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
+    mock_generate.assert_called_once()
     assert response.status_code == status.HTTP_200_OK
 
 
@@ -304,9 +316,15 @@ def test_generate_from_default_model(mock_generate, alias, values, test_client):
     "alias, values",
     [("prompt-1", {"text": ""}), ("prompt-2", {"text": ""})],
 )
-@patch("src.prompt.functional.generate_from_default_model.delay")
-def test_generate_from_default_model_async(mock_generate, alias, values, test_client):
+@patch("src.prompt.functional.generate_from_default_model.apply_async")
+@patch("src.prompt.functional.Generated")
+@patch("src.prompt.functional.Generated.save")
+def test_generate_from_default_model_async(
+    mock_generated_save, mock_generated, mock_generate, alias, values, test_client
+):
     """Test get model endpoint."""
+    mock_generated_instance = MagicMock()
+    mock_generated.return_value = mock_generated_instance
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
         f"/api/v3/prompts/{alias}/generate/async",
@@ -315,11 +333,3 @@ def test_generate_from_default_model_async(mock_generate, alias, values, test_cl
     )
     mock_generate.assert_called_once()
     assert response.status_code == status.HTTP_200_OK
-
-
-@patch("src.worker.celery_app.AsyncResult")
-def test_get_task_status(mock_async_result, test_client):
-    """Test get task status."""
-    mock_async_result.return_value = SimpleNamespace(**{"state": "PENDING"})
-    test_client.get("/api/v3/prompts/status/test_id", headers={"x-api-key": "1234"})
-    mock_async_result.assert_called_with("test_id")

@@ -182,6 +182,8 @@ def generate_text_from_prompt_template_async(
     """
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
+    else:
+        model_parameters = {}
 
     custom_task_id = f"{uuid.uuid4().hex}"
 

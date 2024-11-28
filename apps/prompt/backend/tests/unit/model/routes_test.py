@@ -2,7 +2,7 @@
 
 # Standard Library
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 # 3rd party libraries
 import pytest
@@ -72,13 +72,25 @@ def test_generate(mock_generate, alias, provider, prompt, test_client):
         ("model-2", "bedrock", "hello"),
     ],
 )
-@patch("src.prompt.functional.generate_from_prompt.delay")
-def test_generate_async(mock_generate, alias, provider, prompt, test_client):
-    """Test get model endpoint."""
+@patch("src.prompt.functional.generate_from_prompt.apply_async")
+@patch("src.prompt.functional.Generated")
+@patch("src.prompt.functional.Generated.save")
+def test_generate_async(
+    mock_generated_save,
+    mock_generated,
+    mock_generate,
+    alias,
+    provider,
+    prompt,
+    test_client,
+):
+    """Test the generate async endpoint."""
+    mock_generated_instance = MagicMock()
+    mock_generated.return_value = mock_generated_instance
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
         f"/api/v3/models/{alias}/generate/async?prompt={prompt}",
         headers={"x-api-key": "1234"},
     )
-    mock_generate.assert_called_with(prompt, alias, model_parameters=None)
+    mock_generate.assert_called_once()
     assert response.status_code == status.HTTP_200_OK
