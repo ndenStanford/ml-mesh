@@ -26,7 +26,7 @@ def create_generated(generated: Generated):
         _generated = Generated.get(generated.id)
     except GeneratedNotFound:
         pass
-    # if generated does exist, create it
+    # if generated does not exist, create it
     if _generated is None:
         try:
             generated.save()

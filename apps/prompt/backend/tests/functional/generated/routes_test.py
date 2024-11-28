@@ -9,13 +9,13 @@ import requests
     "data",
     [
         {
-        "id": "qwer6ty1",
-        "status": "str",
-        "generation": {"generated": "generated-1"},
-        "prompt": "english-summarization",
-        "model": "gpt-4o",
-        "model_parameters": {"temperature": "0.5"},
-        "timestamp": "2024-11-19T12:00:00"
+            "id": "qwer6ty1",
+            "status": "str",
+            "generation": {"generated": "generated-1"},
+            "prompt": "english-summarization",
+            "model": "gpt-4o",
+            "model_parameters": {"temperature": "0.5"},
+            "timestamp": "2024-11-19T12:00:00",
         }
     ],
 )
@@ -30,13 +30,13 @@ def test_server_response_status_code(url_generated_namespace, headers, data):
     "data",
     [
         {
-        "id": "qwer6y2",
-        "status": "str",
-        "generation": {"generated": "generated-1"},
-        "prompt": "english-summarization",
-        "model": "gpt-4o",
-        "model_parameters": {"temperature": "0.5"},
-        "timestamp": "2024-11-19T12:00:00"
+            "id": "qwer6y2",
+            "status": "str",
+            "generation": {"generated": "generated-1"},
+            "prompt": "english-summarization",
+            "model": "gpt-4o",
+            "model_parameters": {"temperature": "0.5"},
+            "timestamp": "2024-11-19T12:00:00",
         }
     ],
 )
