@@ -883,7 +883,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-22.04
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: python-base
 
           # backfill
@@ -923,7 +923,7 @@ jobs       :
             self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
             base-image: neuron-inference
 
     with:
