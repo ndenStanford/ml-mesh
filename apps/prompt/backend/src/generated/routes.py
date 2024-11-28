@@ -5,7 +5,7 @@ from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
 # Source
-from src.generated.exceptions import GeneratedExisting
+from src.generated.exceptions import GeneratedExisting, GeneratedNotFound
 from src.generated.tables import Generated
 
 
@@ -21,7 +21,11 @@ def create_generated(generated: Generated):
     Args:
         generated (Generated): generated object to be saved.
     """
-    _generated = Generated.safe_get(generated.id)
+    _generated = None
+    try:
+        _generated = Generated.get(generated.id)
+    except GeneratedNotFound:
+        pass
     # if generated does exist, create it
     if _generated is None:
         try:

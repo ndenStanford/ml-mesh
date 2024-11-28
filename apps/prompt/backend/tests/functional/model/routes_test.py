@@ -64,7 +64,7 @@ def test_server_response_content(url_model_namespace, headers, model_parameters)
     ],
 )
 def test_server_response_content_async(
-    url_model_namespace_status, url_model_namespace_async, headers, model_parameters
+    url_generated_namespace, url_model_namespace_async, headers, model_parameters
 ):
     """Test server response content with Celery integration."""
     headers["model-parameters"] = model_parameters
@@ -72,10 +72,10 @@ def test_server_response_content_async(
     response = requests.post(url_model_namespace_async, headers=headers)
     json_response = response.json()
 
-    assert "task_id" in json_response
-    task_id = json_response["task_id"]
+    assert "id" in json_response
+    task_id = json_response["id"]
 
-    status_url = f"{url_model_namespace_status}/{task_id}"
+    status_url = f"{url_generated_namespace}{task_id}"
     max_wait_time = 10
     start_time = time.time()
 
@@ -84,8 +84,8 @@ def test_server_response_content_async(
         status_json = status_response.json()
 
         if status_json["status"] == "SUCCESS":
-            assert "generated" in status_json["generated"]
-            assert isinstance(status_json["generated"]["generated"], str)
+            assert "generated" in status_json["generation"]
+            assert isinstance(status_json["generation"]["generated"], str)
             break
 
         elif status_json["status"] == "FAILURE":
