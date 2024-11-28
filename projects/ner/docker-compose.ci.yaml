@@ -256,7 +256,7 @@ services:
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -276,14 +276,9 @@ services:
     command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -294,10 +289,10 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/tests, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -310,13 +305,9 @@ services:
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]

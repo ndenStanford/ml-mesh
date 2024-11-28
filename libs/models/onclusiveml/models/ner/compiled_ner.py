@@ -59,7 +59,7 @@ class CompiledNER:
             CompiledNER: The loaded pre-trained CompiledNER object
         """
         compiled_ner_pipeline_base = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline_base")
+            os.path.join(directory, "compiled_ner_pipeline_base"),
         )
 
         return cls(compiled_ner_pipeline_base=compiled_ner_pipeline_base)
@@ -124,133 +124,98 @@ class CompiledNER:
                     dictionary.pop("index", None)
                     dictionary["entity_type"] = dictionary.pop("entity")
                     dictionary["entity_text"] = dictionary.pop("word")
-
         return [
-            [InferenceOutput(**dictionary) for dictionary in entities_list]
+            [
+                [InferenceOutput(**dictionary) for dictionary in entities_list]
+                for entities_list in docs
+            ]
             for docs in res
-            for entities_list in docs
         ]
 
-    def compute_moving_average(self, scores: List[float]) -> float:
-        """Compute the moving average of a list of scores.
+    def compute_average(self, scores: List[float]) -> float:
+        """Compute the average of a list of scores.
 
         Args:
-            scores (List[float]): List of scores for which to compute the moving average
+            scores (List[float]): List of scores for
 
         Returns:
-            float: The computed moving average
+            float: The computed average
         """
         return sum(scores) / len(scores)
 
     def postprocess(
-        self, output: List[List[InferenceOutput]]
+        self, ner_predictions: List[List[InferenceOutput]]
     ) -> List[List[InferenceOutput]]:
-        """Postprocess NER labels to merge contiguous entities and compute scores.
+        """Postprocess nested list of NER predictions by aggregating BIO tags.
 
         Args:
-            output (List[List[InferenceOutput]]): Nested list of NER predictions
-                where each sublist represents entities of a document. Attributes:
-                    - entity_type (str): entity type
-                    - score (float): probability of given entity
-                    - entity_text (str): targeted word for given entity
-                    - start (int): starting position of word
-                    - end (int): ending position of word
+            ner_predictions: List[List[InferenceOutput]]: Nested list of NER predictions
 
         Returns:
-            List[List[InferenceOutput]]: List of extracted named
-                entities in dictionary format.
+            List[List[InferenceOutput]]: Post processed NER predictions
         """
-        output_list: List[List[InferenceOutput]] = (
-            []
-        )  # List to store the postprocessed NER labels
+        flattened_entities = []
+        # Flatten the predictions and add sentence index
+        for sentence_idx, sentence_entities in enumerate(ner_predictions):
+            for entity in sentence_entities:
+                # Convert NamedTuple to dictionary and add sentence_index
+                entity_dict = entity._asdict()
+                entity_dict["sentence_index"] = sentence_idx
+                flattened_entities.append(entity_dict)
 
-        sentence_index = 0  # Initialize sentence index for tracking
-        # Loop through each sublist of NER labels (one sublist per sentence)
-        for sublist in output:
-            merged_sublist = (
-                []
-            )  # List to store merged contiguous entities for the current sentence
-            current_entity = (
-                None  # init variables for tracking current entity and properties
-            )
-            current_score_list = []  # List to store scores of contiguous entities
-            current_word = ""  # Initialise variable for tracking current merged word
-            current_start = (
-                None  # Initalize variable for tracking start pos of merged entity
-            )
-            current_end = (
-                None  # Initalize variable for tracking end pos of merged entity
-            )
-            # loop through each dictionary (NER label) in the sublist
-            for dictionary in sublist:
-                entity = dictionary.entity_type
-                score = dictionary.score
-                word = dictionary.entity_text
-                start = dictionary.start
-                end = dictionary.end
-                # Check if the 'end' value of the current entity matches the 'start' value
-                # of the next entity
-                if current_end == start:
-                    # Append the next entity if the 'end' value is the same as the 'start'
-                    # value of the next entity.
-                    current_score_list.append(score)
-                    current_word += (
-                        "" + word[2:]
-                    )  # merge words while skipping the 'B-' or 'I-' prefix
-                    current_end = end
-                # Check if the current entity is a continuation of the previouss entity
-                elif entity.startswith("I-"):
-                    if current_entity is not None:
-                        current_score_list.append(score)  # type: ignore[unreachable]
-                        current_word += " " + word
-                        current_end = end
-                # Check if the current entity is the beginning of a new entity
-                elif entity.startswith("B-"):
-                    if current_entity is not None:
-                        # Append the merged entity with computed score to the merged_sublist
-                        merged_sublist.append(  # type: ignore[unreachable]
-                            InferenceOutput(
-                                entity_type=current_entity[2:],
-                                score=float(
-                                    self.compute_moving_average(current_score_list)
-                                    if len(current_score_list) > 1
-                                    else current_score_list[0]
-                                ),
-                                sentence_index=sentence_index,
-                                entity_text=current_word,
-                                start=current_start,
-                                end=current_end,
-                            )
-                        )
-                    # update the current entity
-                    current_entity = entity
-                    current_score_list = [score]
-                    current_word = word
-                    current_start = start
-                    current_end = end
-            # Check if there is an unprocessed entity left at the end of the sublist
-            if current_entity is not None:
-                # Append the merged entity with computed score to the merged_sublist
-                merged_sublist.append(
-                    InferenceOutput(
-                        entity_type=current_entity[2:],
-                        score=float(
-                            self.compute_moving_average(current_score_list)
-                            if len(current_score_list) > 1
-                            else current_score_list[0]
-                        ),
-                        sentence_index=sentence_index,
-                        entity_text=current_word,
-                        start=current_start,
-                        end=current_end,
-                    )
-                )
-            # Append the merged_sublist for the current sentence to the output_list
-            output_list.append(merged_sublist)
-            # Increment the sentence index for the next iteration
-            sentence_index += 1
+        # Merge entities based on B- and I- prefix
+        merged_entities = []
+        current_entity = None
+        current_scores = []  # Track scores for true average calculation
 
-        return output_list
+        for entity in flattened_entities:
+            # Check if it's a beginning of a new entity (B- prefix) or there is no current entity
+            if entity["entity_type"].startswith("B-") or current_entity is None:
+                if current_entity:  # If there's an ongoing entity, finalize it
+                    current_entity["score"] = self.compute_average(
+                        current_scores
+                    )  # Use true average
+                    merged_entities.append(current_entity)
+                # Start a new entity
+                current_entity = entity.copy()
+                current_scores = [entity["score"]]
+            elif entity["entity_type"].startswith("I-") and current_entity:
+                # Merge with the current entity
+                current_entity["entity_text"] += entity["entity_text"]
+                current_entity["end"] = entity["end"]
+                current_scores.append(entity["score"])  # Add the new score to the list
+            else:
+                # If the entity type is neither B- nor I-, consider it as a new entity
+                if current_entity:
+                    current_entity["score"] = self.compute_average(current_scores)
+                    merged_entities.append(current_entity)
+                current_entity = entity.copy()
+                current_scores = [entity["score"]]
+
+        # Append the last entity if any
+        if current_entity:
+            current_entity["score"] = self.compute_average(current_scores)
+            merged_entities.append(current_entity)
+
+        # Post-process merged entities
+        converted_entities = []
+        for entity in merged_entities:
+            entity["entity_type"] = entity["entity_type"][
+                2:
+            ]  # Remove prefix (e.g., "B-", "I-")
+            if entity["entity_text"][0] == "▁":
+                entity["start"] += (
+                    1 if entity["start"] != 0 else 0
+                )  # Adjust start position (account for _ offset) if mid-sentence
+            entity["entity_text"] = entity["entity_text"].strip("▁").replace("▁", " ")
+            if (
+                entity["start"] != entity["end"]
+                and len(entity["entity_text"]) > 0
+                and entity["entity_text"] not in ["'", "-", "_", "▁"]
+            ):
+                converted_entities.append(InferenceOutput(**entity))
+
+        return converted_entities
 
     def __call__(
         self, documents: List[str], language: str
@@ -266,5 +231,5 @@ class CompiledNER:
         """
         sent_tokenized_documents = self.preprocess(documents, language)
         ner_labels = self.inference(sent_tokenized_documents, language)
-        entities = self.postprocess(ner_labels)
+        entities = list(map(self.postprocess, ner_labels))
         return entities
