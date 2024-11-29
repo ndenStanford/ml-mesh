@@ -135,3 +135,4 @@ jobs:
         run: |
           export PATH="/opt/aws/neuron/bin:$PATH"
           neuron-ls
+          modinfo neuron
