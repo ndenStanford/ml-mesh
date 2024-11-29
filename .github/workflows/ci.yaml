@@ -641,6 +641,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             push-image: true
             base-image: python-base
+            use-cache: true
 
           # compile
           - name: compile
@@ -652,6 +653,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
+            use-cache: true
 
           # serve
           - name: serve
@@ -665,6 +667,7 @@ jobs       :
             self-hosted-runner-ami: ami-07dcb52c03924443f
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
+            use-cache: false
 
           # backfill
           - name: backfill
@@ -676,8 +679,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: beam-backfill
-
-        use-cache: [true]
+            use-cache: true
 
     with:
       project: sentiment
@@ -693,7 +695,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      use-cache: ${{ matrix.use-cache }}
+      use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
     secrets:
@@ -908,7 +910,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-ami: ami-07dcb52c03924443f
-            use-cache: true
+            use-cache: false
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
 
