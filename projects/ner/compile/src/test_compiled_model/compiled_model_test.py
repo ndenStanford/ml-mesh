@@ -5,6 +5,7 @@ import json
 from typing import List
 
 # 3rd party libraries
+import numpy as np
 import pandas as pd
 import pytest
 from conftest import parametrize_values
@@ -66,7 +67,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compilation_test_settings: Compilation settings
     """
     compiled_predictions = compiled_ner(
-        test_files["inputs"][lang_index][test_sample_index], language=language
+        [test_files["inputs"][lang_index][test_sample_index]], language=language
     )
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler
@@ -98,6 +99,13 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
     compiled_predictions_df = to_dataframe(compiled_predictions_dict)
     expected_predictions_df = to_dataframe(test_sample_list)
+    # ensure score columns are matching float types
+    compiled_predictions_df["score"] = compiled_predictions_df["score"].astype(
+        "float32"
+    )
+    expected_predictions_df["score"] = expected_predictions_df["score"].astype(
+        "float32"
+    )
     # assert ner are identical and scores are within 0.01 absolute deviation
     pd.testing.assert_frame_equal(
         compiled_predictions_df,
@@ -105,18 +113,31 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         rtol=compilation_test_settings.regression_rtol,
         atol=compilation_test_settings.regression_atol,
     )
+
+    def json_serializable(obj):
+        if isinstance(obj, (np.float32, np.float64)):
+            return float(obj)
+
     # create new export file or append prediction to existing exported prediction file
     try:
         with open(
-            settings.test_files(CompileWorkflowTasks.TEST)["predictions"]
+            settings.test_files(CompileWorkflowTasks.TEST)["predictions"],
+            "r",
+            encoding="utf-8",
         ) as compiled_predictions_file:
             all_compiled_predictions = json.load(compiled_predictions_file)
-    except (FileExistsError, FileNotFoundError):
+    except (FileExistsError, FileNotFoundError, json.JSONDecodeError):
         all_compiled_predictions = [[], []]
 
     all_compiled_predictions[lang_index].append(compiled_predictions_dict)
 
     with open(
-        settings.test_files(CompileWorkflowTasks.TEST)["predictions"], "w"
+        settings.test_files(CompileWorkflowTasks.TEST)["predictions"],
+        "w",
+        encoding="utf-8",
     ) as compiled_predictions_file:
-        json.dump(all_compiled_predictions, compiled_predictions_file)
+        json.dump(
+            all_compiled_predictions,
+            compiled_predictions_file,
+            default=json_serializable,
+        )

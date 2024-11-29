@@ -41,7 +41,7 @@ projects.run/%: # Run auxiliary task of component in container
 projects.stop/%: # Stop development container of component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 
-projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
+projects.test/%: projects.unit/% projects.integration/% projects.functional/% ## Run all tests for project component
 	echo "Running all tests."
 
 projects.unit/%: projects.set ## Run unit tests for project component

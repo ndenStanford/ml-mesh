@@ -454,7 +454,7 @@ services:
     command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
