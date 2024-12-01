@@ -54,11 +54,11 @@ fatal() {
 # Installing Linux package manager
 _setup_package_manager(){
 
-    info "🌕  Setup yum ..."
+    info "🌕  Setup dnf ..."
 
-    sudo yum update -y
-    sudo yum upgrade -y
-    sudo yum install yum-utils
+    sudo dnf upgrade -y
+    sudo dnf update -y
+    sudo dnf install -y dnf-utils dnf-plugins-core
     separator
 }
 
@@ -85,14 +85,9 @@ _mount_ebs_volume() {
 # Installing global dependencies
 _install_global_deps() {
 
-    local NEURON
-
-    NEURON=$1
-
     info "🌕  Installing system dependencies..."
 
-    sudo yum install -y git \
-                        curl \
+    sudo dnf install -y git \
                         make \
                         zlib \
                         zlib-devel \
@@ -114,39 +109,15 @@ _install_global_deps() {
                         tk-devel \
                         xz-devel
 
-    # install neuron dependencies if required
-    if [ "${NEURON}" == "y" ]; then
-        echo "Installing neuron libraries"
-        sudo tee /etc/yum.repos.d/neuron.repo > /dev/null <<EOF
-[neuron]
-name=Neuron YUM Repository
-baseurl=https://yum.repos.neuron.amazonaws.com
-enabled=1
-metadata_expire=0
-EOF
-        sudo rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB
-        sudo yum update -y
-        sudo yum install kernel-devel-"$(uname -r)" kernel-headers-"$(uname -r)" -y
-        sudo yum install aws-neuronx-dkms-2.14.5.0 -y
-        sudo yum install aws-neuronx-tools-2.15.4.0 -y
-        export PATH=/opt/aws/neuron/bin:$PATH
-        echo "Neuron OS dependency installation complete."
-        echo "Available neuron device(s):"
-        neuron-ls
-        ls /dev/neuron* -l
-    else
-        warn "No Neuron OS dependencies specified. This step will be skipped"
-    fi
-
     # install docker & docker compose plugin
     echo "Stopping all docker processes"
     sudo systemctl stop docker
     sudo systemctl stop docker.socket
     sudo systemctl stop containerd
     echo "Installing docker compose"
-    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
-    sudo yum install -y docker-compose-plugin
+    sudo dnf install -y docker-compose-plugin
 
     # configure docker storage directory & restart
     echo "Configuring docker dir to mounted EBS volume"
@@ -317,14 +288,12 @@ _setup(){
 
     local NAME
     local EMAIL
-    local NEURON
 
     NAME=$1
     EMAIL=$2
-    NEURON=$3
 
     _mount_ebs_volume
-    _install_global_deps "$NEURON"
+    _install_global_deps
     _setup_ssh_key "$EMAIL"
     _setup_git "$NAME" "$EMAIL"
     _clone_repositories
@@ -353,13 +322,8 @@ main(){
             read -r EMAIL
             [[ $EMAIL == "" ]] && EMAIL="$(whoami)@$(hostname)"
             separator
-            echo "Neuron OS dependencies required? ( y / n ) [default is 'n']"
-            read -r NEURON
-            [[ $NEURON == "" ]] && NEURON="n"
-            separator
             info "Name: ${NAME}"
             info "Email: ${EMAIL}"
-            info "Neuron OS dependencies required: ${NEURON}"
             separator
             info "does this look ok? ( y / n )"
             read -r OK
@@ -367,7 +331,7 @@ main(){
         done
 
         _setup_package_manager
-        _setup "$NAME" "$EMAIL" "$NEURON"
+        _setup "$NAME" "$EMAIL"
     else
 
         info "Kernel ${KERNEL} is not supported by the script."
