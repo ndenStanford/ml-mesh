@@ -266,7 +266,7 @@ jobs       :
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
-            use-cache: false
+            use-cache: true
 
           - name: beam-backfill
             region: us-east-2
@@ -659,7 +659,7 @@ jobs       :
             self-hosted-runner-ami: ami-00288089de4863998
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: gpu-base
-            use-cache: false
+            use-cache: true
 
           # backfill
           - name: backfill
