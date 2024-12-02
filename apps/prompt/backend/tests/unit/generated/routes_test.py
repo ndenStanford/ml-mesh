@@ -29,13 +29,13 @@ from src.generated.tables import Generated
     ],
 )
 @patch.object(Generated, "save")
-@patch.object(Generated, "safe_get")
+@patch.object(Generated, "get")
 def test_create_generated(
-    mock_generated_safe_get, mock_generated_save, data, test_client
+    mock_generated_get, mock_generated_save, data, test_client
 ):
     """Test save generated endpoint."""
     # setup
-    mock_generated_safe_get.return_value = None
+    mock_generated_get.return_value = None
     # mock call
     response = test_client.post(
         "/api/v3/generated", headers={"x-api-key": "1234"}, json=data
