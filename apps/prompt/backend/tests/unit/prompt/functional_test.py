@@ -121,7 +121,7 @@ def test_generate_from_prompt_template_json_build(
     ]
 
     # Call the function under test
-    result = F.generate_from_prompt_template(prompt_alias, model_alias, **payload)
+    response = F.generate_from_prompt_template(prompt_alias, model_alias, **payload)
 
     # Assert that invoke was called twice
     assert mock_runnable_sequence_invoke.call_count == 2
@@ -129,7 +129,7 @@ def test_generate_from_prompt_template_json_build(
     # Verify that build_json was called once with the correct arguments
     mock_build_json.assert_called_once_with(str(result), prompt.fields.keys())
 
-    assert result == result
+    assert response == result
 
 
 @pytest.mark.parametrize(
