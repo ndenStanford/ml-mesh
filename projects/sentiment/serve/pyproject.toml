@@ -7,7 +7,6 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.9.19"
-torch = { version = "1.12.1", extras = ["cuda114"] }
 core = {path = "../../../libs/core"}
 models = {path = "../../../libs/models"}
 serving = {path = "../../../libs/serving"}
