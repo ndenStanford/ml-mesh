@@ -51,7 +51,13 @@ class Settings(OnclusiveBaseSettings):
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     DEFAULT_MODELS: dict = {"default": "gpt-4o-mini"}
-    PROMPTS_TO_SYNC: List[str] = ["machine-learning/english-summarization"]
+    PROMPTS_TO_SYNC: List[str] = [
+        "machine-learning/english-summarization",
+        "machine-learning/ml-summarization-english",
+        "machine-learning/ml-multi-articles-summarization",
+        "summarization/ml-multi-articles-summarization-bespoke",
+        "summarization/bespoke-summary-uk"
+        ]
     CORS_ORIGIN: List[str] = ["*"]
     BEDROCK_READ_TIMEOUT: int = 300
     # Github configuration
