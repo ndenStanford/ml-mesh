@@ -128,7 +128,6 @@ class ServedSentModel(ServedModel):
         attributes = {
             "label": sentiment.get("label"),
             "negative_prob": sentiment.get("negative_prob"),
-            "neutral_prob": sentiment.get("neutral_prob"),
             "positive_prob": sentiment.get("positive_prob"),
             "entities": sentiment.get("entities"),
         }

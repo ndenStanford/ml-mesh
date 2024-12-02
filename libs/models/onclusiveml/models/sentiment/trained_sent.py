@@ -238,7 +238,6 @@ class TrainedSentiment:
             dict: A dictionary containing:
                 - "label" (str): The global sentiment label (e.g., "positive", "neutral", or "negative").
                 - "negative_prob" (float): The probability of negative sentiment.
-                - "neutral_prob" (float): The probability of neutral sentiment.
                 - "positive_prob" (float): The probability of positive sentiment.
                 - "entities" (Optional[List[Dict]]):
                     A list of entities with their respective sentiment labels added under the key "sentiment".
@@ -263,7 +262,6 @@ class TrainedSentiment:
         global_tag, global_prob = self.get_tag_from_proba_absa(global_proba_list)
         sentiment_result["label"] = global_tag
         sentiment_result["negative_prob"] = round(global_prob[0].item(), 4)
-        sentiment_result["neutral_prob"] = round(global_prob[1].item(), 4)
         sentiment_result["positive_prob"] = round(global_prob[2].item(), 4)
         # entity sentiment
         if entities is not None and len(entities) > 0:

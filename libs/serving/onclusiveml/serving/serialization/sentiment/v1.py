@@ -67,14 +67,12 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     Attributes:
         label (str): Overall sentiment of the article
         negative_prob (float): Probablity of negative sentiment
-        neutral_prob (float): Probablity of neutral sentiment
         positive_prob (float): Probablity of positive sentiment
         entities (Optional[List[OutputEntity]]): entities with detected sentiment
     """
 
     label: str
     negative_prob: float
-    neutral_prob: float
     positive_prob: float
     entities: Optional[List[OutputEntity]] = None
 

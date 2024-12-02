@@ -70,7 +70,6 @@ This should return a response along the lines of
             "attributes": {
                 "label": "negative",
                 "negative_prob": 0.9142,
-                "neutral_prob": 0.0578,
                 "positive_prob": 0.0280,
                 "entities": [
                     {

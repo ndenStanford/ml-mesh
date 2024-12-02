@@ -76,7 +76,6 @@ def test_model_server_bio():
                     "attributes": {
                         "label": "negative",
                         "negative_prob": 0.9142,
-                        "neutral_prob": 0.0578,
                         "positive_prob": 0.0280,
                         "entities": [
                             {
@@ -137,7 +136,6 @@ def test_model_server_prediction(payload, expected_response):
                     "attributes": {
                         "label": "negative",
                         "negative_prob": 0.9142,
-                        "neutral_prob": 0.0578,
                         "positive_prob": 0.0280,
                         "entities": None,
                     },
@@ -240,7 +238,6 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                         ],
                         "label": "neutral",
                         "negative_prob": 0.0281,
-                        "neutral_prob": 0.4890,
                         "positive_prob": 0.4829,
                     },
                     "namespace": "sentiment",
