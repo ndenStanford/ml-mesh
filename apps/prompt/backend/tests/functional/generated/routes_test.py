@@ -9,7 +9,7 @@ import requests
     "data",
     [
         {
-            "id": "qwer6ty1",
+            "id": "qwer6ty5",
             "status": "str",
             "generation": {"generated": "generated-1"},
             "prompt": "english-summarization",
@@ -22,7 +22,6 @@ import requests
 def test_server_response_status_code(url_generated_namespace, headers, data):
     """Test server response code."""
     response = requests.post(url_generated_namespace, headers=headers, json=data)
-    print(response.text)
     assert response.status_code == 201
 
 
@@ -30,7 +29,7 @@ def test_server_response_status_code(url_generated_namespace, headers, data):
     "data",
     [
         {
-            "id": "qwer6y2",
+            "id": "qwer6y6",
             "status": "str",
             "generation": {"generated": "generated-1"},
             "prompt": "english-summarization",

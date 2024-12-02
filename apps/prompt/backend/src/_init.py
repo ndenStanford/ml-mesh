@@ -54,9 +54,31 @@ def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
             table(**value).save()
 
 
+def _validate_prompts_to_sync(prompts_to_sync: List[str]):
+    """Validate entries in PROMPTS_TO_SYNC to ensure they follow the 'folder/file' format.
+
+    Args:
+        prompts_to_sync (List[str]): List of prompt paths to validate.
+
+    Raises:
+        ValueError: If any entry does not contain a '/', or has an invalid folder or file name.
+    """
+    for prompt_path in prompts_to_sync:
+        if "/" not in prompt_path:
+            raise ValueError(
+                f"Invalid entry in PROMPTS_TO_SYNC: {prompt_path}. Must be in 'folder/file' format."
+            )
+        folder, file = prompt_path.split("/", 1)
+        if not folder.strip() or not file.strip():
+            raise ValueError(
+                f"Invalid entry in PROMPTS_TO_SYNC: {prompt_path}. Folder and file must be non-empty."
+            )
+
+
 def _syncronize_prompts():
     """Save prompts from registry in dynamoDB if non-exisant."""
     logger.info("Start prompt syncronization...")
+    _validate_prompts_to_sync(settings.PROMPTS_TO_SYNC)
     files = github.ls("")
     for file in files:
         if file in settings.PROMPTS_TO_SYNC:
