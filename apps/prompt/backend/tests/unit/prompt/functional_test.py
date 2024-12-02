@@ -67,7 +67,7 @@ def test_generate_from_prompt_template(
 
 
 @pytest.mark.parametrize(
-    "project, prompt_alias, template, payload, output, model_alias, provider",
+    "project, prompt_alias, template, payload, result, model_alias, provider",
     [
         (
             "new-project1",
@@ -103,7 +103,7 @@ def test_generate_from_prompt_template_json_build(
     prompt_alias,
     template,
     payload,
-    output,
+    result,
     model_alias,
     provider,
 ):
@@ -117,7 +117,7 @@ def test_generate_from_prompt_template_json_build(
     # Set side_effect before calling the function
     mock_runnable_sequence_invoke.side_effect = [
         Exception("Test exception"),
-        str(output),
+        str(result),
     ]
 
     # Call the function under test
@@ -127,9 +127,9 @@ def test_generate_from_prompt_template_json_build(
     assert mock_runnable_sequence_invoke.call_count == 2
 
     # Verify that build_json was called once with the correct arguments
-    mock_build_json.assert_called_once_with(str(output), prompt.fields.keys())
+    mock_build_json.assert_called_once_with(str(result), prompt.fields.keys())
 
-    assert result == output
+    assert result == result
 
 
 @pytest.mark.parametrize(
