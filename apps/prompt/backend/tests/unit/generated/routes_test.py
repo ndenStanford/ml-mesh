@@ -30,9 +30,7 @@ from src.generated.tables import Generated
 )
 @patch.object(Generated, "save")
 @patch.object(Generated, "get")
-def test_create_generated(
-    mock_generated_get, mock_generated_save, data, test_client
-):
+def test_create_generated(mock_generated_get, mock_generated_save, data, test_client):
     """Test save generated endpoint."""
     # setup
     mock_generated_get.return_value = None
