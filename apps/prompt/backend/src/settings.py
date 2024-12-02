@@ -56,8 +56,8 @@ class Settings(OnclusiveBaseSettings):
         "machine-learning/ml-summarization-english",
         "machine-learning/ml-multi-articles-summarization",
         "summarization/ml-multi-articles-summarization-bespoke",
-        "summarization/bespoke-summary-uk"
-        ]
+        "summarization/bespoke-summary-uk",
+    ]
     CORS_ORIGIN: List[str] = ["*"]
     BEDROCK_READ_TIMEOUT: int = 300
     # Github configuration
