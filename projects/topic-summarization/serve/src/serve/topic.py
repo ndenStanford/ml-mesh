@@ -39,9 +39,11 @@ class TopicHandler:
     impact_map: Dict[str, ImpactCategoryLabel] = {
         "low": ImpactCategoryLabel.LOW,
         "medium": ImpactCategoryLabel.MID,
+        "neutral": ImpactCategoryLabel.MID,
         "high": ImpactCategoryLabel.HIGH,
         "low impact": ImpactCategoryLabel.LOW,
         "medium impact": ImpactCategoryLabel.MID,
+        "neutral impact": ImpactCategoryLabel.MID,
         "high impact": ImpactCategoryLabel.HIGH,
     }
 

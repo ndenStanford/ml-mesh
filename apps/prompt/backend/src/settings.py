@@ -54,7 +54,16 @@ class Settings(OnclusiveBaseSettings):
     PROMPTS_TO_SYNC: List[str] = [
         "machine-learning/english-summarization",
         "machine-learning/ml-summarization-english",
+        "machine-learning/ml-transcript-segmentation",
+        "machine-learning/ml-entity-query-extract-gpt",
+        "machine-learning/ml-topic-summarization-entity-focus-gpt",
+        "machine-learning/ml-topic-summarization-entity-sentiment-impact-citation",
+        "machine-learning/ml-entity-query-extract-claude",
+        "machine-learning/ml-transcript-segmentation-ad-detection-claude",
+        "machine-learning/ml-topic-summarization-summary-quality",
+        "machine-learning/ml-topic-summarization-multi-articles-summary-entity-focus-gpt",
         "machine-learning/ml-multi-articles-summarization",
+        "machine-learning/ml-entity-query-extract-gpt",
         "summarization/ml-multi-articles-summarization-bespoke",
         "summarization/bespoke-summary-uk",
     ]
