@@ -299,7 +299,9 @@ class TopicHandler:
             if not isinstance(final_topic[key], dict):
                 continue
             impact_value = final_topic[key]["impact"].lower()
-            final_topic[key]["impact"] = self.impact_map[impact_value]
+            final_topic[key]["impact"] = self.impact_map.get(
+                impact_value, "low"
+            )  # in case return other values
 
         return final_topic
 

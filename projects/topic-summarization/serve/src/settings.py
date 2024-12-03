@@ -79,7 +79,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
                     ),
                     (
                         f"{category_key}_impact",
-                        f"The impact level of {category_value}",
+                        f"The impact level of {category_key}. Output 'High', 'Medium' or 'Low'.",
                     ),
                     (
                         f"{category_key}_sources",
