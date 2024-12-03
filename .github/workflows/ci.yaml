@@ -647,18 +647,6 @@ jobs       :
             base-image: python-base
             use-cache: true
 
-          # compile
-          - name: compile
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: neuron-inference
-            use-cache: true
-
           # serve
           - name: serve
             download-model: true
@@ -667,8 +655,8 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-07dcb52c03924443f
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-00288089de4863998
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
             use-cache: false
