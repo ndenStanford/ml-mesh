@@ -74,9 +74,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "sentiment",
                     "attributes": {
-                        "label": "positive",
-                        "negative_prob": 0.4854,
-                        "positive_prob": 0.4794,
+                        "label": "negative",
+                        "negative_prob": 0.9142,
+                        "positive_prob": 0.0280,
                         "entities": [
                             {
                                 "entity_type": "LOC",
@@ -134,9 +134,9 @@ def test_model_server_prediction(payload, expected_response):
                     "identifier": None,
                     "namespace": "sentiment",
                     "attributes": {
-                        "label": "positive",
-                        "negative_prob": 0.4854,
-                        "positive_prob": 0.4794,
+                        "label": "negative",
+                        "negative_prob": 0.9142,
+                        "positive_prob": 0.0280,
                         "entities": None,
                     },
                 },
@@ -236,9 +236,9 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                                 "start": 0,
                             }
                         ],
-                        "label": "positive",
-                        "negative_prob": 0.1914,
-                        "positive_prob": 0.3098,
+                        "label": "neutral",
+                        "negative_prob": 0.0281,
+                        "positive_prob": 0.4829,
                     },
                     "namespace": "sentiment",
                 },

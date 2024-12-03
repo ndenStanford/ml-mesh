@@ -11,5 +11,5 @@ class OffsetEnum(OnclusiveEnum):
     """
 
     GBR = {"start_offset": -7933, "end_offset": -7933}
-    ESP = {"start_offset": -266, "end_offset": 734}
+    ESP = {"start_offset": -1266, "end_offset": 1734}
     FRA = {"start_offset": -266, "end_offset": -266}
