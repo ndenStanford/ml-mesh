@@ -26,13 +26,13 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     default_model_segmentation: str = "us.anthropic.claude-3-5-sonnet-20240620-v1:0"
     default_model_ad: str = "us.anthropic.claude-3-5-sonnet-20240620-v1:0"
     segmentation_output_schema: Dict[str, str] = {
-        "related_segment": "The most descriptive and informative news segment related to the keywords (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
+        "related_segment": "The most descriptive and informative news segment related to the keywords (DO NOT CHANGE THE TEXT IN ANY FORM, INCLUDING LANGUAGE, SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
         "reason_for_segment": "The reason you believe this story relates to the keywords",
         "segment_summary": "A one-sentence summary of the extracted segment in the same language as the segment",  # noqa: E501
         "segment_title": "A title that represents the extracted segment in the same language as the segment",  # noqa: E501
         "segment_amount": "The total number of news segments in the content",
-        "piece_before": "The segment immediately before the chosen segment (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
-        "piece_after": "The segment immediately after the chosen segment (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
+        "piece_before": "The segment immediately before the chosen segment (DO NOT CHANGE THE TEXT IN ANY FORM, INCLUDING LANGUAGE, SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
+        "piece_after": "The segment immediately after the chosen segment (DO NOT CHANGE THE TEXT IN ANY FORM, INCLUDING LANGUAGE, SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
         "piece_before_accept": "Yes/No - Does the piece before hold any relevance to the segment and keywords?",  # noqa: E501
         "piece_after_accept": "Yes/No - Does the piece after hold any relevance to the segment and keywords?",  # noqa: E501
     }
