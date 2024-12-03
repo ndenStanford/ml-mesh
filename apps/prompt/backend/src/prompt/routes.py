@@ -2,6 +2,8 @@
 
 # Standard Library
 import json
+import uuid
+from datetime import datetime
 from json import JSONDecodeError
 from typing import Any, Dict
 
@@ -10,9 +12,15 @@ from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, Header, HTTPException, status
 from langchain_core.exceptions import OutputParserException
 
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
 # Source
+from src.generated.tables import Generated
+from src.model.constants import MODELS_TO_PARAMETERS, ChatModel
 from src.project.tables import Project
 from src.prompt import functional as F
+from src.prompt.constants import CeleryStatusTypes
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
@@ -21,8 +29,9 @@ from src.settings import get_settings
 settings = get_settings()
 
 router = APIRouter(
-    prefix="/v2/prompts",
+    prefix="/v3/prompts",
 )
+logger = get_default_logger(__name__)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -159,6 +168,52 @@ def generate_text_from_prompt_template(
         )
 
 
+@router.post("/{alias}/generate/async/model/{model}", status_code=status.HTTP_200_OK)
+def generate_text_from_prompt_template_async(
+    alias: str, model: str, values: Dict[str, Any], model_parameters: str = Header(None)
+):
+    """Generates text using a prompt template with specific model.
+
+    Args:
+        alias (str): prompt alias
+        model (str): model name
+        values (Dict[str, Any]): values to fill in template.
+        model_parameters (Dict[str, Any]): Model parameters to override default values.
+    """
+    if model_parameters is not None:
+        model_parameters = json.loads(model_parameters)
+    else:
+        model_parameters = {}
+
+    custom_task_id = f"{uuid.uuid4().hex}"
+
+    model_parameters = {k: str(v) for k, v in model_parameters.items()}
+    generated = Generated(
+        id=custom_task_id,
+        status=CeleryStatusTypes.PENDING,
+        generation=None,
+        error=None,
+        timestamp=datetime.now(),
+        model=model,
+        prompt=alias,
+        model_parameters=model_parameters,
+    )
+
+    generated.save()
+
+    F.generate_from_prompt_template.apply_async(
+        args=[alias, model],
+        kwargs={
+            "model_parameters": model_parameters,
+            "generated_id": custom_task_id,
+            **values,
+        },
+        task_id=custom_task_id,
+    )
+
+    return generated
+
+
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template with default model.
@@ -168,3 +223,45 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     return F.generate_from_default_model(alias, **values)
+
+
+@router.post("/{alias}/generate/async", status_code=status.HTTP_200_OK)
+def generate_text_from_default_model_async(alias: str, values: Dict[str, Any]):
+    """Generates text using a prompt template with default model.
+
+    Args:
+        alias (str): prompt alias
+        values (Dict[str, Any]): values to fill in template.
+    """
+    custom_task_id = f"{uuid.uuid4().hex}"
+
+    model = settings.DEFAULT_MODELS.get(alias, settings.DEFAULT_MODELS["default"])
+    model_parameters = MODELS_TO_PARAMETERS.get(
+        model, MODELS_TO_PARAMETERS[ChatModel.GPT4_O_MINI]
+    )().model_dump()
+    model_parameters = {k: str(v) for k, v in model_parameters.items()}
+
+    generated = Generated(
+        id=custom_task_id,
+        status=CeleryStatusTypes.PENDING,
+        generation=None,
+        error=None,
+        timestamp=datetime.now(),
+        model=model,
+        prompt=alias,
+        model_parameters=model_parameters,
+    )
+
+    generated.save()
+
+    F.generate_from_default_model.apply_async(
+        args=[alias],
+        kwargs={
+            "model_parameters": model_parameters,
+            "generated_id": custom_task_id,
+            **values,
+        },
+        task_id=custom_task_id,
+    )
+
+    return generated

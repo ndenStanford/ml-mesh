@@ -39,9 +39,11 @@ class TopicHandler:
     impact_map: Dict[str, ImpactCategoryLabel] = {
         "low": ImpactCategoryLabel.LOW,
         "medium": ImpactCategoryLabel.MID,
+        "neutral": ImpactCategoryLabel.MID,
         "high": ImpactCategoryLabel.HIGH,
         "low impact": ImpactCategoryLabel.LOW,
         "medium impact": ImpactCategoryLabel.MID,
+        "neutral impact": ImpactCategoryLabel.MID,
         "high impact": ImpactCategoryLabel.HIGH,
     }
 
@@ -60,7 +62,7 @@ class TopicHandler:
         input_dict["str_output_parser"] = settings.STRING_OUTPUT_PARSER
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/api/v3/prompts/{}/generate/model/{}".format(
                 settings.PROMPT_API, prompt_alias, model_name
             ),
             headers=headers,

@@ -1,7 +1,7 @@
 """Functional."""
 
 # Standard Library
-from typing import Dict
+from typing import Dict, Optional
 
 # 3rd party libraries
 from langchain.chains import ConversationChain
@@ -14,15 +14,22 @@ from onclusiveml.llms.json_builder import build_json
 
 # Source
 from src.extensions.redis import redis
+from src.generated.tables import Generated
 from src.model.tables import LanguageModel
+from src.prompt.constants import GENERATED, CeleryStatusTypes
 from src.prompt.exceptions import PromptFieldsMissing, StrOutputParserTypeError
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
+from src.worker import celery_app
 
 
 settings = get_settings()
 
 
+@celery_app.task(
+    default_retry_delay=settings.CELERY_RETRY_DELAY,
+    max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
 @retry(
     tries=settings.LLM_CALL_RETRY_COUNT,
     delay=settings.LLM_CALL_RETRY_DELAY,
@@ -32,15 +39,19 @@ settings = get_settings()
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
     prompt_alias: str, model_alias: str, **kwargs
-) -> Dict[str, str]:
+) -> Optional[Dict[str, str]]:
     """Generates chat message from input prompt and model."""
     # get langchain objects
     model_parameters = kwargs.get("model_parameters", None)
+    generated_id = kwargs.get("generated_id", None)
+
+    if generated_id is not None:
+        Generated.get(generated_id).update_status(CeleryStatusTypes.STARTED)
+
     prompt = PromptTemplate.get(prompt_alias)
     llm = LanguageModel.get(model_alias)
     # setting output parser
     prompt.fields = kwargs.get("output")
-
     # Check if str_output_parser flag is correctly set and validate fields
     str_output_parser = kwargs.get("str_output_parser", False)
     if not isinstance(str_output_parser, bool):
@@ -56,40 +67,99 @@ def generate_from_prompt_template(
     )
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
+
+    result = None
+
     try:
         result = chain.invoke(inputs)
-    except Exception as e:
-        if str_output_parser and prompt.fields:
-            chain = (
-                prompt.as_langchain()
-                | llm.as_langchain(model_parameters=model_parameters)
-                | StrOutputParser()
+        if generated_id is not None:
+            generation = {GENERATED: result} if isinstance(result, str) else result
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.SUCCESS, generation
             )
-            result = chain.invoke(inputs)
-            return build_json(result, prompt.fields.keys())
-        # else raise error
-        else:
+    except Exception as e:
+        try:
+            if str_output_parser and prompt.fields:
+                chain = (
+                    prompt.as_langchain()
+                    | llm.as_langchain(model_parameters=model_parameters)
+                    | StrOutputParser()
+                )
+                result = build_json(chain.invoke(inputs), prompt.fields.keys())
+                if generated_id is not None:
+                    generation = (
+                        {GENERATED: result} if isinstance(result, str) else result
+                    )
+                    Generated.get(generated_id).update_status(
+                        CeleryStatusTypes.SUCCESS, generation
+                    )
+            elif generated_id is not None:
+                Generated.get(generated_id).update_status(
+                    CeleryStatusTypes.FAILURE, None, str(e)
+                )
+                raise e
+            else:
+                raise e
+        except Exception as e:
+            if generated_id is not None:
+                Generated.get(generated_id).update_status(
+                    CeleryStatusTypes.FAILURE, None, str(e)
+                )
             raise e
 
     return result
 
 
+@celery_app.task(
+    default_retry_delay=settings.CELERY_RETRY_DELAY,
+    max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
-    prompt: str, model_alias: str, model_parameters: Dict = None
-) -> Dict[str, str]:
+    prompt: str, model_alias: str, model_parameters: Dict = None, generated_id=None
+) -> Optional[Dict[str, str]]:
     """Generates chat message from input prompt and model."""
+    if generated_id is not None:
+        Generated.get(generated_id).update_status(CeleryStatusTypes.STARTED)
+
     llm = LanguageModel.get(model_alias).as_langchain(model_parameters=model_parameters)
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
-    return conversation.predict(input=prompt)
+
+    result = None
+
+    try:
+        result = conversation.predict(input=prompt)
+        if generated_id is not None:
+            generation = {GENERATED: result} if isinstance(result, str) else result
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.SUCCESS, generation
+            )
+    except Exception as e:
+        if generated_id is not None:
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.FAILURE, None, str(e)
+            )
+        raise e
+    return result
 
 
+@celery_app.task(
+    default_retry_delay=settings.CELERY_RETRY_DELAY,
+    max_retries=settings.CELERY_MAX_RETRY_COUNTS,
+)
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
-def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
+def generate_from_default_model(
+    prompt_alias: str, **kwargs
+) -> Optional[Dict[str, str]]:
     """Generates chat message from input prompt alias and default model."""
     # get langchain objects
+    generated_id = kwargs.get("generated_id", None)
+
+    if generated_id is not None:
+        Generated.get(generated_id).update_status(CeleryStatusTypes.STARTED)
+
     prompt = PromptTemplate.get(prompt_alias)
 
     model_alias = settings.DEFAULT_MODELS.get(
@@ -104,5 +174,18 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
 
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
-
-    return chain.invoke(inputs)
+    result = None
+    try:
+        result = chain.invoke(inputs)
+        if generated_id is not None:
+            generation = {GENERATED: result} if isinstance(result, str) else result
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.SUCCESS, generation
+            )
+    except Exception as e:
+        if generated_id is not None:
+            Generated.get(generated_id).update_status(
+                CeleryStatusTypes.FAILURE, None, str(e)
+            )
+        raise e
+    return result
