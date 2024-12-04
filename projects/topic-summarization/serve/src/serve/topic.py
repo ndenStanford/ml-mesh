@@ -301,7 +301,15 @@ class TopicHandler:
             if not isinstance(final_topic[key], dict):
                 continue
             impact_value = final_topic[key]["impact"].lower()
-            final_topic[key]["impact"] = self.impact_map[impact_value]
+            try:
+                final_topic[key]["impact"] = self.impact_map[impact_value]
+            except KeyError:
+                logger.info(
+                    f"Impact value '{impact_value}' not found in impact_map. Falling back to 'low'."
+                )
+                final_topic[key]["impact"] = self.impact_map.get(
+                    "low"
+                )  # Use 'low' as default impact level.
 
         return final_topic
 
