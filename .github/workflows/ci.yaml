@@ -259,18 +259,21 @@ jobs       :
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
+            use-cache: true
 
           - name: gpu-base
             region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
+            use-cache: true
 
           - name: beam-backfill
             region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: true
+            use-cache: true
 
           - name: neuron-inference
             region: us-east-2
@@ -279,16 +282,17 @@ jobs       :
             push-image: true
             base-image: python-base
             base-region: us-east-2
+            use-cache: true
 
           - name: beam-worker
             region: us-east-2
             self-hosted-runner-type: c6i.large
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
+            use-cache: true
 
         self-hosted-runner-neuron: [false]
-        self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
-        use-cache: [true]
+        self-hosted-runner-ami: [ami-01e5f45a8c586a761]
 
     with:
       environment: prod
@@ -302,7 +306,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.use-cache }}
+      use-cache: ${{ matrix.image.use-cache }}
       push-image: ${{ matrix.image.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -354,7 +358,7 @@ jobs       :
             base-region: us-east-2
 
         self-hosted-runner-neuron: [false]
-        self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
+        self-hosted-runner-ami: [ami-01e5f45a8c586a761]
         use-cache: [true]
 
     with:
@@ -431,7 +435,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-07dcb52c03924443f
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
 
@@ -549,7 +553,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-046f0b2604eaac9c4
+            self-hosted-runner-ami: ami-01e5f45a8c586a761
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -564,7 +568,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-03e4816f04f417e5a
+            self-hosted-runner-ami: ami-00288089de4863998
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -639,19 +643,9 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
-            push-image: true
-            base-image: python-base
-
-          # compile
-          - name: compile
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-22.04
             push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: neuron-inference
+            base-image: python-base
+            use-cache: true
 
           # serve
           - name: serve
@@ -661,10 +655,11 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-00288089de4863998
             push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: neuron-inference
+            base-image: gpu-base
+            use-cache: true
 
           # backfill
           - name: backfill
@@ -676,8 +671,7 @@ jobs       :
             runner-kind: ubuntu-22.04
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: beam-backfill
-
-        use-cache: [true]
+            use-cache: true
 
     with:
       project: sentiment
@@ -693,7 +687,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      use-cache: ${{ matrix.use-cache }}
+      use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
     secrets:
@@ -733,7 +727,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-03e4816f04f417e5a
+            self-hosted-runner-ami: ami-00288089de4863998
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -761,7 +755,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-07dcb52c03924443f
             self-hosted-runner-neuron: true
             use-cache: true
             push-image: true
@@ -822,7 +816,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-neuron: true
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-07dcb52c03924443f
             self-hosted-runner-type: inf1.6xlarge
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
@@ -907,7 +901,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-07dcb52c03924443f
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
@@ -921,7 +915,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
+            self-hosted-runner-ami: ami-07dcb52c03924443f
             use-cache: true
             push-image: true
             base-image: neuron-inference
@@ -1676,7 +1670,7 @@ jobs       :
             integration: true
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-046f0b2604eaac9c4
+            self-hosted-runner-ami: ami-01e5f45a8c586a761
             functional: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base

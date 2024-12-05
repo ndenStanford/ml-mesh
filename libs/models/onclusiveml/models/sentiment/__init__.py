@@ -1,5 +1,5 @@
 """Init."""
 
-from onclusiveml.models.sentiment.compiled_sent import (  # noqa: F401
-    CompiledSentiment,
+from onclusiveml.models.sentiment.trained_sent import (  # noqa: F401
+    TrainedSentiment,
 )

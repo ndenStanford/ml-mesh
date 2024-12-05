@@ -33,7 +33,6 @@ def test_new_es_index():
         "crawler-4-2024.02",
         "crawler-4-2024.01",
         "crawler-4-2023.12",
-        "crawler-4-2023.11",
         "crawler",
     ]
     return new_es_index

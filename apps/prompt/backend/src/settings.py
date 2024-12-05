@@ -31,14 +31,14 @@ class Settings(OnclusiveBaseSettings):
     DOCS_URL: Optional[str] = None
     # initialize database
     INITIALIZE: bool = True
-
     # OpenAI API key
     OPENAI_API_KEY: str
+    CELERY_MAX_RETRY_COUNTS: int = 3
+    CELERY_RETRY_DELAY: float = 30
     LLM_CALL_RETRY_COUNT: int = 2
     LLM_CALL_RETRY_DELAY: float = 3.0
     LLM_CALL_RETRY_BACKOFF: float = 2.0
     LLM_CALL_RETRY_MAX_DELAY: float = 10.0
-
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
 
@@ -51,9 +51,24 @@ class Settings(OnclusiveBaseSettings):
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     DEFAULT_MODELS: dict = {"default": "gpt-4o-mini"}
+    PROMPTS_TO_SYNC: List[str] = [
+        "machine-learning/english-summarization",
+        "machine-learning/ml-summarization-english",
+        "machine-learning/ml-transcript-segmentation",
+        "machine-learning/ml-entity-query-extract-gpt",
+        "machine-learning/ml-topic-summarization-entity-focus-gpt",
+        "machine-learning/ml-topic-summarization-entity-sentiment-impact-citation",
+        "machine-learning/ml-entity-query-extract-claude",
+        "machine-learning/ml-transcript-segmentation-ad-detection-claude",
+        "machine-learning/ml-topic-summarization-summary-quality",
+        "machine-learning/ml-topic-summarization-multi-articles-summary-entity-focus-gpt",
+        "machine-learning/ml-multi-articles-summarization",
+        "machine-learning/ml-entity-query-extract-gpt",
+        "summarization/ml-multi-articles-summarization-bespoke",
+        "summarization/bespoke-summary-uk",
+    ]
     CORS_ORIGIN: List[str] = ["*"]
     BEDROCK_READ_TIMEOUT: int = 300
-
     # Github configuration
     PROMPT_REGISTRY_APP_ID: str
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
