@@ -57,7 +57,7 @@ def test_generate_from_prompt_template(
     "model_alias, prompt_alias, payload, result",
     [
         (
-            ChatModel.GPT4_O,
+            ChatModel.GPT4_O_MINI,
             "prompt3",
             {
                 "input": {"country": "England"},
@@ -68,7 +68,7 @@ def test_generate_from_prompt_template(
         ),
     ],
 )
-@patch.object(RunnableSequence, "invoke")
+@patch.object(RunnableSequence, "invoke", autospec=True)
 @pytest.mark.order(13)
 def test_generate_from_prompt_template_json_build(
     mock_runnable_sequence_invoke,
@@ -79,15 +79,20 @@ def test_generate_from_prompt_template_json_build(
     create_prompts,
     app,
 ):
-    """Test generate prompt from template."""
-    # Set side_effect before calling the function
-    mock_runnable_sequence_invoke.side_effect = [
-        Exception("Test exception"),
-        str(result),
-    ]
+    """Test generate prompt from template json build."""
 
+    def first_call_side_effect(*args, **kwargs):
+        # Raise an exception and restore original method by disabling mock for subsequent calls
+        mock_runnable_sequence_invoke.side_effect = None
+        raise Exception("Test exception")
+
+    # Set side effect for the mock
+    mock_runnable_sequence_invoke.side_effect = first_call_side_effect
+
+    # Call the function under test
     response = F.generate_from_prompt_template(prompt_alias, model_alias, **payload)
-    # assert that final response is equal to expected response
+
+    # Assert that the response matches the expected result
     assert response == result
 
 
