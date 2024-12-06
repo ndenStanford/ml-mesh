@@ -162,7 +162,7 @@ class SummarizationServedModel(ServedModel):
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
 
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/api/v3/prompts/{}/generate/model/{}".format(
                 settings.prompt_api, prompt_alias, settings.summarization_default_model
             ),
             headers=headers,

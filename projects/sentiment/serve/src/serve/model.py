@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Type
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
-from onclusiveml.models.sentiment import CompiledSentiment
+from onclusiveml.models.sentiment import TrainedSentiment
 from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
@@ -52,7 +52,7 @@ class ServedSentModel(ServedModel):
         # self.load()  # FOR LOCAL TESTING ONLY, REMOVE FOR PRODUCTION
 
     @property
-    def model(self) -> CompiledSentiment:
+    def model(self) -> TrainedSentiment:
         """Model class."""
         if self.ready:
             return self._model
@@ -62,8 +62,8 @@ class ServedSentModel(ServedModel):
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
-        # load model artifacts into ready CompiledSentiment instance
-        self._model = CompiledSentiment.from_pretrained(
+        # load model artifacts into ready TrainedSentiment instance
+        self._model = TrainedSentiment.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict

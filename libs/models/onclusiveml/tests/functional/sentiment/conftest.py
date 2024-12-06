@@ -7,33 +7,23 @@ from transformers.pipelines import pipeline
 import pytest
 
 # Internal libraries
-from onclusiveml.compile import CompiledPipeline
+# Internal imports
+from onclusiveml.models.sentiment import TrainedSentiment
 
 
 @pytest.fixture(scope="session")
-def test_hf_pipeline():
-    """HF pipeline fixture."""
+def test_trained_pipeline():
+    """Trained pipeline fixture."""
     return pipeline(
         task="sentiment-analysis",
-        model="cardiffnlp/twitter-xlm-roberta-base-sentiment",
+        model="yangheng/deberta-v3-base-absa-v1.1",
     )
 
 
 @pytest.fixture(scope="session")
-def test_neuron_compiled_sent_pipeline(test_hf_pipeline):
-    """Neuron compiled sentiment pipeline fixture."""
-    neuron_compiled_sent_pipeline = CompiledPipeline.from_pipeline(
-        pipeline=test_hf_pipeline,
-        max_length=128,
-        batch_size=6,
-        neuron=True,
-        validate_compilation=False,
-        tokenizer_settings={"add_special_tokens": True},
-    )
-
-    neuron_compiled_sent_pipeline.save_pretrained("neuron_compiled_sent_pipeline")
-
-    return neuron_compiled_sent_pipeline
+def trained_sentiment_instance(test_trained_pipeline):
+    """Trained sentiment instance fixture."""
+    return TrainedSentiment(trained_sent_pipeline=test_trained_pipeline)
 
 
 @pytest.fixture

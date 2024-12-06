@@ -43,94 +43,11 @@ services:
     networks: [onclusive-net]
 
   # =============================================
-  # COMPILE
-  # =============================================
-
-  compile:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    build:
-      context: ../../
-      dockerfile: projects/sentiment/compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-compile,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-compile
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: sentiment
-        COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG} #should have been v23.8.4?
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile]
-    profiles: [compile, unit, integration, pipeline]
-    environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-
-  compile-download-model:
-    volumes:
-      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.download]
-    profiles: [pipeline]
-    environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-validate-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
-    profiles: [pipeline]
-    environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-upload-model:
-    volumes:
-      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.upload]
-    profiles: [pipeline]
-    environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  # =============================================
   # SERVE
   # =============================================
 
   # serving image
   serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     volumes:
       - serve-volume:/projects/sentiment/serve/models
     build:
@@ -148,6 +65,13 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     environment:
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: false
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -192,22 +116,6 @@ services:
     networks:
       - onclusive-net
 
-  # integration tests
-  # - include model artifact
-  # - do NOT include REST model server process
-  serve-integration:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - serve-volume:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    profiles: [integration]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-
   # functional tests
   # - include model artifact
   # - include REST model server process
@@ -216,6 +124,13 @@ services:
       - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
     hostname: onclusiveml
