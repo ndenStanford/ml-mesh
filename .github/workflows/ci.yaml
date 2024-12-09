@@ -1541,11 +1541,13 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             self-hosted-runner-type: inf1.2xlarge
             runner-kind: custom
+            skip: true
 
     with:
       environment: prod
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
+      skip: ${{ matrix.models.skip }}
       runner-kind: ${{ matrix.models.runner-kind }}
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
