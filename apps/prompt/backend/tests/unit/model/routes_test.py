@@ -59,9 +59,9 @@ def test_get_model(mock_model_get, alias, provider, test_client):
 def test_generate(mock_generate, alias, provider, prompt, test_client):
     """Test get model endpoint."""
     _ = test_client.post(
-        f"/api/v3/models/{alias}/generate",  # Remove the prompt query parameter
+        f"/api/v3/models/{alias}/generate",
         headers={"x-api-key": "1234"},
-        json={"prompt": prompt},  # Send the prompt in JSON body
+        json={"prompt": prompt},
     )
     mock_generate.assert_called_with(prompt, alias, model_parameters=None)
 
