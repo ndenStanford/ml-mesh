@@ -9,7 +9,6 @@ packages = [{include = "src"}]
 python = "3.9.19"
 faiss-gpu = "1.7.2"
 pytorch_lightning = "2.1.4"
-transformers = "4.29.2"
 accelerate = "0.29.3"
 redis = "^5.0.0"
 models = {path = "../../../libs/models"}
