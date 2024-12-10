@@ -16,10 +16,14 @@ import requests
         '{"temperature": 1.0, "maxTokens": 1000}',
     ],
 )
-def test_server_response_status_code(url_model_namespace, headers, model_parameters):
+def test_server_response_status_code(
+    url_model_namespace, headers, model_parameters, test_prompt
+):
     """Test server response code."""
     headers["model-parameters"] = model_parameters
-    response = requests.post(url_model_namespace, headers=headers)
+    response = requests.post(
+        url_model_namespace, headers=headers, json={"prompt": test_prompt}
+    )
     assert response.status_code == 200
 
 
@@ -31,10 +35,14 @@ def test_server_response_status_code(url_model_namespace, headers, model_paramet
         '{"temperature": 1.0, "maxTokens": 1000}',
     ],
 )
-def test_response_header_content_type(url_model_namespace, headers, model_parameters):
+def test_response_header_content_type(
+    url_model_namespace, headers, model_parameters, test_prompt
+):
     """Test response header content type."""
     headers["model-parameters"] = model_parameters
-    response = requests.post(url_model_namespace, headers=headers)
+    response = requests.post(
+        url_model_namespace, headers=headers, json={"prompt": test_prompt}
+    )
     assert response.headers["Content-Type"] == "application/json"
 
 
@@ -46,10 +54,14 @@ def test_response_header_content_type(url_model_namespace, headers, model_parame
         '{"temperature": 1.0, "maxTokens": 1000}',
     ],
 )
-def test_server_response_content(url_model_namespace, headers, model_parameters):
+def test_server_response_content(
+    url_model_namespace, headers, model_parameters, test_prompt
+):
     """Test server response content."""
     headers["model-parameters"] = model_parameters
-    response = requests.post(url_model_namespace, headers=headers)
+    response = requests.post(
+        url_model_namespace, headers=headers, json={"prompt": test_prompt}
+    )
     json_response = response.json()
     assert "generated" in json_response
     assert isinstance(json_response["generated"], str)
@@ -64,12 +76,18 @@ def test_server_response_content(url_model_namespace, headers, model_parameters)
     ],
 )
 def test_server_response_content_async(
-    url_generated_namespace, url_model_namespace_async, headers, model_parameters
+    url_generated_namespace,
+    url_model_namespace_async,
+    headers,
+    model_parameters,
+    test_prompt,
 ):
     """Test server response content with Celery integration."""
     headers["model-parameters"] = model_parameters
 
-    response = requests.post(url_model_namespace_async, headers=headers)
+    response = requests.post(
+        url_model_namespace_async, headers=headers, json={"prompt": test_prompt}
+    )
     json_response = response.json()
 
     assert "id" in json_response

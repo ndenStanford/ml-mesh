@@ -5,15 +5,21 @@ import pytest
 
 
 @pytest.fixture
+def test_prompt():
+    """Test prompt."""
+    return "what is the capital of US??"
+
+
+@pytest.fixture
 def url_model_namespace():
     """Create model namespace url."""
-    return "http://backend:4000/api/v3/models/gpt-4o/generate?prompt=tell%20me%20a%20joke!!!"
+    return "http://backend:4000/api/v3/models/gpt-4o/generate"
 
 
 @pytest.fixture
 def url_model_namespace_async():
     """Create model namespace url."""
-    return "http://backend:4000/api/v3/models/gpt-4o/generate/async?prompt=tell%20me%20a%20joke!!!"
+    return "http://backend:4000/api/v3/models/gpt-4o/generate/async"
 
 
 @pytest.fixture
