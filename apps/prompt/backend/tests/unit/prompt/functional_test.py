@@ -67,6 +67,72 @@ def test_generate_from_prompt_template(
 
 
 @pytest.mark.parametrize(
+    "project, prompt_alias, template, payload, result, model_alias, provider",
+    [
+        (
+            "new-project1",
+            "prompt-1",
+            "What is the capital of {country}",
+            {
+                "str_output_parser": True,
+                "input": {"country": "London"},
+                "output": {"capital": "capital of country"},
+            },
+            {"capital": "London"},
+            "gpt-4o",
+            "openai",
+        ),
+    ],
+)
+@patch("src.prompt.functional.build_json")
+@patch.object(PromptTemplate, "get")
+@patch.object(LanguageModel, "get")
+@patch.object(RunnableSequence, "invoke")
+@patch.object(RedisCache, "__call__")
+@patch.object(redis.connection.ConnectionPool, "get_connection")
+@patch("botocore.session.Session")
+def test_generate_from_prompt_template_json_build(
+    mock_boto_session,
+    mock_redis_get_connection,
+    mock_redis_client,
+    mock_runnable_sequence_invoke,
+    mock_model_get,
+    mock_prompt_get,
+    mock_build_json,
+    project,
+    prompt_alias,
+    template,
+    payload,
+    result,
+    model_alias,
+    provider,
+):
+    """Test generate from prompt template with exception handling."""
+    prompt = PromptTemplate(alias=prompt_alias, template=template, project=project)
+    mock_redis_get_connection.return_value.retry.call_with_retry.return_value = dict()
+    mock_model_get.return_value = LanguageModel(alias=model_alias, provider=provider)
+    mock_prompt_get.return_value = prompt
+    mock_build_json.return_value = {"capital": "London"}
+
+    # Set side_effect before calling the function
+    mock_runnable_sequence_invoke.side_effect = [
+        Exception("Test exception"),
+        str(result),
+    ]
+
+    # Call the function under test
+    response = F.generate_from_prompt_template(prompt_alias, model_alias, **payload)
+
+    # Assert that invoke was called twice
+    assert mock_runnable_sequence_invoke.call_count == 2
+
+    # Verify that build_json was called once with the correct arguments
+    mock_build_json.assert_called_once_with(str(result), prompt.fields.keys())
+
+    assert response == result
+
+
+@pytest.mark.parametrize(
     "prompt, model_alias, provider",
     [
         ("Hello there", "gpt-4o", "openai"),
