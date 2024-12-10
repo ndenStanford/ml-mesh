@@ -59,8 +59,9 @@ def test_get_model(mock_model_get, alias, provider, test_client):
 def test_generate(mock_generate, alias, provider, prompt, test_client):
     """Test get model endpoint."""
     _ = test_client.post(
-        f"/api/v3/models/{alias}/generate?prompt={prompt}",
+        f"/api/v3/models/{alias}/generate",
         headers={"x-api-key": "1234"},
+        json={"prompt": prompt},
     )
     mock_generate.assert_called_with(prompt, alias, model_parameters=None)
 
@@ -89,8 +90,9 @@ def test_generate_async(
     mock_generated.return_value = mock_generated_instance
     mock_generate.return_value = SimpleNamespace(**{"id": "1234"})
     response = test_client.post(
-        f"/api/v3/models/{alias}/generate/async?prompt={prompt}",
+        f"/api/v3/models/{alias}/generate/async",
         headers={"x-api-key": "1234"},
+        json={"prompt": prompt},
     )
     mock_generate.assert_called_once()
     assert response.status_code == status.HTTP_200_OK

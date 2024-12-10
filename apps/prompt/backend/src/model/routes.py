@@ -11,6 +11,7 @@ from fastapi import APIRouter, Header, HTTPException, status
 
 # Source
 from src.generated.tables import Generated
+from src.model.constants import GenerateRequest
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
 from src.prompt.constants import CeleryStatusTypes
@@ -55,19 +56,23 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str, model_parameters: str = Header(None)):
+def generate(
+    alias: str, request: GenerateRequest, model_parameters: str = Header(None)
+):
     """Generates text using a prompt template."""
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
     return {
         "generated": F.generate_from_prompt(
-            prompt, alias, model_parameters=model_parameters
+            request.prompt, alias, model_parameters=model_parameters
         )
     }
 
 
 @router.post("/{alias}/generate/async", status_code=status.HTTP_200_OK)
-def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)):
+def generate_async(
+    alias: str, request: GenerateRequest, model_parameters: str = Header(None)
+):
     """Generates text using a prompt template."""
     if model_parameters is not None:
         model_parameters = json.loads(model_parameters)
@@ -85,14 +90,14 @@ def generate_async(alias: str, prompt: str, model_parameters: str = Header(None)
         error=None,
         timestamp=datetime.now(),
         model=alias,
-        prompt=prompt,
+        prompt=request.prompt,
         model_parameters=model_parameters,
     )
 
     generated.save()
     # Submit the task with the custom ID
     F.generate_from_prompt.apply_async(
-        args=[prompt, alias],
+        args=[request.prompt, alias],
         kwargs={"model_parameters": model_parameters, "generated_id": custom_task_id},
         task_id=custom_task_id,
     )
