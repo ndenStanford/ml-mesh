@@ -130,13 +130,10 @@ class CompiledNER:
                 sentence = sent_tokenized_documents[doc_idx][sent_idx]
                 for entity in sent_entities:
                     start_pos = entity["start"]
-                    # For Korean, check if entity follows a parenthesis
-                    if language == "ko":
-                        if start_pos > 0 and sentence[start_pos - 1] != "(":
+                    if language not in ["ja", "zh"]:
+                        # To check if the entity is following a space that will cause the start_pos shift
+                        if start_pos > 0 and sentence[start_pos].isspace():
                             start_pos += 1
-                    # For other languages except Japanese and Chinese
-                    elif language not in ["ja", "zh"] and entity["start"] != 0:
-                        start_pos += 1
                     doc_entities.append(
                         InferenceOutput(
                             entity_type=entity["entity_group"],
