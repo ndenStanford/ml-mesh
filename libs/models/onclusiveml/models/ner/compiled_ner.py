@@ -116,105 +116,61 @@ class CompiledNER:
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
-        res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
-        # results are in nested list of entities where each sublist represents a doc
-        for doc in res:
-            for entities_list in doc:
-                for dictionary in entities_list:
-                    dictionary.pop("index", None)
-                    dictionary["entity_type"] = dictionary.pop("entity")
-                    dictionary["entity_text"] = dictionary.pop("word")
-        return [
+        res = [
             [
-                [InferenceOutput(**dictionary) for dictionary in entities_list]
-                for entities_list in docs
+                self.compiled_ner_pipeline_base(sentence, aggregation_strategy="simple")
+                for sentence in doc_sentences
             ]
-            for docs in res
+            for doc_sentences in sent_tokenized_documents
         ]
+        processed_results = []
+        for doc_idx, doc in enumerate(res):
+            doc_entities = []
+            for sent_idx, sent_entities in enumerate(doc):
+                sentence = sent_tokenized_documents[doc_idx][sent_idx]
+                for entity in sent_entities:
+                    start_pos = entity["start"]
+                    if language not in ["ja", "zh"]:
+                        # To check if the entity is following a space that will cause the start_pos shift
+                        if start_pos > 0 and sentence[start_pos].isspace():
+                            start_pos += 1
+                    doc_entities.append(
+                        InferenceOutput(
+                            entity_type=entity["entity_group"],
+                            score=entity["score"],
+                            entity_text=entity["word"],
+                            start=start_pos,
+                            end=entity["end"],
+                            sentence_index=sent_idx,
+                        )
+                    )
+            processed_results.append([doc_entities])
 
-    def compute_average(self, scores: List[float]) -> float:
-        """Compute the average of a list of scores.
-
-        Args:
-            scores (List[float]): List of scores for
-
-        Returns:
-            float: The computed average
-        """
-        return sum(scores) / len(scores)
+        return processed_results
 
     def postprocess(
         self, ner_predictions: List[List[InferenceOutput]]
     ) -> List[List[InferenceOutput]]:
-        """Postprocess nested list of NER predictions by aggregating BIO tags.
+        """Filter out invalid or unwanted entities from NER predictions.
 
         Args:
-            ner_predictions: List[List[InferenceOutput]]: Nested list of NER predictions
+            ner_predictions: Nested list of NER predictions as InferenceOutput objects
 
         Returns:
-            List[List[InferenceOutput]]: Post processed NER predictions
+            List[List[InferenceOutput]]: Filtered list of valid entities, excluding:
+                - Entities with same start and end positions
+                - Empty entity text
+                - Single characters: "'", "-", "_"
         """
-        flattened_entities = []
-        # Flatten the predictions and add sentence index
-        for sentence_idx, sentence_entities in enumerate(ner_predictions):
-            for entity in sentence_entities:
-                # Convert NamedTuple to dictionary and add sentence_index
-                entity_dict = entity._asdict()
-                entity_dict["sentence_index"] = sentence_idx
-                flattened_entities.append(entity_dict)
-
-        # Merge entities based on B- and I- prefix
-        merged_entities = []
-        current_entity = None
-        current_scores = []  # Track scores for true average calculation
-
-        for entity in flattened_entities:
-            # Check if it's a beginning of a new entity (B- prefix) or there is no current entity
-            if entity["entity_type"].startswith("B-") or current_entity is None:
-                if current_entity:  # If there's an ongoing entity, finalize it
-                    current_entity["score"] = self.compute_average(
-                        current_scores
-                    )  # Use true average
-                    merged_entities.append(current_entity)
-                # Start a new entity
-                current_entity = entity.copy()
-                current_scores = [entity["score"]]
-            elif entity["entity_type"].startswith("I-") and current_entity:
-                # Merge with the current entity
-                current_entity["entity_text"] += entity["entity_text"]
-                current_entity["end"] = entity["end"]
-                current_scores.append(entity["score"])  # Add the new score to the list
-            else:
-                # If the entity type is neither B- nor I-, consider it as a new entity
-                if current_entity:
-                    current_entity["score"] = self.compute_average(current_scores)
-                    merged_entities.append(current_entity)
-                current_entity = entity.copy()
-                current_scores = [entity["score"]]
-
-        # Append the last entity if any
-        if current_entity:
-            current_entity["score"] = self.compute_average(current_scores)
-            merged_entities.append(current_entity)
-
-        # Post-process merged entities
         converted_entities = []
-        for entity in merged_entities:
-            entity["entity_type"] = entity["entity_type"][
-                2:
-            ]  # Remove prefix (e.g., "B-", "I-")
-            if entity["entity_text"][0] == "▁":
-                entity["start"] += (
-                    1 if entity["start"] != 0 else 0
-                )  # Adjust start position (account for _ offset) if mid-sentence
-            entity["entity_text"] = entity["entity_text"].strip("▁").replace("▁", " ")
-            if (
-                entity["start"] != entity["end"]
-                and len(entity["entity_text"]) > 0
-                and entity["entity_text"] not in ["'", "-", "_", "▁"]
-            ):
-                converted_entities.append(InferenceOutput(**entity))
-
+        for entities_list in ner_predictions:
+            for entity in entities_list:
+                if (
+                    entity.start != entity.end
+                    and len(entity.entity_text) > 0
+                    and entity.entity_text not in ["'", "-", "_"]
+                ):
+                    converted_entities.append(entity)
         return converted_entities
 
     def __call__(

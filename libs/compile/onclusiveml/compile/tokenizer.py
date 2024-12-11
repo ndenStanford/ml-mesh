@@ -175,3 +175,14 @@ class CompiledTokenizer(object):
             `str` or `List[str]`: The decoded token(s).
         """
         return self.tokenizer.convert_ids_to_tokens(ids, skip_special_tokens)
+
+    def convert_tokens_to_string(self, tokens: List[str]) -> str:
+        """Converts a sequence of tokens to a string.
+
+        Args:
+            tokens (List[str]): List of tokens to convert
+
+        Returns:
+            str: Converted string
+        """
+        return self.tokenizer.convert_tokens_to_string(tokens)
