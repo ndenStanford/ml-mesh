@@ -4,17 +4,13 @@
 from typing import Any, Dict, List
 
 # 3rd party libraries
-import mongomock
 from dyntastic import Dyntastic
 from dyntastic.exceptions import DoesNotExist
-from pydantic import BaseModel
 from pydantic_mongo import AbstractRepository
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pymongo import MongoClient
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.data_model.base import BaseDataModel
 from onclusiveml.data.data_model.exception import (
     DataModelException,
     ItemNotFoundException,
@@ -46,26 +42,20 @@ class DocumentDBModel:
     using the Dyntastic library for object mapping.
     """
 
-    def __init__(self, model, database_name_input, collection_name_input, test=False):
+    def __init__(
+        self, client, model, database_name_input, collection_name_input, test=False
+    ):
+        self.client = client
         self.model = model
         self.test = test
-        self.client = self.get_client()
         self.table = self.create_table(database_name_input, collection_name_input)
 
-    def get_client(self) -> Any:
-        if self.test:
-            return mongomock.MongoClient()
-        # Create the MongoDB client connection string
-        connection_string = (
-            f"mongodb://{settings.username}:{settings.password}@{settings.endpoint}:{settings.port}/"
-            f"?tls=true&tlsCAFile={settings.ca_file_path}&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
-        )
-        # Connect to Amazon DocumentDB
-        client = MongoClient(connection_string)
-        return client
-
     def create_table(self, database_name_input, collection_name_input):
+        """Setup table."""
+
         class DocumentDBModelInner(AbstractRepository[self.model]):
+            """Setup collection name."""
+
             class Meta:
                 collection_name = collection_name_input
 
