@@ -110,6 +110,7 @@ class ServerModelSettings(ServingParams):
     """Prediction model settings."""
 
     model_name: str = "sentiment"
+    model_observability: str = "sentiment"
     model_directory: Union[str, Path] = "."
 
 
