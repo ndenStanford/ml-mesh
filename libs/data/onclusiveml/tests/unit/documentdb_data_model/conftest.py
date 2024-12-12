@@ -7,16 +7,10 @@ from typing import Optional
 import mongomock
 import pytest
 from pydantic import BaseModel
-from pydantic_mongo import PydanticObjectId
+from pydantic_mongo import AbstractRepository, PydanticObjectId
 
 # Internal libraries
 from onclusiveml.data.data_model.documentdb import DocumentDBModel
-
-
-@pytest.fixture(scope="function")
-def TestDocumentDBClient():
-    """Mock DocumentDB client."""
-    return mongomock.MongoClient()
 
 
 @pytest.fixture(scope="function")
@@ -34,15 +28,39 @@ def TestDocumentDBModel():
 
 
 @pytest.fixture(scope="function")
+def test_documentdb_database_name():
+    """Mock DocumentDB database name."""
+    return "test_documentdb_database_name"
+
+
+@pytest.fixture(scope="function")
+def test_documentdb_collection_name():
+    """Mock DocumentDB collection name."""
+    return "test_documentdb_collection_name"
+
+
+@pytest.fixture(scope="function")
+def TestDocumentDBClient(
+    TestDocumentDBModel, test_documentdb_database_name, test_documentdb_collection_name
+):
+    """Mock DocumentDB client."""
+    client = mongomock.MongoClient()
+
+    class DocumentDBModelInner(AbstractRepository[TestDocumentDBModel]):
+        """Setup collection name."""
+
+        class Meta:
+            collection_name = test_documentdb_collection_name
+
+    database = client[test_documentdb_database_name]
+    table = DocumentDBModelInner(database=database)
+    return table
+
+
+@pytest.fixture(scope="function")
 def document_db_model(TestDocumentDBClient, TestDocumentDBModel):
     """Fixture to provide a DynamoDBModel instance with a mocked DynamoDB table."""
-    document_db_model = DocumentDBModel(
-        TestDocumentDBClient,
-        TestDocumentDBModel,
-        "test_documentdb_database_name",
-        "test_documentdb_collection_name",
-        True,
-    )
+    document_db_model = DocumentDBModel(TestDocumentDBModel, TestDocumentDBClient)
     yield document_db_model
 
 

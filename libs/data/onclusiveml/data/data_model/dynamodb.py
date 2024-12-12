@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 # 3rd party libraries
 from dyntastic import Dyntastic
 from dyntastic.exceptions import DoesNotExist
+from pydantic import Field
 
 # Internal libraries
 from onclusiveml.data.data_model.base import BaseDataModel
@@ -22,6 +23,16 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
     This class provides methods for CRUD operations on DynamoDB tables
     using the Dyntastic library for object mapping.
     """
+
+    model: Dyntastic = Field(...)
+
+    def __init__(self, model: Dyntastic):
+        """Initialize the BaseDataModel with a specific model.
+
+        Args:
+            model (Type[T]): The model class representing the data schema.
+        """
+        super().__init__(model=model)
 
     @property
     def table_name(self) -> str:

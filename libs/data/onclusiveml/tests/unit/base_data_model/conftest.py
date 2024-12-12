@@ -1,11 +1,11 @@
 """Conftest."""
 
 # Standard Library
-from typing import Type
+from typing import Any, Type
 
 # 3rd party libraries
 import pytest
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr
 
 # Internal libraries
 from onclusiveml.data.data_model.base import BaseDataModel
@@ -22,6 +22,7 @@ class Item(BaseModel):
 class MockDataModel(BaseDataModel[Item]):
     """A mock implementation of BaseDataModel using an in-memory store."""
 
+    model: Any = Field(...)
     _store: dict = PrivateAttr(default_factory=dict)
 
     def __init__(self, model: Type[Item]):

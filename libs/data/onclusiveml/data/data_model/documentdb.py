@@ -4,13 +4,13 @@
 from typing import Any, Dict, List
 
 # 3rd party libraries
-from dyntastic import Dyntastic
-from dyntastic.exceptions import DoesNotExist
+from pydantic import Field
+# from dyntastic import Dyntastic
+# from dyntastic.exceptions import DoesNotExist
 from pydantic_mongo import AbstractRepository
-from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.data.data_model.base import BaseDataModel
 from onclusiveml.data.data_model.exception import (
     DataModelException,
     ItemNotFoundException,
@@ -18,50 +18,25 @@ from onclusiveml.data.data_model.exception import (
 )
 
 
-class ConnectionSettings(OnclusiveBaseSettings):
-    """Tracked NER model specs."""
-
-    username: str
-    password: str
-    endpoint: str
-    port: int
-    ca_file_path: str
-    database_name: str
-    collection_name: str
-
-    model_config = SettingsConfigDict(env_prefix="documentdb_")
-
-
-settings = ConnectionSettings()
-
-
-class DocumentDBModel:
+class DocumentDBModel(BaseDataModel[Any]):
     """A data model class for interacting with DB tables.
 
     This class provides methods for CRUD operations on DB tables
     using the Dyntastic library for object mapping.
     """
 
-    def __init__(
-        self, client, model, database_name_input, collection_name_input, test=False
-    ):
-        self.client = client
-        self.model = model
-        self.test = test
-        self.table = self.create_table(database_name_input, collection_name_input)
+    model: Any = Field(...)
+    client: Any = Field(...)
 
-    def create_table(self, database_name_input, collection_name_input):
-        """Setup table."""
+    def __init__(self, model: Any, client: Any):
+        """Initialize the BaseDataModel with a specific model.
 
-        class DocumentDBModelInner(AbstractRepository[self.model]):
-            """Setup collection name."""
-
-            class Meta:
-                collection_name = collection_name_input
-
-        database = self.client[database_name_input]
-        table = DocumentDBModelInner(database=database)
-        return table
+        Args:
+            model (Type[T]): The model class representing the data schema.
+            client (Type[T]): The documentdb
+            client.
+        """
+        super().__init__(model=model, client=client)
 
     @property
     def table_name(self) -> str:
@@ -70,9 +45,9 @@ class DocumentDBModel:
         Returns:
             str: The name of the DcumentDB table.
         """
-        return self.table._AbstractRepository__collection_name
+        return self.client._AbstractRepository__collection_name
 
-    def get_all(self) -> List[Dyntastic]:
+    def get_all(self) -> List[AbstractRepository]:
         """Fetch all items from the DcumentDB table.
 
         Returns:
@@ -82,25 +57,25 @@ class DocumentDBModel:
             DataModelException: If an error occurs while fetching items.
         """
         try:
-            return list(self.table.find_by({}))
+            return list(self.client.find_by({}))
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def get_one(self, id: str) -> Dyntastic:
+    def get_one(self, id: str) -> AbstractRepository:
         """Fetch a single item from the DcumentDB table by its ID.
 
         Args:
             id (str): The unique identifier of the item.
 
         Returns:
-            Dyntastic: The item with the specified ID.
+            AbstractRepository: The item with the specified ID.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
             DataModelException: If an error occurs while fetching the item.
         """
         try:
-            item = self.table.find_one_by_id(id)
+            item = self.client.find_one_by_id(id)
         except DoesNotExist:
             raise ItemNotFoundException(item_id=id)
         except Exception as e:
@@ -111,14 +86,14 @@ class DocumentDBModel:
 
         return item
 
-    def create(self, item: Dict[str, Any]) -> Dyntastic:
+    def create(self, item: Dict[str, Any]) -> AbstractRepository:
         """Create a new item in the DcumentDB table.
 
         Args:
             item (Dict[str,Any]): The item data to create.
 
         Returns:
-            Dyntastic: The newly created item.
+            AbstractRepository: The newly created item.
 
         Raises:
             ValidationException: If the input data is invalid.
@@ -126,14 +101,14 @@ class DocumentDBModel:
         """
         try:
             new_item = self.model(**item)
-            self.table.save(new_item)
+            self.client.save(new_item)
             return new_item
         except ValueError as ve:
             raise ValidationException(error=str(ve)) from ve
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def update(self, id: str, item: Dict[str, Any]) -> Dyntastic:
+    def update(self, id: str, item: Dict[str, Any]) -> AbstractRepository:
         """Update an existing item in the DcumentDB table.
 
         Args:
@@ -141,7 +116,7 @@ class DocumentDBModel:
             item (Dict[str,Any]): The updated item data.
 
         Returns:
-            Dyntastic: The updated item.
+            AbstractRepository: The updated item.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -149,7 +124,7 @@ class DocumentDBModel:
             DataModelException: If an error occurs while updating the item.
         """
         try:
-            existing_item = self.table.find_one_by_id(id)
+            existing_item = self.client.find_one_by_id(id)
         except DoesNotExist:
             raise ItemNotFoundException(item_id=id)
         except ValueError as ve:
@@ -162,11 +137,11 @@ class DocumentDBModel:
 
         for key, value in item.items():
             setattr(existing_item, key, value)
-        self.table.save(existing_item)
+        self.client.save(existing_item)
 
         return existing_item
 
-    def get_query(self, search_query: dict) -> List[Dyntastic]:
+    def get_query(self, search_query: dict) -> List[AbstractRepository]:
         """Get result for a certain Dcumentdb search query.
 
         Args:
@@ -179,29 +154,29 @@ class DocumentDBModel:
             ValidationException: If the query is invalid.
         """
         try:
-            response = self.table.find_by(search_query)
+            response = self.client.find_by(search_query)
             query_items = [item for item in response]
             return query_items
         except ValidationException as e:
             raise ValidationException("The search query format is invalid.") from e
 
-    def delete_one(self, id: str) -> Dyntastic:
+    def delete_one(self, id: str) -> AbstractRepository:
         """Delete an item from the DcumentDB table by its ID.
 
         Args:
             id (str): The unique identifier of the item to delete.
 
         Returns:
-            Dyntastic: The deleted item.
+            AbstractRepository: The deleted item.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
             DataModelException: If an error occurs while deleting the item.
         """
         try:
-            item = self.table.find_one_by_id(id)
+            item = self.client.find_one_by_id(id)
             if item:
-                self.table.delete(item)
+                self.client.delete(item)
                 return item
         except DoesNotExist:
             raise ItemNotFoundException(item_id=id)
@@ -211,7 +186,7 @@ class DocumentDBModel:
         if not item:
             raise ItemNotFoundException(item_id=id)
 
-    def delete_all(self) -> List[Dyntastic]:
+    def delete_all(self) -> List[AbstractRepository]:
         """Delete all items in the DcumentDB table.
 
         Returns:
@@ -221,9 +196,9 @@ class DocumentDBModel:
             DataModelException: If an error occurs while deleting items.
         """
         try:
-            items = list(self.table.find_by({}))
+            items = list(self.client.find_by({}))
             for item in items:
-                self.table.delete(item)
+                self.client.delete(item)
             return items
         except Exception as e:
             raise DataModelException(error=str(e)) from e

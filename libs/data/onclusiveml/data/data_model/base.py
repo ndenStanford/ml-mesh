@@ -2,19 +2,16 @@
 
 # Standard Library
 from abc import ABC, abstractmethod
-from typing import Any, Generic, List, Type, TypeVar
+from typing import Any, Generic, List, TypeVar
 
 # 3rd party libraries
-from pydantic import Field
-
-# Internal libraries
-from onclusiveml.core.serialization.schema import JsonApiSchema
+from pydantic import BaseModel
 
 
 T = TypeVar("T")
 
 
-class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
+class BaseDataModel(BaseModel, ABC, Generic[T]):
     """Abstract base class for data models.
 
     This class defines the interface for basic CRUD (Create, Read, Update, Delete)
@@ -24,16 +21,6 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
     The class is generic over type T, which represents the type of items
     stored in the data model.
     """
-
-    model: Any = Field(...)
-
-    def __init__(self, model: Any):
-        """Initialize the BaseDataModel with a specific model.
-
-        Args:
-            model (Type[T]): The model class representing the data schema.
-        """
-        super().__init__(model=model)
 
     @property
     @abstractmethod
