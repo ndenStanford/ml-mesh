@@ -1,13 +1,10 @@
-"""DcumentDB Data Model."""
+"""DocumentDB Data Model."""
 
 # Standard Library
 from typing import Any, Dict, List
 
 # 3rd party libraries
-from pydantic import Field
-# from dyntastic import Dyntastic
-# from dyntastic.exceptions import DoesNotExist
-from pydantic_mongo import AbstractRepository
+from pydantic import BaseModel, Field
 
 # Internal libraries
 from onclusiveml.data.data_model.base import BaseDataModel
@@ -40,15 +37,15 @@ class DocumentDBModel(BaseDataModel[Any]):
 
     @property
     def table_name(self) -> str:
-        """Return the name of the DcumentDB table associated with the model.
+        """Return the name of the DocumentDB table associated with the model.
 
         Returns:
-            str: The name of the DcumentDB table.
+            str: The name of the DocumentDB table.
         """
         return self.client._AbstractRepository__collection_name
 
-    def get_all(self) -> List[AbstractRepository]:
-        """Fetch all items from the DcumentDB table.
+    def get_all(self) -> List[BaseModel]:
+        """Fetch all items from the DocumentDB table.
 
         Returns:
             List[T]: A list of all items in the table.
@@ -61,14 +58,14 @@ class DocumentDBModel(BaseDataModel[Any]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def get_one(self, id: str) -> AbstractRepository:
-        """Fetch a single item from the DcumentDB table by its ID.
+    def get_one(self, id: str) -> BaseModel:
+        """Fetch a single item from the DocumentDB table by its ID.
 
         Args:
             id (str): The unique identifier of the item.
 
         Returns:
-            AbstractRepository: The item with the specified ID.
+            BaseModel: The item with the specified ID.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -76,8 +73,6 @@ class DocumentDBModel(BaseDataModel[Any]):
         """
         try:
             item = self.client.find_one_by_id(id)
-        except DoesNotExist:
-            raise ItemNotFoundException(item_id=id)
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
@@ -86,14 +81,14 @@ class DocumentDBModel(BaseDataModel[Any]):
 
         return item
 
-    def create(self, item: Dict[str, Any]) -> AbstractRepository:
-        """Create a new item in the DcumentDB table.
+    def create(self, item: Dict[str, Any]) -> BaseModel:
+        """Create a new item in the DocumentDB table.
 
         Args:
             item (Dict[str,Any]): The item data to create.
 
         Returns:
-            AbstractRepository: The newly created item.
+            BaseModel: The newly created item.
 
         Raises:
             ValidationException: If the input data is invalid.
@@ -108,15 +103,15 @@ class DocumentDBModel(BaseDataModel[Any]):
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
-    def update(self, id: str, item: Dict[str, Any]) -> AbstractRepository:
-        """Update an existing item in the DcumentDB table.
+    def update(self, id: str, item: Dict[str, Any]) -> BaseModel:
+        """Update an existing item in the DocumentDB table.
 
         Args:
             id (str): The unique identifier of the item to update.
             item (Dict[str,Any]): The updated item data.
 
         Returns:
-            AbstractRepository: The updated item.
+            BaseModel: The updated item.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -125,8 +120,6 @@ class DocumentDBModel(BaseDataModel[Any]):
         """
         try:
             existing_item = self.client.find_one_by_id(id)
-        except DoesNotExist:
-            raise ItemNotFoundException(item_id=id)
         except ValueError as ve:
             raise ValidationException(error=str(ve)) from ve
         except Exception as e:
@@ -141,8 +134,8 @@ class DocumentDBModel(BaseDataModel[Any]):
 
         return existing_item
 
-    def get_query(self, search_query: dict) -> List[AbstractRepository]:
-        """Get result for a certain Dcumentdb search query.
+    def get_query(self, search_query: dict) -> List[BaseModel]:
+        """Get result for a certain DocumentDB search query.
 
         Args:
             search_query (str): serialized search query.
@@ -160,14 +153,14 @@ class DocumentDBModel(BaseDataModel[Any]):
         except ValidationException as e:
             raise ValidationException("The search query format is invalid.") from e
 
-    def delete_one(self, id: str) -> AbstractRepository:
-        """Delete an item from the DcumentDB table by its ID.
+    def delete_one(self, id: str) -> BaseModel:
+        """Delete an item from the DocumentDB table by its ID.
 
         Args:
             id (str): The unique identifier of the item to delete.
 
         Returns:
-            AbstractRepository: The deleted item.
+            BaseModel: The deleted item.
 
         Raises:
             ItemNotFoundException: If the item does not exist.
@@ -178,16 +171,14 @@ class DocumentDBModel(BaseDataModel[Any]):
             if item:
                 self.client.delete(item)
                 return item
-        except DoesNotExist:
-            raise ItemNotFoundException(item_id=id)
         except Exception as e:
             raise DataModelException(error=str(e)) from e
 
         if not item:
             raise ItemNotFoundException(item_id=id)
 
-    def delete_all(self) -> List[AbstractRepository]:
-        """Delete all items in the DcumentDB table.
+    def delete_all(self) -> List[BaseModel]:
+        """Delete all items in the DocumentDB table.
 
         Returns:
             List[T]: A list of all deleted items.

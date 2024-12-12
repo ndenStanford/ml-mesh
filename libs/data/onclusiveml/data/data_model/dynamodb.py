@@ -24,7 +24,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
     using the Dyntastic library for object mapping.
     """
 
-    model: Dyntastic = Field(...)
+    model: Any = Field(...)
 
     def __init__(self, model: Dyntastic):
         """Initialize the BaseDataModel with a specific model.
