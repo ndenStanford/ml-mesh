@@ -25,9 +25,9 @@ class BaseDataModel(JsonApiSchema, ABC, Generic[T]):
     stored in the data model.
     """
 
-    model: Type[T] = Field(...)
+    model: Any = Field(...)
 
-    def __init__(self, model: Type[T]):
+    def __init__(self, model: Any):
         """Initialize the BaseDataModel with a specific model.
 
         Args:
