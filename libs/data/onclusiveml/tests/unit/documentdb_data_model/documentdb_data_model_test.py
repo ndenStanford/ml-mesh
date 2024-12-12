@@ -4,7 +4,6 @@
 
 # 3rd party libraries
 import pytest
-from dyntastic import A
 
 # Internal libraries
 from onclusiveml.data.data_model.exception import (
