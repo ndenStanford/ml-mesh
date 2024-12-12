@@ -23,7 +23,9 @@ def get_model_server() -> ModelServer:
     ner_served_model = ServedNERModel(served_model_artifacts=artifacts)
     # initialize model server
     model_server = ModelServer(configuration=settings, model=ner_served_model)
-    Instrumentator.enable(model_server, app_name=settings.model_observability)
+    Instrumentator.enable(
+        model_server, app_name=f"{settings.model_name}-{settings.api_version}"
+    )
 
     return model_server
 

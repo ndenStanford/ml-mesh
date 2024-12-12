@@ -110,7 +110,6 @@ class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "ner"
-    model_observability: str = "ner"
     model_directory: Union[str, Path] = "."
 
 
