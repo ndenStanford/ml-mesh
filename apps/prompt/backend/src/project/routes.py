@@ -11,7 +11,7 @@ from src.prompt.tables import PromptTemplate
 
 
 router = APIRouter(
-    prefix="/v2/projects",
+    prefix="/v3/projects",
 )
 
 

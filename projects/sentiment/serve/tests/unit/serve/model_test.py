@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 # Internal libraries
-from onclusiveml.models.sentiment import CompiledSentiment
+from onclusiveml.models.sentiment import TrainedSentiment
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
@@ -19,7 +19,7 @@ def test_served_model_init(served_model):
     assert not served_model.ready
 
 
-@patch.object(CompiledSentiment, "from_pretrained")
+@patch.object(TrainedSentiment, "from_pretrained")
 def test_served_model_load(mock_from_pretrained, served_model):
     """Test served model load."""
     assert not served_model.ready

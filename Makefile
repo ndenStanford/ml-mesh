@@ -34,8 +34,6 @@ KUBECTL_VERSION=$(shell cat .kubectl-version)
 JAVA_VERSION=$(shell cat .java-version)
 NODE_VERSION=$(shell cat .node-version)
 UBUNTU_VERSION=$(shell cat .ubuntu-version)
-NEURON_DRIVER_VERSION=$(shell cat .neuronx-dkms-version)
-NEURON_TOOLS_VERSION=$(shell cat .neuronx-tools-version)
 
 ## VARIABLES
 ifeq ($(USE_DOCKER_CACHE),false)

@@ -113,7 +113,7 @@ def test_model_server_bio():
                             {
                                 "entity_type": "ORG",
                                 "entity_text": "エアビーアンドビー",
-                                "score": 0.9992916285991669,
+                                "score": 0.9992916584014893,
                                 "sentence_index": 0,
                                 "start": 0,
                                 "end": 9,
@@ -129,10 +129,64 @@ def test_model_server_bio():
                             {
                                 "entity_type": "ORG",
                                 "entity_text": "エアビーアンドビー",
-                                "score": 0.9988850255807241,
+                                "score": 0.9988849759101868,
                                 "sentence_index": 1,
                                 "start": 3,
                                 "end": 12,
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        # Test case for Chinese (with entities)
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "ner",
+                    "attributes": {"content": "防弹少年团(BTS)的成员马云访问清华大学"},
+                    "parameters": {"language": "zh"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "ner",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "防弹少年团",
+                                "score": 0.9925098419189453,
+                                "sentence_index": 0,
+                                "start": 0,
+                                "end": 5,
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "BTS",
+                                "score": 0.9839503765106201,
+                                "sentence_index": 0,
+                                "start": 6,
+                                "end": 9,
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "马云",
+                                "score": 0.9969251155853271,
+                                "sentence_index": 0,
+                                "start": 13,
+                                "end": 15,
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "清华大学",
+                                "score": 0.7689006328582764,
+                                "sentence_index": 0,
+                                "start": 17,
+                                "end": 21,
                             },
                         ]
                     },
@@ -161,7 +215,7 @@ def test_model_server_bio():
                             {
                                 "entity_type": "ORG",
                                 "entity_text": "에어비앤비",
-                                "score": 0.9997547745704651,
+                                "score": 0.9997547268867493,
                                 "sentence_index": 0,
                                 "start": 0,
                                 "end": 5,
@@ -177,7 +231,7 @@ def test_model_server_bio():
                             {
                                 "entity_type": "ORG",
                                 "entity_text": "에어비앤비를",
-                                "score": 0.9993805646896362,
+                                "score": 0.9993805885314941,
                                 "sentence_index": 1,
                                 "start": 5,
                                 "end": 11,
@@ -199,7 +253,7 @@ def test_model_server_bio():
                             "In 2020, SpaceX, founded by Elon Musk, successfully launched astronauts to the International Space Station from American soil for the first time since the retirement of the Space Shuttle program in 2011.",
                             "William Shakespeare, the renowned English playwright, wrote 'Romeo and Juliet' in the late 16th century. The tragic love story, set in Verona, Italy, has been adapted countless times for stage and screen.",
                             "The Great Barrier Reef, stretching over 2,300 kilometers off the coast of Queensland, Australia, is the world's largest coral reef system. It is home to diverse marine life and visible from space.",
-                            "Apple Inc., headquartered in Cupertino, California, revolutionized the smartphone industry with the introduction of the iPhone in 2007. The company's co-founder, Steve Jobs, played a crucial role in its development.",
+                            "Apple Inc(Apple)., headquartered in Cupertino, California, revolutionized the smartphone industry with the introduction of the iPhone in 2007. The company's co-founder, Steve Jobs, played a crucial role in its development.",
                         ]  # noqa
                     },
                     "parameters": {"language": "en"},
@@ -240,7 +294,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "PER",
                                     "entity_text": "Gustave Eiffel",
-                                    "score": 0.9995022614796957,
+                                    "score": 0.9995022416114807,
                                     "sentence_index": 0,
                                     "start": 60,
                                     "end": 74,
@@ -250,7 +304,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "ORG",
                                     "entity_text": "SpaceX",
-                                    "score": 0.9997899830341339,
+                                    "score": 0.9997899532318115,
                                     "sentence_index": 0,
                                     "start": 9,
                                     "end": 15,
@@ -258,7 +312,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "PER",
                                     "entity_text": "Elon Musk",
-                                    "score": 0.9996558427810669,
+                                    "score": 0.9996559023857117,
                                     "sentence_index": 0,
                                     "start": 28,
                                     "end": 37,
@@ -266,7 +320,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "International Space Station",
-                                    "score": 0.9997769395510355,
+                                    "score": 0.9997768998146057,
                                     "sentence_index": 0,
                                     "start": 79,
                                     "end": 106,
@@ -276,7 +330,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "PER",
                                     "entity_text": "William Shakespeare",
-                                    "score": 0.9998430907726288,
+                                    "score": 0.9998431205749512,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 19,
@@ -302,7 +356,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "Great Barrier Reef",
-                                    "score": 0.9997691154479981,
+                                    "score": 0.9997690916061401,
                                     "sentence_index": 0,
                                     "start": 4,
                                     "end": 22,
@@ -327,32 +381,40 @@ def test_model_server_bio():
                             [
                                 {
                                     "entity_type": "ORG",
-                                    "entity_text": "Apple Inc.",
-                                    "score": 0.9988864461580912,
+                                    "entity_text": "Apple Inc",
+                                    "score": 0.998591423034668,
                                     "sentence_index": 0,
                                     "start": 0,
-                                    "end": 10,
+                                    "end": 9,
+                                },
+                                {
+                                    "entity_type": "ORG",
+                                    "entity_text": "Apple",
+                                    "score": 0.9993466734886169,
+                                    "sentence_index": 0,
+                                    "start": 10,
+                                    "end": 15,
                                 },
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "Cupertino",
-                                    "score": 0.9980465173721313,
+                                    "score": 0.9986340403556824,
                                     "sentence_index": 0,
-                                    "start": 29,
-                                    "end": 38,
+                                    "start": 36,
+                                    "end": 45,
                                 },
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "California",
-                                    "score": 0.9986708164215088,
+                                    "score": 0.9987733960151672,
                                     "sentence_index": 0,
-                                    "start": 40,
-                                    "end": 50,
+                                    "start": 47,
+                                    "end": 57,
                                 },
                                 {
                                     "entity_type": "PER",
                                     "entity_text": "Steve Jobs",
-                                    "score": 0.9998300969600677,
+                                    "score": 0.9998301267623901,
                                     "sentence_index": 1,
                                     "start": 26,
                                     "end": 36,
@@ -392,7 +454,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "東京スカイツリー",
-                                    "score": 0.9983153144518534,
+                                    "score": 0.9983153343200684,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 8,
@@ -400,7 +462,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "東京都墨田区",
-                                    "score": 0.9964338392019272,
+                                    "score": 0.9964338541030884,
                                     "sentence_index": 0,
                                     "start": 20,
                                     "end": 26,
@@ -428,7 +490,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "PER",
                                     "entity_text": "村上春樹",
-                                    "score": 0.9997902810573578,
+                                    "score": 0.9997903108596802,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 4,
@@ -444,7 +506,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "PER",
                                     "entity_text": "カフカ",
-                                    "score": 0.9987940986951193,
+                                    "score": 0.9987940788269043,
                                     "sentence_index": 1,
                                     "start": 9,
                                     "end": 12,
@@ -462,7 +524,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "静岡県",
-                                    "score": 0.9971112807591757,
+                                    "score": 0.9971113204956055,
                                     "sentence_index": 0,
                                     "start": 4,
                                     "end": 7,
@@ -470,7 +532,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "山梨県",
-                                    "score": 0.9849872986475626,
+                                    "score": 0.9849873185157776,
                                     "sentence_index": 0,
                                     "start": 8,
                                     "end": 11,
@@ -486,7 +548,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "ユネスコ",
-                                    "score": 0.989531472325325,
+                                    "score": 0.9895314574241638,
                                     "sentence_index": 1,
                                     "start": 6,
                                     "end": 10,
@@ -496,7 +558,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "ORG",
                                     "entity_text": "トヨタ自動車",
-                                    "score": 0.9966776669025421,
+                                    "score": 0.9966776967048645,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 6,
@@ -526,7 +588,7 @@ def test_model_server_bio():
                             "서울타워는 1975년에 완공된 서울특별시 용산구에 위치한 전망탑입니다. 남산 정상에 세워져 있어 서울의 상징적인 랜드마크로 알려져 있습니다.",
                             "삼성전자는 1969년에 설립된 한국의 대표적인 기업으로, 스마트폰과 반도체 분야에서 세계적인 기업으로 성장했습니다. 갤럭시 시리즈로 유명합니다.",
                             "백제문화단지는 충청남도 부여군에 위치한 역사 테마파크로, 2010년에 개장했습니다. 백제의 역사와 문화를 체험할 수 있는 다양한 시설을 갖추고 있습니다.",
-                            "방탄소년단(BTS)은 2013년에 데뷔한 한국의 7인조 보이그룹으로, 전 세계적으로 큰 인기를 얻고 있습니다. 그들의 음악은 빌보드 차트에서 여러 차례 1위를 기록했습니다.",
+                            "방탄소년단(BTS)은 방탄소년단(BTS)은 2013년에 데뷔한 한국의 7인조 보이그룹으로, 전 세계적으로 큰 인기를 얻고 있습니다. 그들의 음악은 빌보드 차트에서 여러 차례 1위를 기록했습니다.",
                             "제주도는 대한민국 최남단에 위치한 화산섬으로, 2007년 유네스코 세계자연유산으로 지정되었습니다. 한라산과 아름다운 해변으로 유명한 관광지입니다.",
                         ]  # noqa
                     },
@@ -544,7 +606,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "서울타워",
-                                    "score": 0.9437261422475179,
+                                    "score": 0.943726122379303,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 4,
@@ -560,7 +622,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "용산구",
-                                    "score": 0.9243932962417603,
+                                    "score": 0.9243932366371155,
                                     "sentence_index": 0,
                                     "start": 23,
                                     "end": 26,
@@ -588,7 +650,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "백제문화단",
-                                    "score": 0.997564509510994,
+                                    "score": 0.9975645542144775,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 5,
@@ -614,7 +676,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "ORG",
                                     "entity_text": "방탄소년단",
-                                    "score": 0.9995901942253113,
+                                    "score": 0.9996685981750488,
                                     "sentence_index": 0,
                                     "start": 0,
                                     "end": 5,
@@ -622,10 +684,26 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "ORG",
                                     "entity_text": "BTS",
-                                    "score": 0.9953851401805878,
+                                    "score": 0.9928964376449585,
                                     "sentence_index": 0,
                                     "start": 6,
                                     "end": 9,
+                                },
+                                {
+                                    "entity_type": "ORG",
+                                    "entity_text": "방탄소년단",
+                                    "score": 0.9990884065628052,
+                                    "sentence_index": 0,
+                                    "start": 12,
+                                    "end": 17,
+                                },
+                                {
+                                    "entity_type": "ORG",
+                                    "entity_text": "BTS",
+                                    "score": 0.9914676547050476,
+                                    "sentence_index": 0,
+                                    "start": 18,
+                                    "end": 21,
                                 },
                             ],
                             [
@@ -648,7 +726,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "ORG",
                                     "entity_text": "유네스코",
-                                    "score": 0.9916230241457621,
+                                    "score": 0.9916229844093323,
                                     "sentence_index": 0,
                                     "start": 32,
                                     "end": 36,
@@ -656,7 +734,7 @@ def test_model_server_bio():
                                 {
                                     "entity_type": "LOC",
                                     "entity_text": "한라산",
-                                    "score": 0.981324295202891,
+                                    "score": 0.9813242554664612,
                                     "sentence_index": 1,
                                     "start": 0,
                                     "end": 3,

@@ -55,6 +55,12 @@ class BaseLLMParameters(OnclusiveBaseModel):
     max_tokens: int = Field(3000, alias="maxTokens")
 
 
+class GenerateRequest(OnclusiveBaseModel):
+    """Generate prompt request json body."""
+
+    prompt: str
+
+
 class TextGenerationConfig(BaseLLMParameters):
     """Text generation config for tital model parameters."""
 
