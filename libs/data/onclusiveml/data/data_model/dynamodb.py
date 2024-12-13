@@ -136,7 +136,7 @@ class DynamoDBModel(BaseDataModel[Dyntastic]):
         """Get result for a certain dynamodb search query.
 
         Args:
-            search_query (str): serialized search query.
+            search_query (dict): serialized search query.
 
         Returns:
             T: The query related item, or None.
