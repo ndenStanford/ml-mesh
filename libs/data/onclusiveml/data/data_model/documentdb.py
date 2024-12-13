@@ -19,7 +19,7 @@ class DocumentDBModel(BaseDataModel[Any]):
     """A data model class for interacting with DB tables.
 
     This class provides methods for CRUD operations on DB tables
-    using the Dyntastic library for object mapping.
+    using the DocumentDB library for object mapping.
     """
 
     model: Any = Field(...)

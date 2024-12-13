@@ -2,7 +2,7 @@
 
 # Standard Library
 from abc import ABC, abstractmethod
-from typing import Any, Generic, List, TypeVar
+from typing import Any, Dict, Generic, List, TypeVar, Union
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -87,11 +87,11 @@ class BaseDataModel(BaseModel, ABC, Generic[T]):
         """
 
     @abstractmethod
-    def get_query(self, search_query: str) -> List[T]:
+    def get_query(self, search_query: Union[str, Dict]) -> List[T]:
         """Get result for a certain query.
 
         Args:
-            search_query (str): serialized search query.
+            search_query (Union[str,Dict]): serialized search query.
 
         Returns:
             T: The query related item, or None.
