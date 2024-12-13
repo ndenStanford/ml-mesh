@@ -1,4 +1,4 @@
-"""Test DynamoDB Data Model."""
+"""Test DocumentDB Data Model."""
 
 # Standard Library
 
